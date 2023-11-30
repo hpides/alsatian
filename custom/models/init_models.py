@@ -16,7 +16,8 @@ from global_utils.split_models import transform_to_sequential, split_model
 # from feature_extraction.split_models import split_model, transform_to_sequential
 
 
-def initialize_model(model_name, pretrained=False, new_num_classes=None, features_only=False, sequential_model=False):
+def initialize_model(model_name, pretrained=False, new_num_classes=None, features_only=False, sequential_model=False,
+                     freeze_feature_extractor=False):
     # init base model
     if model_name == RESNET_18:
         model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1) if pretrained else resnet18()
@@ -64,6 +65,26 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
                 nn.Dropout(p=model.dropout, inplace=True),
                 nn.Linear(model.lastconv_output_channels, new_num_classes),
             )
+        else:
+            raise ValueError(f"Unknown model: {model_name}")
+
+    if freeze_feature_extractor:
+        # freeze all parameters later unfreeze specific ones
+        for param in model.parameters():
+            param.requires_grad = False
+
+        if model_name in RESNETS:
+            for param in model.fc.parameters():
+                param.requires_grad = True
+        elif model_name == MOBILE_V2:
+            for param in model.classifier.parameters():
+                param.requires_grad = True
+        elif model_name in TRANSFORMER_MODELS:
+            for param in model.heads.parameters():
+                param.requires_grad = True
+        elif model_name in EFF_NETS:
+            for param in model.classifier.parameters():
+                param.requires_grad = True
         else:
             raise ValueError(f"Unknown model: {model_name}")
 

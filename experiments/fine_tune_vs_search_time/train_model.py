@@ -8,6 +8,8 @@ from torch.optim import lr_scheduler
 def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders, dataset_sizes, device):
     measurements = {}
 
+    model = model.to(device)
+
     for epoch in range(num_epochs):
         print(f'Epoch {epoch}/{num_epochs - 1}')
         measurements[epoch] = {}
