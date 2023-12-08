@@ -4,6 +4,8 @@ import torch
 from torch import optim
 from torch.optim import lr_scheduler
 
+from global_utils.global_constants import TIME_DATA_LOADING
+
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders, dataset_sizes, device):
     measurements = {}
@@ -17,6 +19,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders,
         # Each epoch has a training and validation phase
         for phase in ['train', 'val']:
             measurements[epoch][phase] = {}
+            measurements[epoch][phase][TIME_DATA_LOADING] = []
             start = time.time_ns()
             if phase == 'train':
                 model.train()  # Set model to training mode
@@ -27,7 +30,10 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders,
             running_corrects = 0
 
             # Iterate over data.
+            data_load_start = time.time_ns()
+
             for inputs, labels in dataloaders[phase]:
+                measurements[epoch][phase][TIME_DATA_LOADING].append(time.time_ns() - data_load_start)
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 # zero the parameter gradients
@@ -47,6 +53,9 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders,
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
+
+                data_load_start = time.time_ns()
+
             if phase == 'train':
                 scheduler.step()
 

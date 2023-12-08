@@ -4,3 +4,5 @@ __pycache__
 /data/imagenette2/
 /tmp_dir/
 /experiments/fine_tune_vs_search_time/results/
+/experiments/end_to_end_times/fine_tuning/results/
+/experiments/end_to_end_times/calc_features/results/
