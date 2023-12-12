@@ -1,7 +1,5 @@
 # Calc features experiment
 
-- `chmod a+w results/`
-
 # Run on DES GPU Server in docker container
 - `screen -S nils`
 - `export PYTHONPATH=${PYTHONPATH}:/tmp/pycharm_project_635/`
@@ -11,9 +9,7 @@
     --data_dir /tmp/pycharm_project_635/data/imagenette2
     --device cuda
     --num_repetitions 5
-    --new_num_classes 10
     --env_name DES-GPU-SERVER
-    --fine_tuning_variant full_fine_tuning
     --use_defined_parameter_sets
 ```
 
