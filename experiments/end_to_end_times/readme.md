@@ -82,6 +82,9 @@
     - https://technical.city/en/video/GeForce-RTX-2080-Ti-vs-RTX-A5000#benchmarks (don't know how reliable the numbers
       are but just to get a rough estimate)
     - 195 * 1.15 -> 224h (pretty close to SHiFT numbers)
+    - **problem**: SHiFT assumes only 20 epochs so we would assume 200s, not 500s
+      - with this our results are approx 2.5x faster than what SHiFT presents, but:
+        - they use different framework, different setup, maybe slow data load
 
 
 
