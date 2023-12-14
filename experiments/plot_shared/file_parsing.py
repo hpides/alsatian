@@ -1,10 +1,16 @@
 import json
 import os
 
-def get_raw_data(root_dir, search_strings):
+
+def get_raw_data(root_dir, search_strings, expected_files=1):
     matches = extract_files_by_name(root_dir, search_strings)
-    assert len(matches) == 1
-    return parse_json_file(matches[0])
+    assert len(matches) == expected_files, \
+        f"expected {expected_files} files, but found {len(matches)} for {search_strings}"
+    if expected_files == 1:
+        return parse_json_file(matches[0])
+    else:
+        return [parse_json_file(match) for match in matches]
+
 
 def all_strings_in_file_name(search_strings, file):
     for search_string in search_strings:

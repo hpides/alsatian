@@ -50,7 +50,6 @@ def plot_stacked_bar_chart(data, ignore=[], factor=1, title="", save_path=None, 
                     bbox_inches='tight')  # Use bbox_inches='tight' to ensure the legend is not cut off
 
     print(category_sums)
-    plt.show()
 
 
 if __name__ == '__main__':

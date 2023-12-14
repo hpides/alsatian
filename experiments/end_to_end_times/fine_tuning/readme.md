@@ -1,9 +1,3 @@
-# 
-
-- two types of experiments
-  1) full fine tuning (all parameters adjusted)
-  2) feature extraction (only head trained)
-
 # Run on DES GPU Server in docker container
 - `screen -S nils`
 - `export PYTHONPATH=${PYTHONPATH}:/tmp/pycharm_project_635/`
