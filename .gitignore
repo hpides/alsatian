@@ -9,4 +9,4 @@ __pycache__
 /experiments/end_to_end_times/fine_tuning/plotting/plots/feature_extraction/
 /experiments/end_to_end_times/fine_tuning/plotting/plots/full_fine_tuning/
 /experiments/end_to_end_times/calc_features/plotting/plots/
-/experiments/bottlenecks/exp_extraction_vs_classification/results/debug/
+/experiments/bottlenecks/model_rank/results/debug/

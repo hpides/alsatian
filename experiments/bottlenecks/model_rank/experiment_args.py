@@ -6,6 +6,10 @@ class ExpArgs:
         self.extract_batch_size = args.getint(section, 'extract_batch_size')
         self.classify_batch_size = args.getint(section, 'classify_batch_size')
         self.num_items = args.getint(section, 'num_items')
+        self.device = args[section]['device']
+        self.split_level = args[section]['split_level']
+        self.dataset_type = args[section]['dataset_type']
+        self.data_workers = args.getint(section, 'data_workers')
 
     def __str__(self):
         return str(self.__dict__)

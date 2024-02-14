@@ -1,29 +1,27 @@
-# EXPERIMENT NAME
+# Model Search Bottlenecks
 
 ## Experiment Overview
 
 - **goal**
-    - In this set of experiments we want to find out where the bottlenecks are for the model search workload as
-      described in SHiFT
-    - questions to be answered are
-        - Q1: what is the bottleneck: feature extraction or the final ranking of the model based on extracted features (
-          e.g. by training a FC layer)
-        - Q2: where are the bottlenecks for the sub-steps
-            - Q2.1: where are the bottlenecks for feature extraction
-            - Q2.2: where are the bottlenecks for ranking
+    - When searching through different DL models the standard procedure (as proposed in many papers asuch as SHiFT)consist of two steps:
+        - (1) extracting features and
+        - (2) ranking/scoring the model on the extracted features
+    - In this experiment we want to analyze where the bottlenecks are for this procedure. We will first look at entire models and after that at reduced and composed models
 - **workload**
-    - the high level workload should be a search query over a selected model as, for example, described in SHiFT
-    - to have more reliable results we will vary the workload by 
-      - domain / model architecture
-      - dataset size
-      - (batch size): could use the max batch size working for all/most models on our GPU 
-      - hardware: GPU setup and CPU setup
+    - we will use a simple feature extraction and model ranking pipeline
+    - we will execute for a total of 50 batches (first few batches to warm up the GPU, then get some measurements)
+    - we will vary the workload by
+        - domain / model architecture
+        - full/partially/joined models
+        - (batch size): could use the max batch size working for all/most models on our GPU
+        - hardware: GPU setup and CPU setup
 - **overview of folder structure**
     - TODO
 
 ## Hardware setup
 
 ### Reduced DES GPU server setup
+
 - **Hardware**
     - DES GPU server
     - 2 GPUs (NVIDIA RTX A5000, 24GB)
@@ -37,11 +35,22 @@
 
 ## Conducted Experiments
 
-## Models
-- we use the following models ...
-- we use the following data
+### Models (Feature Extraction)
+- model architectures
+    - efficientNet, mobilenet, resnet18, resnet 50, resnet152, ViT
+    - BERT, RoBERTa
+- model configurations
+    - full, last 50%, 25%, 3#, 1# layers
+    - joint model with multiple heads: last 50%, last 3#
 
-- overview of what experiments are conducted
+### Models (Model Scoring)
+- one fully connected layer with
+    - 1000, 100, 2 output classes
+
+### Datasets
+- imagemodels: imagenet
+- text: TBD
+
 
 ## Analysis
 
