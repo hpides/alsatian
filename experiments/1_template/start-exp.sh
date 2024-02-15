@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Assigning command line arguments to variables
 repository_url=github.com/slin96/model-search-paper.git
