@@ -10,6 +10,7 @@ class ExpArgs:
         self.split_level = args[section]['split_level']
         self.dataset_type = args[section]['dataset_type']
         self.data_workers = args.getint(section, 'data_workers')
+        self.dummy_input_dir = args[section]['dummy_input_dir']
 
     def __str__(self):
         return str(self.__dict__)

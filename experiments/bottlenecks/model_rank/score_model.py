@@ -11,6 +11,7 @@ from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE, LOAD_DATA, CUDA, INFERENCE, \
     CALC_PROXY_SCORE, STATE_DICT_SIZE, PARTIAL_STATE_DICT_SIZE
 from global_utils.device import get_device
+from global_utils.dummy_dataset import get_input_shape, DummyDataset
 from global_utils.size import state_dict_size_mb
 from global_utils.split_models import split_model, get_split_index
 from search.proxies.nn_proxy import linear_proxy
@@ -29,7 +30,8 @@ def score_model_exp(exp_args: ExpArgs):
 
     split_index = get_split_index(exp_args.split_level, model, exp_args.model_name)
     if split_index is not None:
-        _, model = split_model(model, split_index)
+        initial_model = model
+        unused_model, model = split_model(model, split_index)
     state_dict = model.state_dict()
     results[PARTIAL_STATE_DICT_SIZE] = state_dict_size_mb(state_dict)
 
@@ -37,11 +39,21 @@ def score_model_exp(exp_args: ExpArgs):
         data_set = CustomImageFolder(os.path.join(exp_args.dataset_path, 'train'), imagenet_inference_transform)
         # artificially making the dataset smaller
         data_set.set_subrange(0, exp_args.num_items)
-
-        data_loader = torch.utils.data.DataLoader(data_set, batch_size=exp_args.extract_batch_size, shuffle=False,
-                                                  num_workers=exp_args.data_workers)
     else:
         raise NotImplementedError(f'the dataset type {exp_args.dataset_type} is currently not supported')
+
+    # in case we split the model, the model resulting out of the split will not have the same input shape as the
+    # original dataset thus we create a new dummy dataset having items of the correct shape
+    if split_index is not None and split_index > 0:
+        # first get the item shape of the original data without the batch size
+        item_shape = data_set[0][0].shape
+        model_input_shape = get_input_shape(split_index, initial_model, exp_args.extract_batch_size,
+                                            exp_args.num_items, item_shape)
+        data_set = DummyDataset(exp_args.extract_batch_size, exp_args.num_items, model_input_shape,
+                                exp_args.dummy_input_dir)
+
+    data_loader = torch.utils.data.DataLoader(data_set, batch_size=exp_args.extract_batch_size, shuffle=False,
+                                              num_workers=exp_args.data_workers)
 
     end_to_end, detailed_measurements = bench.benchmark_cpu(
         _score_model, model, state_dict, data_loader, device, bench)
