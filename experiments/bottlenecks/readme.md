@@ -48,7 +48,8 @@
     - 1000, 100, 2 output classes
 
 ### Datasets
-- imagemodels: imagenet
+- imagemodels: ImageNette (subclass of Imagenet dataset)
+  - https://github.com/fastai/imagenette (we use the full sized version)
 - text: TBD
 
 
