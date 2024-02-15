@@ -4,7 +4,7 @@
 repository_url=github.com/slin96/model-search-paper.git
 script_to_start=experiments/bottlenecks/model_rank/main.py
 github_access_token_file=./access_token
-venv_activate_path=/Users/nils/uni/programming/model-search-paper/venv/bin/activate
+python_dir=/Users/nils/uni/programming/model-search-paper/venv/bin/python
 branch=bottleneck-analysis
 repo_name=model-search-paper
 config_file=experiments/bottlenecks/model_rank/config.ini
@@ -45,14 +45,8 @@ if [ ! -f "$script_to_start" ]; then
     exit 1
 fi
 
-# Check if the virtual environment activation script is provided
-if [ ! -z "$venv_activate_path" ]; then
-    # Activate the virtual environment
-    source $venv_activate_path
-fi
-
 # Set the PYTHONPATH to include the current directory
 export PYTHONPATH=$PWD
 
 # Execute the specified Python script
-python $script_to_start --config_file $config_file --config_section $config_section
+$python_dir $script_to_start --config_file $config_file --config_section $config_section
