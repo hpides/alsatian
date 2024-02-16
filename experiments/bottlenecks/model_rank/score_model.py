@@ -90,7 +90,7 @@ def _score_model(model, state_dict, data, device):
 
         for i, (inputs, l) in enumerate(data):
             # measure data loading time
-            batch_measures[LOAD_DATA].append(time.time_ns() - start)
+            batch_measures[LOAD_DATA].append(time.perf_counter() - start)
 
             measurement, batch = bench.micro_benchmark_cpu(_load_data_to_device, inputs, device)
             batch_measures[DATA_TO_DEVICE].append(measurement)
