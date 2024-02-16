@@ -27,9 +27,9 @@ def compare_end_to_end(json_file_path):
     sum_times += measurements[MODEL_TO_DEVICE]
     sum_times += measurements[STATE_TO_MODEL]
     sum_times += measurements[CALC_PROXY_SCORE]
-    sum_times += sum(measurements[LOAD_DATA])
-    sum_times += sum(measurements[DATA_TO_DEVICE])
-    sum_times += sum(measurements[INFERENCE])
+    sum_times += sum(measurements[LOAD_DATA][10:])
+    sum_times += sum(measurements[DATA_TO_DEVICE][10:])
+    sum_times += sum(measurements[INFERENCE][10:])
 
     print(f'end-to-end\t: {end_to_end_time * 10 ** -9:.3f} s ({end_to_end_time * 10 ** -6:.3f} ms)')
     print(f'sum of times: {sum_times * 10 ** -9:.3f} s ({sum_times * 10 ** -6:.3f} ms)')
@@ -44,8 +44,11 @@ def calculate_percentage_difference(old_value, new_value):
 
 
 if __name__ == '__main__':
-    # Example file path
-    json_file_path = '/Users/nils/Downloads/consistency/2024-02-16-12:13:03#score_model_exp_section_debug-des-consistent-results-w1.json'
-    # json_file_path = '/Users/nils/Downloads/consistency/2024-02-16-12:24:59#score_model_exp_section_debug-des-consistent-results-w2.json'
-
-    compare_end_to_end(json_file_path)
+    for file in [
+        '/Users/nils/Downloads/consistency/2024-02-16-12:13:03#score_model_exp_section_debug-des-consistent-results-w1.json',
+        '/Users/nils/Downloads/consistency/2024-02-16-12:24:59#score_model_exp_section_debug-des-consistent-results-w2.json',
+        '/Users/nils/Downloads/consistency/2024-02-16-12:29:36#score_model_exp_section_debug-des-consistent-results-w4.json',
+        '/Users/nils/Downloads/consistency/2024-02-16-12:33:15#score_model_exp_section_debug-des-consistent-results-w8.json'
+    ]:
+        compare_end_to_end(file)
+        print()

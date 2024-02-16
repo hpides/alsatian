@@ -54,7 +54,8 @@ def score_model_exp(exp_args: ExpArgs):
     data_loader = torch.utils.data.DataLoader(data_set, batch_size=exp_args.extract_batch_size, shuffle=False,
                                               num_workers=exp_args.data_workers)
 
-    end_to_end, detailed_measurements = bench.benchmark_cpu(
+    bench.warm_up_gpu()
+    end_to_end, detailed_measurements = bench.benchmark_end_to_end(
         _score_model, model, state_dict, data_loader, device, bench)
 
     results.update(detailed_measurements)
@@ -62,15 +63,16 @@ def score_model_exp(exp_args: ExpArgs):
     return results
 
 
-def _score_model(model, state_dict, data, device, bench):
+def _score_model(model, state_dict, data, device):
+    bench = Benchmarker(device)
     measurements = {}
     # assume we already have an initialized model
     # so, we just have to
     # load the model on the device (GPU)
-    measurement, model = bench.benchmark_cpu(_load_model_to_device, model, device)
+    measurement, model = bench.micro_benchmark_cpu(_load_model_to_device, model, device)
     measurements[MODEL_TO_DEVICE] = measurement
     # load the state dict into the model
-    measurement, _ = bench.benchmark_cpu(_load_state_dict_in_model, model, state_dict)
+    measurement, _ = bench.micro_benchmark_cpu(_load_state_dict_in_model, model, state_dict)
     measurements[STATE_TO_MODEL] = measurement
 
     batch_measures = {
@@ -84,30 +86,36 @@ def _score_model(model, state_dict, data, device, bench):
 
     # need to backprop here ...
     with torch.no_grad():
-        start = time.time_ns()
+        start = time.perf_counter()
 
-        for inputs, l in data:
+        for i, (inputs, l) in enumerate(data):
             # measure data loading time
             batch_measures[LOAD_DATA].append(time.time_ns() - start)
 
-            measurement, batch = bench.benchmark_cpu(_load_data_to_device, inputs, device)
+            measurement, batch = bench.micro_benchmark_cpu(_load_data_to_device, inputs, device)
             batch_measures[DATA_TO_DEVICE].append(measurement)
 
-            measurement, out = bench.benchmark(_inference, batch, model)
-            batch_measures[INFERENCE].append(measurement)
+            bench.register_cuda_start(i)
+            out = _inference(batch, model)
+            bench.register_cuda_end(i)
 
             features.append(out)
             labels.append(l)
 
-            start = time.time_ns()
+            start = time.perf_counter()
 
     # actually ranking the model with proxy score
     # since we only interested in the duration, but not in the actual ranking -> just use features for train and test
     # also assume 100 classes for now
-    measurement, proxy_score = bench.benchmark_cpu(
+    measurement, proxy_score = bench.benchmark_end_to_end(
         linear_proxy, features, labels, features, labels, 100, device
     )
     measurements[CALC_PROXY_SCORE] = measurement
+
+    bench.sync_and_summarize_tasks()
+    for task in bench.tasks.values():
+        assert task.time_taken is not None
+        batch_measures[INFERENCE].append(task.time_taken)
 
     measurements.update(batch_measures)
     return measurements
