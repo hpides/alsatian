@@ -51,7 +51,8 @@ class Benchmarker:
         result = method(*args, **kwargs)
 
         # make sure that all the GPU tasks are finished as well
-        torch.cuda.synchronize()
+        if self.device.type == CUDA:
+            torch.cuda.synchronize()
         end_time = time.perf_counter()
         elapsed = end_time - start_time
         return elapsed, result
