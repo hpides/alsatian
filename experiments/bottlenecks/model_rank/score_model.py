@@ -55,8 +55,14 @@ def score_model_exp(exp_args: ExpArgs):
                                               num_workers=exp_args.data_workers)
 
     bench.warm_up_gpu()
-    end_to_end, detailed_measurements = bench.benchmark_end_to_end(
+    end_to_end, (detailed_measurements, detailed_bench) = bench.benchmark_end_to_end(
         _score_model, model, state_dict, data_loader, device)
+
+    if device.type == CUDA:
+        detailed_bench.sync_and_summarize_tasks()
+        for task in detailed_bench.tasks.values():
+            assert task.time_taken is not None
+            detailed_measurements[INFERENCE].append(task.time_taken)
 
     results.update(detailed_measurements)
     results['end_to_end_time'] = end_to_end
@@ -111,15 +117,8 @@ def _score_model(model, state_dict, data, device):
         linear_proxy, features, labels, features, labels, 100, device
     )
     measurements[CALC_PROXY_SCORE] = measurement
-
-    if device.type == CUDA:
-        bench.sync_and_summarize_tasks()
-        for task in bench.tasks.values():
-            assert task.time_taken is not None
-            batch_measures[INFERENCE].append(task.time_taken)
-
     measurements.update(batch_measures)
-    return measurements
+    return measurements, bench
 
 
 def _load_model_to_device(model, device):
