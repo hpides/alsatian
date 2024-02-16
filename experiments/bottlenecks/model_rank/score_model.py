@@ -99,6 +99,8 @@ def _score_model(model, state_dict, data, device, bench):
             features.append(out)
             labels.append(l)
 
+            start = time.time_ns()
+
     # actually ranking the model with proxy score
     # since we only interested in the duration, but not in the actual ranking -> just use features for train and test
     # also assume 100 classes for now
