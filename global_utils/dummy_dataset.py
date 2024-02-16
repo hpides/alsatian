@@ -1,47 +1,48 @@
-import math
 import os
-import random
-import tempfile
 
 import torch
 
 from global_utils.split_models import split_model
 
 
-def get_input_shape(split_index, model, batch_size, number_items, item_shape):
-    with tempfile.TemporaryDirectory() as temp_dir:
-        device = torch.device("cpu")
+def get_input_shape(split_index, model, number_items, item_shape):
+    device = torch.device("cpu")
 
-        data = DummyDataset(batch_size=batch_size, number_items=number_items, item_shape=item_shape,
-                            directory=temp_dir)
-        first, second = split_model(model, split_index)
-        shape = _second_model_input_shape(data, first, device)
+    data = DummyDataset(number_items=number_items, input_shape=item_shape, label_shape=(1,),
+                        directory='', saved_items=0)
+    first, second = split_model(model, split_index)
+    shape = _second_model_input_shape(data, first, device)
 
-        return shape
+    return shape
 
 
 def _second_model_input_shape(data, first, device):
-    batch = data.get_random_batch().to(device)
-    first.to(device)
-    output = first(batch)
+    _input, _label = data.generate_random_batch(1)
+    _input = _input.to(device)
+    first = first.to(device)
+    output = first(_input)
     s = output.shape
-    return s
+    return s[1:]
 
 
 class DummyDataset:
 
-    def __init__(self, batch_size, number_items, item_shape, directory, saved_batches=30):
-        self.batch_size = batch_size
+    def __init__(self, number_items, input_shape, label_shape, directory, saved_items=500):
         self.number_items = number_items
-        self.item_shape = item_shape
-        self.numer_of_batches = math.ceil(number_items / batch_size)
-        self.tmp_data = os.path.abspath(directory)
-        self.saved_batches = min(saved_batches, self.numer_of_batches)
+        self.input_shape = input_shape
+        self.label_shape = label_shape
+        self.tmp_data = os.path.join(os.path.abspath(directory), 'tmp')
+        self.saved_items = min(saved_items, self.number_items)
 
-        os.makedirs(self.tmp_data, exist_ok=True)
-        print(f"Directory '{self.tmp_data}' created.")
+        if self.has_persisted_items:
+            os.makedirs(self.tmp_data, exist_ok=True)
+            print(f"Directory '{self.tmp_data}' created.")
 
-        self._save_batches_to_disk(self.saved_batches)
+        self._save_items_to_disk()
+
+    @property
+    def has_persisted_items(self) -> bool:
+        return self.saved_items > 0
 
     def __del__(self):
         if os.path.exists(self.tmp_data):
@@ -53,7 +54,7 @@ class DummyDataset:
         return self.number_items
 
     def __getitem__(self, index):
-        return self.get_random_batch()
+        return self.get_item(index)
 
     def _clear_directory(self):
         for root, dirs, files in os.walk(self.tmp_data):
@@ -62,21 +63,37 @@ class DummyDataset:
             for dir in dirs:
                 os.rmdir(os.path.join(root, dir))
 
-    def get_random_batch(self):
-        batch_index = random.randint(0, self.saved_batches - 1)
-        return torch.load(self._get_batch_path(batch_index))
+    def get_item(self, index):
+        if self.has_persisted_items:
+            item_index = index % self.saved_items
+            return torch.load(self._get_item_path(item_index))
+        else:
+            return self._generate_random_item()
 
-    def _save_batches_to_disk(self, number_of_batches):
-        for i in range(number_of_batches):
-            batch = torch.randn(size=[self.batch_size] + list(self.item_shape), dtype=torch.float)
-            batch_path = self._get_batch_path(i)
-            torch.save(batch, batch_path)
+    def _save_items_to_disk(self):
+        for i in range(self.saved_items):
+            item = self._generate_random_item()
+            item_path = self._get_item_path(i)
+            torch.save(item, item_path)
 
-    def _get_batch_path(self, i):
-        return os.path.join(self.tmp_data, f'batch-{i}.pt')
+    def _generate_random_item(self):
+        _input = torch.randn(size=list(self.input_shape), dtype=torch.float)
+        _label = torch.randint(low=0, high=1, size=list(self.label_shape), dtype=torch.uint8)
+        item = (_input, _label)
+        return item
+
+    def generate_random_batch(self, batch_size):
+        input_batch = torch.randn(size=[batch_size] + list(self.input_shape), dtype=torch.float)
+        label_batch = torch.randint(low=0, high=256, size=[batch_size] + list(self.label_shape),
+                                    dtype=torch.uint8)
+        batch = (input_batch, label_batch)
+        return batch
+
+    def _get_item_path(self, i):
+        return os.path.join(self.tmp_data, f'item-{i}.pt')
 
 
 if __name__ == '__main__':
-    temp_dir = DummyDataset(16, 50, (224, 224, 3), './dummy_data')
+    temp_dir = DummyDataset(16, (224, 224, 3), (1,), './dummy_data')
     print('test')
     del temp_dir

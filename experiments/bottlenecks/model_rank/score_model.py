@@ -46,11 +46,10 @@ def score_model_exp(exp_args: ExpArgs):
     # original dataset thus we create a new dummy dataset having items of the correct shape
     if split_index is not None and split_index > 0:
         # first get the item shape of the original data without the batch size
-        item_shape = data_set[0][0].shape
-        model_input_shape = get_input_shape(split_index, initial_model, exp_args.extract_batch_size,
-                                            exp_args.num_items, item_shape)
-        data_set = DummyDataset(exp_args.extract_batch_size, exp_args.num_items, model_input_shape,
-                                exp_args.dummy_input_dir)
+        input_shape = data_set[0][0].shape
+        model_input_shape = get_input_shape(split_index, initial_model, exp_args.num_items, input_shape)
+        label_shape = data_set[0][1].shape if torch.is_tensor(data_set[0][1]) else (1,)
+        data_set = DummyDataset(exp_args.num_items, model_input_shape, label_shape, exp_args.dummy_input_dir)
 
     data_loader = torch.utils.data.DataLoader(data_set, batch_size=exp_args.extract_batch_size, shuffle=False,
                                               num_workers=exp_args.data_workers)

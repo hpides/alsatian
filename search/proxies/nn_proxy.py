@@ -21,10 +21,7 @@ def linear_proxy(train_features, train_labels, test_features, test_labels, num_c
     # train model on train data
     model.train()
     for i in range(100):
-        batch = torch.cat(train_features, dim=0)
-        label = torch.cat(train_labels, dim=0)
-        batch = batch.to(device)
-        label = label.to(device)
+        batch, label = _prepare_batch_and_label(device, train_features, train_labels)
         optimizer.zero_grad()
         outputs = model(batch)
         loss = torch.nn.CrossEntropyLoss()(outputs, label)
@@ -37,10 +34,7 @@ def linear_proxy(train_features, train_labels, test_features, test_labels, num_c
     total_loss = 0.0
     total_samples = 0
 
-    batch = torch.cat(test_features, dim=0)
-    label = torch.cat(test_labels, dim=0)
-    batch = batch.to(device)
-    label = label.to(device)
+    batch, label = _prepare_batch_and_label(device, test_features, test_labels)
     outputs = model(batch)
     loss = torch.nn.CrossEntropyLoss()(outputs, label)
 
@@ -50,6 +44,14 @@ def linear_proxy(train_features, train_labels, test_features, test_labels, num_c
 
     average_loss = total_loss / total_samples
     return average_loss
+
+
+def _prepare_batch_and_label(device, test_features, test_labels):
+    batch = torch.cat(test_features, dim=0)
+    label = torch.flatten(torch.cat(test_labels, dim=0))
+    batch = batch.to(device)
+    label = label.to(device)
+    return batch, label
 
 
 if __name__ == '__main__':
