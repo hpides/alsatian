@@ -15,7 +15,7 @@ class Task:
         self.time_taken = None
 
     def set_time_taken(self):
-        self.time_taken = self.start.elapsed_time(self.end)
+        self.time_taken = self.start.elapsed_time(self.end) * 10 ** -3  # times are in ms, convert to s to be consistent
 
     def record_start(self):
         self.start.record()
@@ -67,7 +67,7 @@ class Benchmarker:
         ender.record()
         torch.cuda.synchronize()  # WAIT FOR GPU SYNC
         elapsed = starter.elapsed_time(ender)
-        elapsed = elapsed * 10 ** 6  # times are in ms, convert to ns to be consistent
+        elapsed = elapsed * 10 ** -3  # times are in ms, convert to s to be consistent
         return elapsed, result
 
     def micro_benchmark_cpu(self, method, *args, **kwargs):
