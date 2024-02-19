@@ -27,14 +27,14 @@ def compare_end_to_end(json_file_path):
     sum_times += measurements[MODEL_TO_DEVICE]
     sum_times += measurements[STATE_TO_MODEL]
     sum_times += measurements[CALC_PROXY_SCORE]
-    sum_times += sum(measurements[LOAD_DATA][10:])
-    sum_times += sum(measurements[DATA_TO_DEVICE][10:])
-    sum_times += sum(measurements[INFERENCE][10:])
+    sum_times += sum(measurements[LOAD_DATA])
+    sum_times += sum(measurements[DATA_TO_DEVICE])
+    sum_times += sum(measurements[INFERENCE])
 
-    print(f'end-to-end\t: {end_to_end_time * 10 ** -9:.3f} s ({end_to_end_time * 10 ** -6:.3f} ms)')
-    print(f'sum of times: {sum_times * 10 ** -9:.3f} s ({sum_times * 10 ** -6:.3f} ms)')
+    print(f'end-to-end\t: {end_to_end_time:.3f} s')
+    print(f'sum of times: {sum_times:.3f} s')
     abs_diff = abs(end_to_end_time - sum_times)
-    print(f'Abs difference: {abs_diff * 10 ** -9:.3f} s ({abs_diff * 10 ** -6:.3f} ms)')
+    print(f'Abs difference: {abs_diff:.3f} s ({abs_diff * 10 ** 3:.3f} ms)')
     print(f'Per difference: {calculate_percentage_difference(sum_times, end_to_end_time):.3f} %')
 
 
@@ -45,10 +45,23 @@ def calculate_percentage_difference(old_value, new_value):
 
 if __name__ == '__main__':
     for file in [
-        '/Users/nils/Downloads/consistency/2024-02-16-12:13:03#score_model_exp_section_debug-des-consistent-results-w1.json',
-        '/Users/nils/Downloads/consistency/2024-02-16-12:24:59#score_model_exp_section_debug-des-consistent-results-w2.json',
-        '/Users/nils/Downloads/consistency/2024-02-16-12:29:36#score_model_exp_section_debug-des-consistent-results-w4.json',
-        '/Users/nils/Downloads/consistency/2024-02-16-12:33:15#score_model_exp_section_debug-des-consistent-results-w8.json'
+        # '/Users/nils/Downloads/consistency/2024-02-16-12:13:03#score_model_exp_section_debug-des-consistent-results-w1.json',
+        # '/Users/nils/Downloads/consistency/2024-02-16-12:24:59#score_model_exp_section_debug-des-consistent-results-w2.json',
+        # '/Users/nils/Downloads/consistency/2024-02-16-12:29:36#score_model_exp_section_debug-des-consistent-results-w4.json',
+        # '/Users/nils/Downloads/consistency/2024-02-16-12:33:15#score_model_exp_section_debug-des-consistent-results-w8.json'
+        # '/Users/nils/Downloads/consistency/2024-02-16-17:46:29#score_model_exp_section_debug-des-consistent-results-w1.json'
+        # '/Users/nils/Downloads/consistency/2024-02-16-17:54:45#score_model_exp_section_debug-des-consistent-results-w1.json',
+        # '/Users/nils/Downloads/consistency/2024-02-16-17:57:06#score_model_exp_section_debug-des-consistent-results-w1.json',
+        # '/Users/nils/Downloads/consistency/2024-02-16-17:57:17#score_model_exp_section_debug-des-consistent-results-w2.json',
+        # '/Users/nils/Downloads/consistency/2024-02-16-17:57:26#score_model_exp_section_debug-des-consistent-results-w4.json',
+        # '/Users/nils/Downloads/consistency/2024-02-16-17:57:33#score_model_exp_section_debug-des-consistent-results-w8.json'
+        '/Users/nils/Downloads/consistency/2024-02-16-18:10:17#score_model_exp_section_debug-des-consistent-results-w1.json',
+        '/Users/nils/Downloads/consistency/2024-02-16-18:10:27#score_model_exp_section_debug-des-consistent-results-w2.json',
+        '/Users/nils/Downloads/consistency/2024-02-16-18:10:40#score_model_exp_section_debug-des-consistent-results-w4.json',
+        '/Users/nils/Downloads/consistency/2024-02-16-18:10:48#score_model_exp_section_debug-des-consistent-results-w8.json'
+
+
+
     ]:
         compare_end_to_end(file)
         print()
