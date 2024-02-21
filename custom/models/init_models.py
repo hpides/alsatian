@@ -12,10 +12,6 @@ from global_utils.model_names import *
 from global_utils.split_models import transform_to_sequential, split_model
 
 
-# from feature_extraction.constants import IO_OPT, CMP_REUSE
-# from feature_extraction.split_models import split_model, transform_to_sequential
-
-
 def initialize_model(model_name, pretrained=False, new_num_classes=None, features_only=False, sequential_model=False,
                      freeze_feature_extractor=False):
     # init base model

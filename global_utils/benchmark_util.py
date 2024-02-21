@@ -28,21 +28,32 @@ class Benchmarker:
     def __init__(self, device: torch.device):
         assert isinstance(device, torch.device), "device needs to be a valid device "
         self.device = device
-        self.tasks: Dict[str, Task] = {}
+        self.tasks: Dict[str, Dict[int, Task]] = {}
 
-    def register_cuda_start(self, task_id):
+    def add_task(self, task_id):
+        self.tasks[task_id] = {}
+
+    def get_task_times(self, task_id):
+        result = []
+        for task in self.tasks[task_id].values():
+            assert task.time_taken is not None
+            result.append(task.time_taken)
+        return result
+
+    def register_cuda_start(self, task_id, _index):
         task = Task()
         task.record_start()
-        self.tasks[task_id] = task
+        self.tasks[task_id][_index] = task
 
-    def register_cuda_end(self, task_id):
-        self.tasks[task_id].record_end()
+    def register_cuda_end(self, task_id, _index):
+        self.tasks[task_id][_index].record_end()
 
     def sync_and_summarize_tasks(self):
         torch.cuda.synchronize()
-        for task in self.tasks.values():
-            if task.time_taken is None:
-                task.set_time_taken()
+        for task_id, tasks in self.tasks.items():
+            for task in tasks.values():
+                if task.time_taken is None:
+                    task.set_time_taken()
 
     def benchmark_end_to_end(self, method, *args, **kwargs):
         start_time = time.perf_counter()

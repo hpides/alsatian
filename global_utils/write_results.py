@@ -3,6 +3,8 @@ import os
 import subprocess
 from datetime import datetime
 
+from global_utils.dependencies import get_pip_dependency_dict
+
 
 def get_git_commit_hash():
     try:
@@ -22,9 +24,16 @@ def write_measurements_and_args_to_json_file(measurements, args, dir_path, file_
     commit_hash = get_git_commit_hash()
 
     if isinstance(args, dict):
-        results = {'git-hash': commit_hash, 'args': str(args), 'measurements': measurements}
+        results = {'git-hash': commit_hash,
+                   'args': str(args),
+                   'pip-dependencies': get_pip_dependency_dict(),
+                   'measurements': measurements
+                   }
     else:
-        results = {'git-hash': commit_hash, 'args': vars(args), 'measurements': measurements}
+        results = {'git-hash': commit_hash,
+                   'args': vars(args),
+                   'pip-dependencies': get_pip_dependency_dict(),
+                   'measurements': measurements}
     with open(file_path, 'w') as json_file:
         # Write dictionary as JSON to the file
         json.dump(results, json_file)
