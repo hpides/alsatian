@@ -1,18 +1,16 @@
 import configparser
 
-from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_101, RESNET_34
+from global_utils.model_names import VISION_MODEL_CHOICES
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
     sections = []
 
     model_search_space = VISION_MODEL_CHOICES.copy()
-    model_search_space.remove(RESNET_101)
-    model_search_space.remove(RESNET_34)
 
     # generate ini files
     for model_name in model_search_space:
-        for split_level in [str(x) for x in [None, -1, -2, 50]]:
+        for split_level in [str(x) for x in [None, -1, -2, 25, 50, 75]]:
             for num_items in [100, 1000, 10000]:
                 section = f'bottleneck_analysis-model-{model_name}-items-{num_items}-split-{split_level}'
                 sections.append(section)
@@ -35,8 +33,10 @@ if __name__ == '__main__':
         config.write(configfile)
 
     with open('run-all-exp.sh', 'w') as script:
-        script.write('#!/bin/sh \n')
+        script.write('#!/bin/sh \nfor i in $(seq 1 10);\ndo\n')
         for section in sections:
             # use server_script_template.sh ad adjust it for your server
-            cmd = f'./run_exp.sh {section} \n'
+            cmd = f'\t./run_exp.sh {section} \n'
             script.write(cmd)
+        script.write('done')
+
