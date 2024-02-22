@@ -1,6 +1,7 @@
 import os
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FixedLocator
 
 
 def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=None, file_name=None):
@@ -36,6 +37,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
 
     ax.set_yticks(range(num_models))
     ax.set_yticklabels(models, fontsize='large')
+    ax.xaxis.set_major_locator(FixedLocator(range(0, 101, 20)))
     ax.set_xticklabels([f"{i}%" for i in range(0, 101, 20)], fontsize='large')
     ax.set_xlim(0, 100)  # Set x-axis limit to ensure it ends at 100%
     ax.set_xlabel('Percentage', fontsize='large')
@@ -44,7 +46,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
 
     # Create a custom legend
     handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
-    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=len(tasks), fontsize='large')
+    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=len(tasks), fontsize='large')
 
     plt.grid(axis='x')
 
