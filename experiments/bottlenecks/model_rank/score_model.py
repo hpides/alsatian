@@ -55,7 +55,6 @@ def score_model_exp(exp_args: ExpArgs):
                                               num_workers=exp_args.data_workers)
 
     bench.warm_up_gpu()
-    time.sleep(2)
     end_to_end, (detailed_measurements, detailed_bench) = bench.benchmark_end_to_end(
         _score_model, model, state_dict, data_loader, device)
 

@@ -14,13 +14,13 @@ if __name__ == '__main__':
     for model_name in model_search_space:
         for split_level in [str(x) for x in [None, -1, -2, 50]]:
             for num_items in [100, 1000, 10000]:
-                section = f'bottleneck_analysis+model>{model_name}+items>{num_items}+split>{split_level}'
+                section = f'bottleneck_analysis-model-{model_name}-items-{num_items}-split-{split_level}'
                 sections.append(section)
 
                 config[section] = {
                     'model_name': model_name,
-                    'result_dir': '/mount-fs/results/debug',
-                    'dataset_path': '/mount-fs/results/bottleneck-analysis',
+                    'result_dir': '/mount-fs/results/bottleneck-analysis',
+                    'dataset_path': '/mount-ssd/data/imagenette2',
                     'extract_batch_size': '128',  # chosen based on experiments
                     'classify_batch_size': '16',  # currently not used
                     'num_items': num_items,
