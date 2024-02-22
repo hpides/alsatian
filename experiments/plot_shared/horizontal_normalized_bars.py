@@ -6,9 +6,12 @@ from matplotlib.ticker import FixedLocator
 
 def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=None, file_name=None):
     data = normalize_to_percent(data)
+
     models = list(data.keys())
     first_key = list(data.keys())[0]
     tasks = list(data[first_key].keys())
+    for ign in ignore:
+        tasks.remove(ign)
     num_models = len(models)
     num_tasks = len(tasks)
 
@@ -30,6 +33,10 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
 
     # Plotting stacked horizontal bars for each model
     for i, (model, task_times) in enumerate(data.items()):
+
+        for ign in ignore:
+            del task_times[ign]
+
         left = 0
         for j, (task, time) in enumerate(task_times.items()):
             ax.barh(i, time, color=colors[j], label=task if i == 0 else None, left=left)
@@ -46,7 +53,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
 
     # Create a custom legend
     handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
-    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=len(tasks), fontsize='large')
+    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=4, fontsize='large')
 
     plt.grid(axis='x')
 

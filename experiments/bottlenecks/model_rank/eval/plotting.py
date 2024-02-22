@@ -38,7 +38,7 @@ if __name__ == '__main__':
     root_dir = '/Users/nils/Downloads/bottleneck-analysis'
     file_template = 'bottleneck_analysis-model-{}-items-{}-split-{}'
     num_items = '100'
-    split = '-1'
+    split = 'None'
     disk_speed = 200 # in MB/s
 
     data = {}
@@ -49,4 +49,5 @@ if __name__ == '__main__':
 
         data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
 
-    plot_horizontal_normalized_bar_chart(data, save_path='./', file_name='dummy')
+    ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
+    plot_horizontal_normalized_bar_chart(data, save_path='./', file_name='dummy', ignore=ignore)
