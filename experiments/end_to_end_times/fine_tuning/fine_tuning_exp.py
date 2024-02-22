@@ -9,7 +9,7 @@ from custom.dataset_transfroms import imagenet_data_transforms
 from custom.models.init_models import initialize_model
 from experiments.end_to_end_times.fine_tuning.train_model import standard_training
 from global_utils.global_constants import FULL_FINE_TUNING, FEATURE_EXTRACTION, VAL, TRAIN
-from global_utils.model_names import MODEL_CHOICES, RESNET_18, MOBILE_V2, RESNET_50, RESNET_152, VIT_B_16, VIT_L_16
+from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_18, MOBILE_V2, RESNET_50, RESNET_152, VIT_B_16, VIT_L_16
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                         required=True)
 
     # parameters that can also be set by setting a flag
-    parser.add_argument('--model_name', type=str, choices=MODEL_CHOICES)
+    parser.add_argument('--model_name', type=str, choices=VISION_MODEL_CHOICES)
     parser.add_argument('--train_size', type=int)
     parser.add_argument('--val_size', type=int)
     parser.add_argument('--batch_size', type=int)
