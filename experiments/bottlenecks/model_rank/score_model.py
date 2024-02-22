@@ -9,7 +9,7 @@ from custom.models.init_models import initialize_model
 from experiments.bottlenecks.model_rank.experiment_args import ExpArgs
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE, LOAD_DATA, CUDA, INFERENCE, \
-    CALC_PROXY_SCORE, STATE_DICT_SIZE, PARTIAL_STATE_DICT_SIZE
+    CALC_PROXY_SCORE, STATE_DICT_SIZE, PARTIAL_STATE_DICT_SIZE, END_TO_END, END_DATA_LOAD, END_EXTRACT_FEATURES
 from global_utils.device import get_device
 from global_utils.dummy_dataset import get_input_shape, DummyDataset
 from global_utils.size import state_dict_size_mb
@@ -59,14 +59,13 @@ def score_model_exp(exp_args: ExpArgs):
     end_to_end, (detailed_measurements, detailed_bench) = bench.benchmark_end_to_end(
         _score_model, model, state_dict, data_loader, device)
 
-    if device.type == CUDA:
-        detailed_bench.sync_and_summarize_tasks()
-        for task in detailed_bench.tasks.values():
-            assert task.time_taken is not None
-            detailed_measurements[INFERENCE].append(task.time_taken)
+    detailed_bench.sync_and_summarize_tasks()
+    detailed_measurements[DATA_TO_DEVICE] = detailed_bench.get_task_times(DATA_TO_DEVICE)
+    detailed_measurements[INFERENCE] = detailed_bench.get_task_times(INFERENCE)
 
     results.update(detailed_measurements)
-    results['end_to_end_time'] = end_to_end
+    results[END_TO_END] = end_to_end
+
     return results
 
 
@@ -76,10 +75,10 @@ def _score_model(model, state_dict, data, device):
     # assume we already have an initialized model
     # so, we just have to
     # load the model on the device (GPU)
-    measurement, model = bench.micro_benchmark_cpu(_load_model_to_device, model, device)
+    measurement, model = bench.micro_benchmark(_load_model_to_device, model, device)
     measurements[MODEL_TO_DEVICE] = measurement
     # load the state dict into the model
-    measurement, _ = bench.micro_benchmark_cpu(_load_state_dict_in_model, model, state_dict)
+    measurement, _ = bench.micro_benchmark(_load_state_dict_in_model, model, state_dict)
     measurements[STATE_TO_MODEL] = measurement
 
     batch_measures = {
@@ -88,28 +87,39 @@ def _score_model(model, state_dict, data, device):
         INFERENCE: []
     }
 
+    bench.add_task(DATA_TO_DEVICE)
+    bench.add_task(INFERENCE)
+
     features = []
     labels = []
 
     # need to backprop here ...
     with torch.no_grad():
         start = time.perf_counter()
+        end_to_end_start = time.perf_counter()
 
         for i, (inputs, l) in enumerate(data):
             # measure data loading time
             batch_measures[LOAD_DATA].append(time.perf_counter() - start)
 
-            measurement, batch = bench.micro_benchmark_cpu(_load_data_to_device, inputs, device)
-            batch_measures[DATA_TO_DEVICE].append(measurement)
+            if i == len(data) - 1:
+                measurements[END_DATA_LOAD] = time.perf_counter() - end_to_end_start
 
-            bench.register_cuda_start(i)
+            bench.register_cuda_start(DATA_TO_DEVICE, i)
+            batch = _load_data_to_device(inputs, device)
+            bench.register_cuda_end(DATA_TO_DEVICE, i)
+
+            bench.register_cuda_start(INFERENCE, i)
             out = _inference(batch, model)
-            bench.register_cuda_end(i)
+            bench.register_cuda_end(INFERENCE, i)
 
             features.append(out)
             labels.append(l)
 
             start = time.perf_counter()
+
+    torch.cuda.synchronize()
+    measurements[END_EXTRACT_FEATURES] = time.perf_counter() - end_to_end_start
 
     # actually ranking the model with proxy score
     # since we only interested in the duration, but not in the actual ranking -> just use features for train and test
