@@ -12,3 +12,5 @@ __pycache__
 /experiments/bottlenecks/model_rank/results/debug/
 /experiments/bottlenecks/model_rank/on_server_exec/run_all_exp.sh
 /experiments/bottlenecks/model_rank/on_server_exec/tmp-config.ini
+/experiments/plot_shared/dummy.png
+/experiments/plot_shared/dummy.svg
