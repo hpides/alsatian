@@ -6,9 +6,9 @@ from matplotlib.ticker import FixedLocator
 
 def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=None, file_name=None):
     data = normalize_to_percent(data)
-
     models = list(data.keys())
-    tasks = list(data["Model A"].keys())
+    first_key = list(data.keys())[0]
+    tasks = list(data[first_key].keys())
     num_models = len(models)
     num_tasks = len(tasks)
 
