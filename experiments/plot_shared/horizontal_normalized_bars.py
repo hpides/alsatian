@@ -64,7 +64,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
         path = os.path.join(save_path, f'{file_name}.png')
         plt.savefig(path, format="png", bbox_inches='tight')
 
-    plt.show()
+    # plt.show()
 
 
 def normalize_to_percent(data):
