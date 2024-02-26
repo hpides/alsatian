@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-from experiments.bottlenecks.opt_parameters.eval.eval_batch_size_util import read_json, aggregate_data
+from experiments.opt_parameters.eval.eval_batch_size_util import read_json, aggregate_data
 from global_utils.global_constants import MEASUREMENTS
 from global_utils.model_names import VISION_MODEL_CHOICES
 
@@ -37,5 +37,5 @@ if __name__ == '__main__':
     des_gpu_vision_measurements = '../results/batch_size_impact/2024-02-20-13:30:29#batch_size_impact.json'
     data = read_json(des_gpu_vision_measurements)
     aggregate_data(data)
-    out = os.path.join('./plots', 'des_gpu_vision_measurements')
+    out = os.path.join('plots', 'des_gpu_vision_measurements')
     plot_end_to_end_batch_size(data, out)
