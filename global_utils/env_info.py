@@ -2,6 +2,8 @@ import os
 import platform
 import subprocess
 import psutil
+import cpuinfo
+
 
 def get_cpuset_cpus():
     try:
@@ -17,10 +19,7 @@ def get_system_info():
     system_info['OS'] = platform.system()
 
     # CPU information
-    cpu_info = {}
-    cpu_info['type'] = platform.processor()
-    cpu_info['cores'] = psutil.cpu_count(logical=False)
-    cpu_info['cores (logical)'] = psutil.cpu_count(logical=True)
+    cpu_info = cpuinfo.get_cpu_info()
     cpu_info['cpus avail to docker'] = get_cpuset_cpus()
     system_info['CPU'] = cpu_info
 
@@ -48,3 +47,5 @@ if __name__ == '__main__':
     # Example usage:
     system_info = get_system_info()
     print(system_info)
+
+    print('test')
