@@ -2,12 +2,12 @@
 
 # Assigning command line arguments to variables
 repository_url=github.com/slin96/model-search-paper.git
-script_to_start=experiments/opt_parameters/worker_batch_size_impact.py
+script_to_start=experiments/opt_parameters/data_loading/data_loading_experiment.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=bottleneck-analysis
 repo_name=model-search-paper
-config_file=experiments/opt_parameters/config.ini
+config_file=experiments/opt_parameters/data_loading/config.ini
 config_section=opt-params-des-gpu
 
 # Function to read the access token from file
