@@ -28,6 +28,9 @@ if __name__ == '__main__':
     nums_workers = [1, 2, 4, 8, 12, 16, 20, 24, 28, 32, 48]
     model_names = VISION_MODEL_CHOICES
 
+    data_set = CustomImageFolder(os.path.join(exp_args.dataset_path, 'train'), imagenet_inference_transform)
+    dataset_len = len(data_set)
+
     for model_name in model_names:
         for batch_size in batch_sizes:
             for num_workers in nums_workers:
@@ -35,10 +38,11 @@ if __name__ == '__main__':
                 exp_args.model_name = model_name
                 exp_args.extract_batch_size = batch_size
                 exp_args.data_workers = num_workers
-                exp_args.num_items = 10 * max(batch_sizes)
+                exp_args.num_items = int(dataset_len / max(batch_sizes)) * max(batch_sizes)
 
                 model = initialize_model(exp_args.model_name, pretrained=True, features_only=True)
                 data_set = CustomImageFolder(os.path.join(exp_args.dataset_path, 'train'), imagenet_inference_transform)
+                data_set.set_subrange(0, exp_args.num_items)
                 data_loader = torch.utils.data.DataLoader(data_set, batch_size=exp_args.extract_batch_size,
                                                           shuffle=False,
                                                           num_workers=exp_args.data_workers)

@@ -14,3 +14,4 @@ __pycache__
 /experiments/bottlenecks/model_rank/on_server_exec/tmp-config.ini
 /experiments/plot_shared/dummy.png
 /experiments/plot_shared/dummy.svg
+/experiments/2_opt_parameters/eval/plots-32-cores/
