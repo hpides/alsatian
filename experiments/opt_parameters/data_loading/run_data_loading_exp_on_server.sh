@@ -48,4 +48,4 @@ fi
 export PYTHONPATH=$PWD
 
 # Execute the specified Python script
-$python_dir $script_to_start --config_file $config_file --config_section $config_section
+$python_dir $script_to_start

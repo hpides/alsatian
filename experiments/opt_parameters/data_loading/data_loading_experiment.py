@@ -10,7 +10,7 @@ from global_utils.dummy_dataset import DummyDataset
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 if __name__ == '__main__':
-    config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../config.ini')
+    config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), './config.ini')
     config_section = 'data-loading-exp-params-des-gpu'
 
     # Read configuration file
