@@ -37,6 +37,8 @@ class CustomImageFolder(ImageFolder):
         self.return_samples_only = return_samples_only
 
     def set_subrange(self, from_index, to_index):
+        if to_index > len(self.samples):
+            raise ValueError(f"the 'to_index' ({to_index}) exceeds the size of the dataset ({len(self.samples)})")
         self.samples = self.all_samples[from_index:to_index]
 
     def __getitem__(self, index: int) -> Tuple[Any, Any]:
