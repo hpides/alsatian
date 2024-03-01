@@ -3,6 +3,8 @@
 - unless otherwise noted the information can be extracted by executing the
   script [env_info.py](..%2Fglobal_utils%2Fenv_info.py)
 
+
+# DES GPU Server setup
 ## Hardware Setup
 
 - GPU
