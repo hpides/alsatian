@@ -41,9 +41,6 @@
         - None -> no sleep -> simulate small model/no inference cost
         - 2s -> simulates a larger model/longer inference time
     - dataset_type
-        - imagenette: uses the imagenette dataset with the standard inference pre-processing pipeline for imagenet
-          models
-            - not every image has the same size ~=117 KB -> 0.12 MB
         - preprocessed_ssd: saves data in the shape (3,224,224) on SSD, meaning there is no data loading require
             - here a single item is 3*224*224*4 Byte ~= 0.6MB large, meaning batch has the following sizes:
                 - 32: 19.2 MB
@@ -51,6 +48,10 @@
                 - 256: 153 MB
                 - 512: 306 MB
                 - 1024: 612 MB
+        - imagenette: uses the imagenette dataset with the standard inference pre-processing pipeline for imagenet
+          models
+            - not every image has the same size ~=117 KB -> 0.12 MB
+            - this means the data that has to be loaded form disk is approx 5X smaller
 
 #### Results
 
@@ -60,8 +61,53 @@
 
 ##### Effect of batch size
 
+- when not overlapping data loading, the time it takes to load roughly grows linear with the batch size
+- example here for no sleep and loading imagenet data (left) and loading preprocessed data from SSD (right)
+
+<p float="left">
+  <img src="./plots/batch_size_impact/workers-1-sleep-None-data-imagenette.png" width="400" />
+  <img src="./plots/batch_size_impact/workers-1-sleep-None-data-preprocessed_ssd.png" width="400" /> 
+</p>
+
 ##### Effect of number of workers
+
+- for **1 worker** we see an almost constant load time per batch over time (see above)
+    - when loading actual images we see more fluctuation because not all images have same size
+    - when loading preprocessed data from SSD more or less constant because all items have exact same size
+- for **2 or more workers** we see the behaviour that we predicted above
+    - assume the inference is faster than loading a batch (sleep None), then we see peaks every n batches because we
+      have to little
+      overlap (left image)
+    - when the inference takes longer (sleep 2) than loading a batch, loading first batch has high time, then almost
+      instantaneous (right image)
+
+<p float="left">
+  <img src="./plots/batch_size_impact/workers-2-sleep-None-data-imagenette.png" width="400" />
+  <img src="./plots/batch_size_impact/workers-2-sleep-2-data-imagenette.png" width="400" /> 
+</p>
+
+- varying the number of workers more we can observe
+    - the more workers, the longer it takes to load the initial batch because of initializing processes, compete for
+      resources
+    - long run the more workers, the lower the number of spikes because of limited parallel preprocessing
+        - 1 worker almost constant time
+        - 2 workers, peaks every 2 batches
+        - 4 workers peaks every 4 batches, ...
+- <p float="left">
+  <img src="./plots/workers_impact/batch_size-256-sleep-None-data-preprocessed_ssd.png" width="600" />
+
+</p>
 
 ##### Effect of sleep time
 
+- see above
+- when no sleep -> data loading is bottleneck, we see delays
+- when sleep long enough -> inference bottleneck, data loading almost instantaneous
+
 ##### Effect of dataset type
+
+- loading actual images, slower and more fluctuations
+- loading preprocessed data faster and almost no fluctuations
+- **interesting**: a preprocessed item is 5X as large as the average image but the data loading of the preprocessed data
+  is still significantly shorter -> when loading actual images we are compute bottlenecked
+- for images see section effect on batch szie above
