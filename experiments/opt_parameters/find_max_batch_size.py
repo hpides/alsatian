@@ -9,7 +9,7 @@ from experiments.bottlenecks.model_rank.run_experiment import run_experiment_sec
 from global_utils.model_names import VISION_MODEL_CHOICES
 
 if __name__ == '__main__':
-    config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config.ini')
+    config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'num_workers_and_batch_size/config.ini')
     config_section = 'debug-des-gpu'
 
     # Read configuration file
