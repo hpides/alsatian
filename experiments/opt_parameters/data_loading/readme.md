@@ -100,7 +100,6 @@
         - 4 workers peaks every 4 batches, ...
 - <p float="left">
   <img src="./plots/workers_impact/batch_size-256-sleep-None-data-preprocessed_ssd.png" width="600" />
-
 </p>
 
 ##### Effect of sleep time

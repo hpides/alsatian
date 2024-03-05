@@ -1,11 +1,11 @@
-from statistics import median, mean
+from statistics import median
+
+import matplotlib.pyplot as plt
 
 from experiments.plot_shared.file_parsing import get_raw_data
 from global_utils.constants import INFERENCE
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import VISION_MODEL_CHOICES, CONVOLUTION_MODELS, TRANSFORMER_MODELS
-import matplotlib.pyplot as plt
-import numpy as np
+from global_utils.model_names import CONVOLUTION_MODELS, TRANSFORMER_MODELS
 
 
 def get_file_id(model_name, batch_size):
@@ -30,8 +30,8 @@ def collect_inf_time_data(root_dir, model_names, batch_sizes, agg_func=None, nor
 
             inf_times[model_name][batch_size] = _data
 
-
     return inf_times
+
 
 def plot_inf_times(data, save_path):
     fig, ax = plt.subplots(figsize=(12, 8))
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     root_dir = '/Users/nils/Downloads/inference-time-exp'
     batch_sizes = [32, 128, 256, 512, 1024]
 
-    save_path = '../plots/inf_times_'
+    save_path = '../plots/inf_times'
 
     model_names = CONVOLUTION_MODELS
     data = collect_inf_time_data(root_dir, model_names, batch_sizes, agg_func=median, normalize=True)
@@ -73,11 +73,3 @@ if __name__ == '__main__':
     model_names = TRANSFORMER_MODELS
     data = collect_inf_time_data(root_dir, model_names, batch_sizes, agg_func=median, normalize=True)
     plot_inf_times(data, f'{save_path}_trans_models')
-
-
-    # for batch_size in batch_sizes:
-    #         for dataset_type in dataset_types:
-    #             _id = f'batch_size-{batch_size}-sleep-{sleep}-data-{dataset_type}'
-    #             output_path = f'../plots/workers_impact/{_id}'
-    #             data = collect_batch_size_data(root_dir, batch_size, sleep, dataset_type, nums_workers, last_batch=9)
-    #             multi_line_plot(data, output_path)

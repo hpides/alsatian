@@ -15,4 +15,3 @@ __pycache__
 /experiments/plot_shared/dummy.png
 /experiments/plot_shared/dummy.svg
 /experiments/opt_parameters/num_workers_and_batch_size/eval/plots-32-cores/
-/experiments/opt_parameters/inf_times/plots/
