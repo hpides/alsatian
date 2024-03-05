@@ -7,8 +7,6 @@ github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=bottleneck-analysis
 repo_name=model-search-paper
-config_file=experiments/opt_parameters/data_loading/config.ini
-config_section=opt-params-des-gpu
 
 # Function to read the access token from file
 read_access_token() {

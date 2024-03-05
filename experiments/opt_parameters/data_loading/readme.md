@@ -80,6 +80,11 @@
       overlap (left image)
     - when the inference takes longer (sleep 2) than loading a batch, loading first batch has high time, then almost
       instantaneous (right image)
+- **large batch size can lead to data loading bottleneck**
+    - what we also see is that the larger the batch size the higher the peaks become and the higher the time to load the
+      very first batch, if overall data loading is the bottleneck, it can be the case that (even though inference with a
+      larger batch size might be faster) a smaller batch size is the better choice for end to end time because then the
+      peaks, and especially the time to load the first batch are shorter
 
 <p float="left">
   <img src="./plots/batch_size_impact/workers-2-sleep-None-data-imagenette.png" width="400" />
