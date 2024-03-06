@@ -10,8 +10,6 @@ __pycache__
 /experiments/end_to_end_times/fine_tuning/plotting/plots/full_fine_tuning/
 /experiments/end_to_end_times/calc_features/plotting/plots/
 /experiments/bottlenecks/model_rank/results/debug/
-/experiments/bottlenecks/model_rank/on_server_exec/run_all_exp.sh
-/experiments/bottlenecks/model_rank/on_server_exec/tmp-config.ini
 /experiments/plot_shared/dummy.png
 /experiments/plot_shared/dummy.svg
 /experiments/opt_parameters/num_workers_and_batch_size/eval/plots-32-cores/
