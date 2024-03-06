@@ -33,9 +33,11 @@ if __name__ == '__main__':
                     }
 
     with open('tmp-config.ini', 'w') as configfile:
+        configfile.seek(0)
         config.write(configfile)
 
     with open('run-all-exp.sh', 'w') as script:
+        script.seek(0)
         script.write('#!/bin/sh \nfor i in $(seq 1 10);\ndo\n')
         for section in sections:
             # use server_script_template.sh ad adjust it for your server
