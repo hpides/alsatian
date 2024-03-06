@@ -35,10 +35,13 @@ def score_model_exp(exp_args: ExpArgs):
     state_dict = model.state_dict()
     results[PARTIAL_STATE_DICT_SIZE] = state_dict_size_mb(state_dict)
 
-    if exp_args.dataset_type == 'image_folder':
+    if exp_args.dataset_type in ['image_folder', 'imagenette']:
         data_set = CustomImageFolder(os.path.join(exp_args.dataset_path, 'train'), imagenet_inference_transform)
         # artificially making the dataset smaller
         data_set.set_subrange(0, exp_args.num_items)
+    elif exp_args.dataset_type == 'imagenette_preprocessed_ssd':
+        data_set = DummyDataset(exp_args.num_items, (3, 224, 224), (1,), exp_args.dummy_input_dir,
+                                saved_items=exp_args.num_items)
     else:
         raise NotImplementedError(f'the dataset type {exp_args.dataset_type} is currently not supported')
 

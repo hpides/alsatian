@@ -24,13 +24,12 @@ if __name__ == '__main__':
     nums_workers = [1, 2, 4, 8, 32, 48, 64]
     sleeps = [None, 2]
 
-
-
     for dataset_type in ['imagenette', 'preprocessed_ssd']:
 
         if dataset_type == 'preprocessed_ssd':
             dataset_size = 1024 * 10
-            data_set = DummyDataset(1024 * 10, (3, 224, 224), (1,), exp_args.dummy_input_dir, saved_items=dataset_size)
+            data_set = DummyDataset(dataset_size, (3, 224, 224), (1,), exp_args.dummy_input_dir,
+                                    saved_items=dataset_size)
         elif dataset_type == 'imagenette':
             data_set = CustomImageFolder(os.path.join(exp_args.dataset_path, 'train'),
                                          imagenet_inference_transform)
@@ -41,7 +40,6 @@ if __name__ == '__main__':
                     print(f"{batch_size} - {num_workers}")
                     exp_args.batch_size = batch_size
                     exp_args.data_workers = num_workers
-
 
                     data_loader = torch.utils.data.DataLoader(data_set, batch_size=exp_args.batch_size,
                                                               shuffle=False,
