@@ -46,7 +46,11 @@ def list_of_layers(model: torch.nn.Sequential, include_seq=False, split_classes=
 
 
 def get_split_index(split_index, model_name):
-    split_index = int(split_index)
+    try:
+        split_index = int(split_index)
+    except ValueError:
+        return None
+
     num_layers = len(SPLIT_INDEXES[model_name])
     if split_index >= 0:
         # interpret split-level as percentage number, length of available split points
