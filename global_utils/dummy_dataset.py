@@ -2,6 +2,7 @@ import os
 
 import torch
 
+from global_utils.file_names import clean_file_name
 from global_utils.split_models import split_model
 
 
@@ -27,25 +28,36 @@ def _second_model_input_shape(data, first, device):
 
 class DummyDataset:
 
-    def __init__(self, number_items, input_shape, label_shape, directory, saved_items=500):
+    def __init__(self, number_items, input_shape, label_shape, directory, saved_items=500, allow_reuse=True,
+                 cleanup=False):
         self.number_items = number_items
         self.input_shape = input_shape
         self.label_shape = label_shape
-        self.tmp_data = os.path.join(os.path.abspath(directory), 'tmp')
         self.saved_items = min(saved_items, self.number_items)
+        self.tmp_data = os.path.join(os.path.abspath(directory), f'tmp-{self._dummy_data_id}')
+        self._use_cached_data = False
+        self.allow_reuse = allow_reuse
+        self.cleanup = cleanup
 
         if self.has_persisted_items:
-            os.makedirs(self.tmp_data, exist_ok=True)
-            print(f"Directory '{self.tmp_data}' created.")
+            if os.path.exists(self.tmp_data) and self.allow_reuse:
+                self._use_cached_data = True
+            else:
+                os.makedirs(self.tmp_data, exist_ok=True)
+                print(f"Directory '{self.tmp_data}' created.")
+                self._save_items_to_disk()
 
-        self._save_items_to_disk()
+    @property
+    def _dummy_data_id(self):
+        return clean_file_name(
+            f'{self.number_items}-{"-".join(map(str, self.input_shape))}-{"-".join(map(str, self.label_shape))}-{self.saved_items}')
 
     @property
     def has_persisted_items(self) -> bool:
         return self.saved_items > 0
 
     def __del__(self):
-        if os.path.exists(self.tmp_data):
+        if os.path.exists(self.tmp_data) and self.cleanup:
             self._clear_directory()
             os.rmdir(self.tmp_data)
             print(f"Directory '{self.tmp_data}' deleted.")
@@ -95,5 +107,6 @@ class DummyDataset:
 
 if __name__ == '__main__':
     temp_dir = DummyDataset(16, (224, 224, 3), (1,), './dummy_data')
+    test = temp_dir._dummy_data_id
     print('test')
     del temp_dir
