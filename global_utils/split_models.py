@@ -45,19 +45,18 @@ def list_of_layers(model: torch.nn.Sequential, include_seq=False, split_classes=
     return result
 
 
-def get_split_index(split_index, model, model_name):
-    try:
-        split_index = int(split_index)
-    except:
-        return None
-
+def get_split_index(split_index, model_name):
+    split_index = int(split_index)
+    num_layers = len(SPLIT_INDEXES[model_name])
     if split_index >= 0:
-        # interpret split-level as percentage number
-        num_layers = len(model)
-        split_index = int(num_layers * (1 - split_index))
-    elif split_index == -1 or split_index == -2:
-        # look up split index
+        # interpret split-level as percentage number, length of available split points
+        # example: assume we have 10 layers and get split_index 50, we want to split the model 50/50 -> split index 5
+        # example: assume we have 10 layers and get split_index 75, we want to split the model 25/75 -> split index 0.75*10 -> 7.5 -> rounded to 8
+        split_index = int(num_layers * (split_index))
+    elif split_index < 0:
+        # we want to split the last abs(split_index) layers
+        # example: split index -2, model has 10 layers -> split 8/2 -> split index 8
         split_index = SPLIT_INDEXES[model_name][-1 * split_index]
-    else:
-        raise NotImplementedError(f"Split index of {split_index} currently not supported.")
+        if split_index < 0:
+            raise ValueError("split not possible; negative split index abs too high")
     return split_index
