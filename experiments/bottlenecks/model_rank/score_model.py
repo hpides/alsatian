@@ -28,7 +28,7 @@ def score_model_exp(exp_args: ExpArgs):
     results[STATE_DICT_SIZE] = state_dict_size_mb(model.state_dict())
     # if split param is given split model
 
-    split_index = get_split_index(exp_args.split_level, model, exp_args.model_name)
+    split_index = get_split_index(exp_args.split_level, exp_args.model_name)
     if split_index is not None:
         initial_model = model
         unused_model, model = split_model(model, split_index)
