@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     with open('run-all-exp.sh', 'w') as script:
         script.seek(0)
-        script.write('#!/bin/sh \nfor i in $(seq 1 10);\ndo\n')
+        script.write('#!/bin/sh \nfor i in $(seq 1 5);\ndo\n')
         for section in sections:
             # use server_script_template.sh ad adjust it for your server
             cmd = f'\t./run_exp.sh {section} \n'
