@@ -56,7 +56,7 @@ def get_split_index(split_index, model_name):
         # interpret split-level as percentage number, length of available split points
         # example: assume we have 10 layers and get split_index 50, we want to split the model 50/50 -> split index 5
         # example: assume we have 10 layers and get split_index 75, we want to split the model 25/75 -> split index 0.75*10 -> 7.5 -> rounded to 8
-        split_index = int(num_layers * (split_index))
+        split_index = int(num_layers * (split_index / 100))
     elif split_index < 0:
         # we want to split the last abs(split_index) layers
         # example: split index -2, model has 10 layers -> split 8/2 -> split index 8
