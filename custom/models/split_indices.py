@@ -115,24 +115,22 @@ SPLIT_INDEXES = {
         4,  # last 15 bottleneck layer onwards
     ],
     RESNET_34: [  # interestingly these indexes seem to be the same as resnet50 but this one has approx 4M less params
-        [
-            22,  # only linear layer
-            19,  # last 1 bottleneck layer onwards
-            17,  # last 2 bottleneck layer onwards
-            16,  # last 3 bottleneck layer onwards
-            15,  # last 4 bottleneck layer onwards
-            14,  # last 5 bottleneck layer onwards
-            13,  # last 6 bottleneck layer onwards
-            12,  # last 7 bottleneck layer onwards
-            11,  # last 8 bottleneck layer onwards
-            10,  # last 9 bottleneck layer onwards
-            9,  # last 10 bottleneck layer onwards
-            8,  # last 11 bottleneck layer onwards
-            7,  # last 12 bottleneck layer onwards
-            6,  # last 13 bottleneck layer onwards
-            5,  # last 14 bottleneck layer onwards
-            4,  # last 15 bottleneck layer onwards
-        ]
+        22,  # only linear layer
+        19,  # last 1 bottleneck layer onwards
+        17,  # last 2 bottleneck layer onwards
+        16,  # last 3 bottleneck layer onwards
+        15,  # last 4 bottleneck layer onwards
+        14,  # last 5 bottleneck layer onwards
+        13,  # last 6 bottleneck layer onwards
+        12,  # last 7 bottleneck layer onwards
+        11,  # last 8 bottleneck layer onwards
+        10,  # last 9 bottleneck layer onwards
+        9,  # last 10 bottleneck layer onwards
+        8,  # last 11 bottleneck layer onwards
+        7,  # last 12 bottleneck layer onwards
+        6,  # last 13 bottleneck layer onwards
+        5,  # last 14 bottleneck layer onwards
+        4,  # last 15 bottleneck layer onwards
     ],
     RESNET_18: [
         14,  # only linear layer
