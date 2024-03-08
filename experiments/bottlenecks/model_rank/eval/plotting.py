@@ -28,8 +28,9 @@ def extract_and_filter(file, disk_speed):
     return result
 
 
-def get_aggregated_data(root_dir, file_id, agg_func, disk_speed):
+def get_aggregated_data(root_dir, file_id, agg_func, disk_speed, expected_files=5):
     files = extract_files_by_name(root_dir, [file_id])
+    assert len(files) == 5
     extracted_data = [extract_and_filter(f, disk_speed) for f in files]
     agg_data = aggregate_measurements(extracted_data, agg_func)
     return agg_data
@@ -42,7 +43,8 @@ if __name__ == '__main__':
 
     model_names = VISION_MODEL_CHOICES.copy()
 
-    for dataset_type in ['imagenette_preprocessed_ssd', 'imagenette']:
+    # . at the end of name is important here to distinguish between dataset types when searching for files
+    for dataset_type in ['imagenette.', 'imagenette_preprocessed_ssd.']:
         for split in [str(x) for x in [None, -1, -3, 25, 50, 75]]:
             for num_items in [3 * 32, 1024, 9 * 1024]:
                 data = {}
@@ -55,7 +57,7 @@ if __name__ == '__main__':
 
                 # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
                 ignore = []
-                file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'
+                file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'.replace('.', '')
                 plot_horizontal_normalized_bar_chart(data, save_path='./plots', file_name=f'normalized-{file_name}',
                                                      ignore=ignore)
                 plot_stacked_bar_chart(data, save_path='./plots', file_name=f'stacked-{file_name}')
