@@ -37,21 +37,25 @@ def get_aggregated_data(root_dir, file_id, agg_func, disk_speed):
 
 if __name__ == '__main__':
     root_dir = '/Users/nils/Downloads/bottleneck-analysis'
-    file_template = 'bottleneck_analysis-model-{}-items-{}-split-{}'
-    disk_speed = 200 # in MB/s
+    file_template = 'bottleneck_analysis-model-{}-items-{}-split-{}-dataset_type-{}'
+    disk_speed = 200  # in MB/s
 
-    for split in [str(x) for x in [None, -1, -2, 25, 50, 75]]:
-        for num_items in [100, 1000, 10000]:
-            data = {}
-            for model_name in VISION_MODEL_CHOICES:
-                # example_config = ['resnet152', '100', '50']
-                config = [model_name, num_items, split]
-                file_id = file_template.format(*config)
+    model_names = VISION_MODEL_CHOICES.copy()
 
-                data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
+    for dataset_type in ['imagenette_preprocessed_ssd', 'imagenette']:
+        for split in [str(x) for x in [None, -1, -3, 25, 50, 75]]:
+            for num_items in [3 * 32, 1024, 9 * 1024]:
+                data = {}
+                for model_name in model_names:
+                    # example_config = ['resnet152', '100', '50', 'imagenette']
+                    config = [model_name, num_items, split, dataset_type]
+                    file_id = file_template.format(*config)
 
-            # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
-            ignore = []
-            file_name = f'bottleneck_analysis-items-{num_items}-split-{split}'
-            plot_horizontal_normalized_bar_chart(data, save_path='./plots', file_name=f'normalized-{file_name}', ignore=ignore)
-            plot_stacked_bar_chart(data, save_path='./plots', file_name=f'stacked-{file_name}')
+                    data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
+
+                # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
+                ignore = []
+                file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'
+                plot_horizontal_normalized_bar_chart(data, save_path='./plots', file_name=f'normalized-{file_name}',
+                                                     ignore=ignore)
+                plot_stacked_bar_chart(data, save_path='./plots', file_name=f'stacked-{file_name}')
