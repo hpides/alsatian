@@ -40,20 +40,20 @@ def sort_dict_by_values(input_dict):
     return sorted_dict
 
 
-if __name__ == '__main__':
+def top_3_confs():
+    global model_name, data, key
     batch_sizes = [32, 128, 256, 512, 1024]
     nums_workers = [1, 2, 4, 8, 12, 16, 32, 48, 64]
     model_names = VISION_MODEL_CHOICES
     dataset_types = [IMAGENETTE, PREPROCESSED_SSD]
     root_dir = '/Users/nils/Downloads/worker_batch_size_impact'
-
     selected_configs = {
         IMAGENETTE: {BATCH_SIZE: 128, NUM_WORKERS: 12},
         PREPROCESSED_SSD: {BATCH_SIZE: 256, NUM_WORKERS: 2}
     }
-
     for dataset_type in dataset_types:
         config_count = {}
+        config_regrets = {}
         for model_name in model_names:
 
             data = get_metric_numbers_one_model(
@@ -84,3 +84,44 @@ if __name__ == '__main__':
         for key, value in sorted_dict.items():
             print(f"{key}: {value}")
         print()
+
+
+def select_lowest_regret_config(root_dir, dataset_type):
+    batch_sizes = [32, 128, 256, 512, 1024]
+    nums_workers = [1, 2, 4, 8, 12, 16, 32, 48, 64]
+
+    accumulated_regrets = {}
+
+    for batch_size in batch_sizes:
+        for num_workers in nums_workers:
+            sum_pct_regret = 0
+            for model_name in VISION_MODEL_CHOICES:
+                data = get_metric_numbers_one_model(
+                    root_dir, [END_TO_END], model_name, batch_sizes, nums_workers, dataset_type,
+                    batch_size_normalized=False
+                )
+                transformed = transform_data(data)
+                inverted = create_inverted_index(transformed)
+                top_config = get_top_n_lowest_values(inverted, 1)
+
+                selected_config_time = data[batch_size][num_workers][END_TO_END]
+                regret = selected_config_time - top_config[0][0]
+                pct_regret = regret / top_config[0][0]
+                sum_pct_regret += pct_regret
+            accumulated_regrets[f'batch_size: {batch_size} - workers: {num_workers}'] = sum_pct_regret / len(
+                VISION_MODEL_CHOICES)
+
+    sorted_dict = dict(sorted(accumulated_regrets.items(), key=lambda item: item[1]))
+    return sorted_dict
+
+
+if __name__ == '__main__':
+    top_3_confs()
+    top = select_lowest_regret_config('/Users/nils/Downloads/worker_batch_size_impact', IMAGENETTE)
+    print()
+    print(top)
+    print()
+    top = select_lowest_regret_config('/Users/nils/Downloads/worker_batch_size_impact', PREPROCESSED_SSD)
+    print()
+    print(top)
+    print()
