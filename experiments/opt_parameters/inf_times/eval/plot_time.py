@@ -1,6 +1,5 @@
-from statistics import median
-
 import matplotlib.pyplot as plt
+import numpy as np
 
 from experiments.plot_shared.file_parsing import get_raw_data
 from global_utils.constants import INFERENCE
@@ -12,7 +11,7 @@ def get_file_id(model_name, batch_size):
     return f"inference_time-des_gpu-model_name-{model_name}-batch_size-{batch_size}"
 
 
-def collect_inf_time_data(root_dir, model_names, batch_sizes, agg_func=None, normalize=False):
+def collect_inf_time_mean_and_std(root_dir, model_names, batch_sizes, normalize=False):
     inf_times = {}
     for model_name in model_names:
         inf_times[model_name] = {}
@@ -22,13 +21,12 @@ def collect_inf_time_data(root_dir, model_names, batch_sizes, agg_func=None, nor
 
             _data = measurements[INFERENCE]
 
-            if agg_func:
-                _data = agg_func(measurements[INFERENCE])
-
             if normalize:
-                _data = _data / batch_size
+                _data = [d / batch_size for d in _data]
 
-            inf_times[model_name][batch_size] = _data
+            inf_times[model_name][batch_size] = {}
+            inf_times[model_name][batch_size]['mean'] = np.mean(_data)
+            inf_times[model_name][batch_size]['std'] = np.std(_data)
 
     return inf_times
 
@@ -40,11 +38,12 @@ def plot_inf_times(data, save_path):
     batch_sizes = [32, 128, 256, 512, 1024]
 
     bar_width = 0.1
-    index = range(len(models))
+    index = np.arange(len(models))
 
     for i, batch_size in enumerate(batch_sizes):
-        values = [data[model][batch_size] for model in models]
-        ax.bar([x + i * bar_width for x in index], values, bar_width, label=f'Batch Size: {batch_size}')
+        means = [data[model][batch_size]['mean'] for model in models]
+        std_devs = [data[model][batch_size]['std'] for model in models]
+        ax.bar(index + i * bar_width, means, bar_width, yerr=std_devs, label=f'Batch Size: {batch_size}')
 
     ax.set_xlabel('Model names')
     ax.set_ylabel('Time in seconds')
@@ -67,9 +66,9 @@ if __name__ == '__main__':
     save_path = '../plots/inf_times'
 
     model_names = CONVOLUTION_MODELS
-    data = collect_inf_time_data(root_dir, model_names, batch_sizes, agg_func=median, normalize=True)
+    data = collect_inf_time_mean_and_std(root_dir, model_names, batch_sizes, normalize=True)
     plot_inf_times(data, f'{save_path}_conv_models')
 
     model_names = TRANSFORMER_MODELS
-    data = collect_inf_time_data(root_dir, model_names, batch_sizes, agg_func=median, normalize=True)
+    data = collect_inf_time_mean_and_std(root_dir, model_names, batch_sizes, normalize=True)
     plot_inf_times(data, f'{save_path}_trans_models')
