@@ -2,6 +2,14 @@ from experiments.opt_parameters.num_workers_and_batch_size.eval.plotting import 
 from global_utils.constants import END_TO_END
 from global_utils.model_names import VISION_MODEL_CHOICES
 
+NUM_WORKERS = 'num_workers'
+
+BATCH_SIZE = 'batch_size'
+
+PREPROCESSED_SSD = 'preprocessed_ssd'
+
+IMAGENETTE = 'imagenette'
+
 
 def transform_data(data):
     transformed_data = {}
@@ -17,7 +25,7 @@ def create_inverted_index(data):
     inverted_index = {}
     for key, inner_dict in data.items():
         for sub_key, value in inner_dict.items():
-            inverted_index[value] = {'batch_size': key, 'num_workers': sub_key}
+            inverted_index[value] = {BATCH_SIZE: key, NUM_WORKERS: sub_key}
     return inverted_index
 
 
@@ -36,8 +44,13 @@ if __name__ == '__main__':
     batch_sizes = [32, 128, 256, 512, 1024]
     nums_workers = [1, 2, 4, 8, 12, 16, 32, 48, 64]
     model_names = VISION_MODEL_CHOICES
-    dataset_types = ['imagenette', 'preprocessed_ssd']
+    dataset_types = [IMAGENETTE, PREPROCESSED_SSD]
     root_dir = '/Users/nils/Downloads/worker_batch_size_impact'
+
+    selected_configs = {
+        IMAGENETTE: {BATCH_SIZE: 128, NUM_WORKERS: 12},
+        PREPROCESSED_SSD: {BATCH_SIZE: 256, NUM_WORKERS: 2}
+    }
 
     for dataset_type in dataset_types:
         config_count = {}
@@ -52,7 +65,12 @@ if __name__ == '__main__':
             inverted = create_inverted_index(transformed)
             print(f'Model name: {model_name}, dataset type: {dataset_type}')
             top_3_configs = get_top_n_lowest_values(inverted, 3)
+            top_config = top_3_configs[0]
+            selected_config = data[selected_configs[dataset_type][BATCH_SIZE]][
+                selected_configs[dataset_type][NUM_WORKERS]]
+            time_regret = selected_config[END_TO_END] - top_config[0]
             print(top_3_configs)
+            print(f'regret (abs): {time_regret}, regret (%): {100 * (time_regret / top_config[0])} %')
             print()
             for _time, config in top_3_configs:
                 if str(config) not in config_count:
