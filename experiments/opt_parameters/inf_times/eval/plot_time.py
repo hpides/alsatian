@@ -42,7 +42,8 @@ def plot_inf_times(data, save_path):
 
     for i, batch_size in enumerate(batch_sizes):
         means = [data[model][batch_size]['mean'] for model in models]
-        std_devs = [data[model][batch_size]['std'] for model in models]
+        # use 2 standard deviations
+        std_devs = [data[model][batch_size]['std'] * 2 for model in models]
         ax.bar(index + i * bar_width, means, bar_width, yerr=std_devs, label=f'Batch Size: {batch_size}')
 
     ax.set_xlabel('Model names')
