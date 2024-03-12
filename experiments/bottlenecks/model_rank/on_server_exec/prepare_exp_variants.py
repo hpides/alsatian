@@ -16,7 +16,10 @@ if __name__ == '__main__':
                 for dataset_type, batch_size, num_workers in [('imagenette', 128, 12),
                                                               ('imagenette_preprocessed_ssd', 256, 2)]:
                     section = f'bottleneck_analysis-model-{model_name}-items-{num_items}-split-{split_level}-dataset_type-{dataset_type}'
-                    sections.append(section)
+
+                    # if the split is not Note we assume by default that data is stored/cached on SSD
+                    if not (split_level == 'None' and dataset_type == 'imagenette'):
+                        sections.append(section)
 
                     config[section] = {
                         'model_name': model_name,
