@@ -28,12 +28,15 @@ def _second_model_input_shape(data, first, device):
 
 class DummyDataset:
 
-    def __init__(self, number_items, input_shape, label_shape, directory, saved_items=500, allow_reuse=True,
+    def __init__(self, number_items, input_shape, label_shape, directory, saved_items=None, allow_reuse=True,
                  cleanup=False):
         self.number_items = number_items
         self.input_shape = input_shape
         self.label_shape = label_shape
-        self.saved_items = min(saved_items, self.number_items)
+        if saved_items:
+            self.saved_items = min(saved_items, self.number_items)
+        else:
+            self.saved_items = self.number_items
         self.tmp_data = os.path.join(os.path.abspath(directory), f'tmp-{self._dummy_data_id}')
         self._use_cached_data = False
         self.allow_reuse = allow_reuse
