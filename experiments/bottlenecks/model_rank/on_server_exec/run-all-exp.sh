@@ -7,35 +7,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet152-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -43,35 +28,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet101-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -79,35 +49,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet50-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -115,35 +70,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet34-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -151,35 +91,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-resnet18-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -187,35 +112,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-mobilenet_v2-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -223,35 +133,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_s-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -259,35 +154,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-eff_net_v2_l-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -295,35 +175,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_16-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -331,35 +196,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_16-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -367,35 +217,20 @@ do
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_b_32-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split-None-dataset_type-imagenette_preprocessed_ssd 
@@ -403,34 +238,19 @@ do
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split-None-dataset_type-imagenette_preprocessed_ssd 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split-None-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split-None-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split--1-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split--1-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split--3-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split--3-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split-25-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split-25-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split-50-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split-50-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-96-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-1024-split-75-dataset_type-imagenette_preprocessed_ssd 
-	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split-75-dataset_type-imagenette 
 	./run_exp.sh bottleneck_analysis-model-vit_l_32-items-9216-split-75-dataset_type-imagenette_preprocessed_ssd 
 done

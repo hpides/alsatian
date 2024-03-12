@@ -18,7 +18,7 @@ if __name__ == '__main__':
                     section = f'bottleneck_analysis-model-{model_name}-items-{num_items}-split-{split_level}-dataset_type-{dataset_type}'
 
                     # if the split is not Note we assume by default that data is stored/cached on SSD
-                    if not (split_level == 'None' and dataset_type == 'imagenette'):
+                    if split_level == 'None' or dataset_type == 'imagenette_preprocessed_ssd':
                         sections.append(section)
 
                     config[section] = {
