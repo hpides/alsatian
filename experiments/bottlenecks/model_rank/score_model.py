@@ -40,8 +40,7 @@ def score_model_exp(exp_args: ExpArgs):
         # artificially making the dataset smaller
         data_set.set_subrange(0, exp_args.num_items)
     elif exp_args.dataset_type == 'imagenette_preprocessed_ssd':
-        data_set = DummyDataset(exp_args.num_items, (3, 224, 224), (1,), exp_args.dummy_input_dir,
-                                saved_items=exp_args.num_items)
+        data_set = DummyDataset(exp_args.num_items, (3, 224, 224), (1,), exp_args.dummy_input_dir)
     else:
         raise NotImplementedError(f'the dataset type {exp_args.dataset_type} is currently not supported')
 
