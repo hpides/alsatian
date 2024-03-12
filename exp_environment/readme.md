@@ -37,7 +37,7 @@
   - base image: nvidia/cuda:11.3.0-devel-ubuntu20.04
 - use only half of the CPUs (--cpuset-cpus="64-127")
   - e.g.: docker update --cpuset-cpus="64-127" <container name>
-- use only one GPU (--gpus device=0)
+- use only one GPU (--gpus device=1)
 
 
 
