@@ -7,7 +7,7 @@ from experiments.plot_shared.plotting_util import plot_stacked_bar_chart
 from global_utils.constants import STATE_DICT_SIZE, LOAD_DATA, DATA_TO_DEVICE, INFERENCE, MODEL_TO_DEVICE, \
     CALC_PROXY_SCORE, STATE_TO_MODEL, LOAD_STATE_DICT
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import VISION_MODEL_CHOICES
+from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L
 
 
 def extract_and_filter(file, disk_speed):
@@ -30,10 +30,33 @@ def extract_and_filter(file, disk_speed):
 
 def get_aggregated_data(root_dir, file_id, agg_func, disk_speed, expected_files=5):
     files = extract_files_by_name(root_dir, [file_id])
-    assert len(files) == 5
+    assert len(files) == 5, file_id
     extracted_data = [extract_and_filter(f, disk_speed) for f in files]
     agg_data = aggregate_measurements(extracted_data, agg_func)
     return agg_data
+
+
+def plot_time_dist(root_dir, file_template, model_names, disk_speed, file_name_prefix=""):
+    # . at the end of name is important here to distinguish between dataset types when searching for files
+    for dataset_type in ['imagenette.', 'imagenette_preprocessed_ssd.']:
+        for split in [str(x) for x in [None, -1, -3, 25, 50, 75]]:
+            for num_items in [3 * 32, 1024, 9 * 1024]:
+                if split == 'None' or dataset_type == 'imagenette_preprocessed_ssd.':
+                    data = {}
+                    for model_name in model_names:
+                        # example_config = ['resnet152', '100', '50', 'imagenette']
+                        config = [model_name, num_items, split, dataset_type]
+                        file_id = file_template.format(*config)
+
+                        data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
+
+                    # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
+                    ignore = []
+                    file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'.replace('.',
+                                                                                                                   '')
+                    plot_horizontal_normalized_bar_chart(data, save_path='./plots', file_name=f'{file_name_prefix}normalized-{file_name}',
+                                                         ignore=ignore)
+                    plot_stacked_bar_chart(data, save_path='./plots', file_name=f'{file_name_prefix}stacked-{file_name}')
 
 
 if __name__ == '__main__':
@@ -43,21 +66,7 @@ if __name__ == '__main__':
 
     model_names = VISION_MODEL_CHOICES.copy()
 
-    # . at the end of name is important here to distinguish between dataset types when searching for files
-    for dataset_type in ['imagenette.', 'imagenette_preprocessed_ssd.']:
-        for split in [str(x) for x in [None, -1, -3, 25, 50, 75]]:
-            for num_items in [3 * 32, 1024, 9 * 1024]:
-                data = {}
-                for model_name in model_names:
-                    # example_config = ['resnet152', '100', '50', 'imagenette']
-                    config = [model_name, num_items, split, dataset_type]
-                    file_id = file_template.format(*config)
+    plot_time_dist(root_dir, file_template, model_names, disk_speed)
 
-                    data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
-
-                # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
-                ignore = []
-                file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'.replace('.', '')
-                plot_horizontal_normalized_bar_chart(data, save_path='./plots', file_name=f'normalized-{file_name}',
-                                                     ignore=ignore)
-                plot_stacked_bar_chart(data, save_path='./plots', file_name=f'stacked-{file_name}')
+    model_names = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
+    plot_time_dist(root_dir, file_template, model_names, disk_speed, 'PART-')

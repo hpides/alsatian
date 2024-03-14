@@ -15,7 +15,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
     num_models = len(models)
     num_tasks = len(tasks)
 
-    fig, ax = plt.subplots(figsize=(10, 12))
+    fig, ax = plt.subplots(figsize=(8, num_models / 2))
 
     # Specify non-transparent colors
     colors = [
@@ -53,7 +53,13 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
 
     # Create a custom legend
     handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
-    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=4, fontsize='large')
+    if num_models == 12:
+        magic = 1.15
+    elif num_models == 4:
+        magic = 1.5
+    else:
+        magic = 1.2
+    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.5, magic), ncol=4, fontsize='large')
 
     plt.grid(axis='x')
 
@@ -65,6 +71,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
         plt.savefig(path, format="png", bbox_inches='tight')
 
     # plt.show()
+    plt.close()
 
 
 def normalize_to_percent(data):
