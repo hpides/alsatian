@@ -5,7 +5,7 @@ repository_url=github.com/slin96/model-search-paper.git
 script_to_start=experiments/opt_parameters/inf_times/inference_time_experiment.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
-branch=bottleneck-analysis
+branch=main
 repo_name=model-search-paper
 
 # Function to read the access token from file
