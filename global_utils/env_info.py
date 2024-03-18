@@ -1,55 +1,51 @@
-import importlib
+import os
+import platform
+import subprocess
+import psutil
+import cpuinfo
 
+
+def get_cpuset_cpus():
+    try:
+        cpuset_cpus = subprocess.check_output(['cat', '/sys/fs/cgroup/cpuset.cpus']).decode().strip()
+        return cpuset_cpus
+    except subprocess.CalledProcessError:
+        return "Unknown"
 
 def get_system_info():
-    # Check if psutil and GPUtil are available
-    try:
-        importlib.import_module('psutil')
-        importlib.import_module('GPUtil')
-    except ImportError as e:
-        print(f"Error: {e}")
-        print("Please install the required libraries using 'pip install psutil gputil'")
-        return None
+    system_info = {}
 
-    import psutil
-    import GPUtil
+    # Operating System
+    system_info['OS'] = platform.system()
 
-    # Get CPU information
-    cpu_info = {
-        'cpu_cores': psutil.cpu_count(logical=False),
-        'total_cpu_threads': psutil.cpu_count(logical=True)
-    }
+    # CPU information
+    cpu_info = cpuinfo.get_cpu_info()
+    cpu_info['cpus avail to docker'] = get_cpuset_cpus()
+    system_info['CPU'] = cpu_info
 
-    # Get memory information
     memory_info = {
         'total_memory': psutil.virtual_memory().total,
         'available_memory': psutil.virtual_memory().available
     }
+    system_info['memory'] = memory_info
 
-    # Get GPU information
+
+    # GPU information (for NVIDIA GPUs)
     try:
-        gpus = GPUtil.getGPUs()
-        gpu_info = [
-            {
-                'gpu_id': gpu.id,
-                'name': gpu.name,
-                'memory_total': gpu.memoryTotal,
-                'memory_free': gpu.memoryFree
-            }
-            for gpu in gpus
-        ]
-    except Exception as e:
-        gpu_info = f"Error retrieving GPU information: {e}"
+        gpu_info = subprocess.check_output(['nvidia-smi', '--query-gpu=name,driver_version', '--format=csv,noheader']).decode().strip().split(',')
+        system_info['GPU'] = {
+            'type': gpu_info[0].strip(),
+            'driver_version': gpu_info[1].strip()
+        }
+    except subprocess.CalledProcessError:
+        system_info['GPU'] = "No NVIDIA GPU detected"
 
-    system_info = {
-        'cpu': cpu_info,
-        'memory': memory_info,
-        'gpu': gpu_info
-    }
 
     return system_info
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # Example usage:
     system_info = get_system_info()
     print(system_info)
+
+    print('test')

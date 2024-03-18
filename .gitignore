@@ -9,3 +9,9 @@ __pycache__
 /experiments/end_to_end_times/fine_tuning/plotting/plots/feature_extraction/
 /experiments/end_to_end_times/fine_tuning/plotting/plots/full_fine_tuning/
 /experiments/end_to_end_times/calc_features/plotting/plots/
+/experiments/bottlenecks/model_rank/results/debug/
+/experiments/plot_shared/dummy.png
+/experiments/plot_shared/dummy.svg
+/experiments/opt_parameters/num_workers_and_batch_size/eval/plots-32-cores/
+/global_utils/dummy_data/
+/experiments/bert_sentiment/aclImdb/
