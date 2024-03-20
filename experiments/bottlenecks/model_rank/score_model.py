@@ -12,8 +12,8 @@ from global_utils.constants import MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVI
     CALC_PROXY_SCORE, STATE_DICT_SIZE, PARTIAL_STATE_DICT_SIZE, END_TO_END, END_DATA_LOAD, END_EXTRACT_FEATURES
 from global_utils.device import get_device
 from global_utils.dummy_dataset import get_input_shape, DummyDataset
+from global_utils.model_operations import split_model, get_split_index
 from global_utils.size import state_dict_size_mb
-from global_utils.split_models import split_model, get_split_index
 from search.proxies.nn_proxy import linear_proxy
 
 

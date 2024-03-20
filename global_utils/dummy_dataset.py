@@ -3,7 +3,7 @@ import os
 import torch
 
 from global_utils.file_names import clean_file_name
-from global_utils.split_models import split_model
+from global_utils.model_operations import split_model
 
 
 def get_input_shape(split_index, model, number_items, item_shape):
