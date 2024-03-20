@@ -1,27 +1,6 @@
-import os
-
-import torch
-
 from custom.models.init_models import initialize_model
 from global_utils.model_names import *
-
-
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-
-def get_model_size(model):
-    # Serialize the model
-    torch.save(model.state_dict(), 'temp_model.pth')
-
-    # Get the size of the serialized model file
-    model_size = os.path.getsize('temp_model.pth')
-
-    # Delete the temporary model file
-    os.remove('temp_model.pth')
-
-    return model_size
-
+from global_utils.model_operations import count_parameters, get_model_size
 
 if __name__ == '__main__':
     latex_abb = {

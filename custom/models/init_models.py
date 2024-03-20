@@ -9,7 +9,7 @@ from custom.models.split_indices import SPLIT_INDEXES
 from custom.models.vision_transformer import Encoder, vit_b_16, vit_b_32, vit_l_16, vit_l_32, ViT_L_32_Weights, \
     ViT_L_16_Weights, ViT_B_32_Weights, ViT_B_16_Weights
 from global_utils.model_names import *
-from global_utils.split_models import transform_to_sequential, split_model
+from global_utils.model_operations import transform_to_sequential, split_model
 
 
 def initialize_model(model_name, pretrained=False, new_num_classes=None, features_only=False, sequential_model=False,

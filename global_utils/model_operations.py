@@ -1,4 +1,7 @@
+import os
+
 import torch
+from torch import nn
 
 from custom.models.split_indices import SPLIT_INDEXES
 
@@ -64,3 +67,51 @@ def get_split_index(split_index, model_name):
         if split_index < 0:
             raise ValueError("split not possible; negative split index abs too high")
     return split_index
+
+
+def merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential, _index):
+    base_model_one, head_one = split_model(base_model, _index)
+    base_model_two, head_two = split_model(to_merge, _index)
+
+    class MergedHeadModel(nn.Module):
+        def __init__(self, head_one, head_two):
+            super(MergedHeadModel, self).__init__()
+            self.head_one = head_one
+            self.head_two = head_two
+
+        def forward(self, x):
+            x1 = self.head_one(x)
+            x2 = self.head_two(x)
+            x = torch.cat((x1, x2), dim=1)
+            return x
+
+    merged_model = nn.Sequential(
+        *list(base_model_one.children()),
+        MergedHeadModel(head_one, head_two)
+    )
+    return merged_model
+
+def merge_n_models(models, models_indices):
+    # IMPORTANT: Indices must be sorted
+    merged_model = models[0]
+    for i, si in enumerate(models_indices):
+        merged_model = merge_models(merged_model, models[i + 1], si)
+
+    return merged_model
+
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def get_model_size(model):
+    # Serialize the model
+    torch.save(model.state_dict(), 'temp_model.pth')
+
+    # Get the size of the serialized model file
+    model_size = os.path.getsize('temp_model.pth')
+
+    # Delete the temporary model file
+    os.remove('temp_model.pth')
+
+    return model_size
