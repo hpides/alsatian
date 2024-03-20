@@ -1,3 +1,5 @@
+import os
+
 import torch
 from torch import nn
 
@@ -88,3 +90,28 @@ def merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential,
         MergedHeadModel(head_one, head_two)
     )
     return merged_model
+
+def merge_n_models(models, models_indices):
+    # IMPORTANT: Indices must be sorted
+    merged_model = models[0]
+    for i, si in enumerate(models_indices):
+        merged_model = merge_models(merged_model, models[i + 1], si)
+
+    return merged_model
+
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def get_model_size(model):
+    # Serialize the model
+    torch.save(model.state_dict(), 'temp_model.pth')
+
+    # Get the size of the serialized model file
+    model_size = os.path.getsize('temp_model.pth')
+
+    # Delete the temporary model file
+    os.remove('temp_model.pth')
+
+    return model_size
