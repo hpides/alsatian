@@ -1,14 +1,19 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
-from model_search.execution.planning.execution_plan import ExecutionPlan, SingleModelExecutionStep
+from model_search.execution.engine.abstract_execution_engine import ExecutionEngine
+from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep
 
 
-class ExecutionEngine(ABC):
 
-    def execute_plan(self, execution_plan: ExecutionPlan):
-        for exex_step in execution_plan.execution_steps:
-            self.execute_step(exex_step)
 
-    @abstractmethod
-    def execute_step(self, exex_step: SingleModelExecutionStep):
+class BaselineExecutionEngine(ExecutionEngine):
+
+    def execute_step(self, exex_step: ExecutionStep):
+        if isinstance(exex_step, BaselineExtractFeaturesStep):
+            self.execute_baseline_extract_features_step(exex_step)
+        else:
+            raise NotImplementedError
+
+    def execute_baseline_extract_features_step(self, exex_step):
+        # TODO -> look into already existing code
         pass
