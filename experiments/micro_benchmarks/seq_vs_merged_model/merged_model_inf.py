@@ -54,7 +54,6 @@ if __name__ == '__main__':
         merged_model = merge_n_models(models, split_indices)
 
         merged_model.eval()
-        print(count_parameters(merged_model))
 
         bench = Benchmarker(device)
 
@@ -65,3 +64,4 @@ if __name__ == '__main__':
 
     print(measurements)
     print(f'mean: {mean(measurements)}')
+    print(count_parameters(merged_model))

@@ -5,6 +5,7 @@ import torch
 from custom.models.init_models import initialize_model
 from global_utils.benchmark_util import Benchmarker
 from global_utils.model_names import RESNET_50
+from global_utils.model_operations import count_parameters
 
 
 def inference(model, random_batches):
@@ -32,3 +33,4 @@ if __name__ == '__main__':
 
     print(measurements)
     print(f'mean: {mean(measurements)}')
+    print(f'num_params: {count_parameters(model)}')
