@@ -9,7 +9,16 @@ TRAIN = 'train'
 TEST = 'test'
 
 
+class BaselinePlannerConfig:
+    def __init__(self, num_workers: int, batch_size: int):
+        self.num_workers = num_workers
+        self.batch_size = batch_size
+
+
 class BaselineExecutionPlanner(ExecutionPlanner):
+    def __init__(self, config: BaselinePlannerConfig):
+        self.config: BaselinePlannerConfig = config
+
     def generate_execution_plan(self, model_snapshots: [ModelSnapshot], dataset_paths: dict) -> ExecutionPlan:
         # the baseline execution plan is a sequential iteration over the models with no reuse of model intermediates or
         # technique to reduce the amount of data processed by the models (e.g. sucessive halving)
@@ -20,8 +29,8 @@ class BaselineExecutionPlanner(ExecutionPlanner):
 
         # TODO take this information as parameters
         data_set_class = DatasetClass.CUSTOM_IMAGE_FOLDER
-        num_workers = 12
-        batch_size = 128
+        num_workers = self.config.num_workers
+        batch_size = self.config.batch_size
 
         for snapshot in model_snapshots:
             execution_steps = []

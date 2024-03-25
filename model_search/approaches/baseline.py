@@ -7,7 +7,7 @@ from global_utils.global_constants import TRAIN
 from global_utils.model_names import RESNET_18
 from model_search.caching_service import TensorCachingService
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine
-from model_search.execution.planning.baseline_planner import TEST, BaselineExecutionPlanner
+from model_search.execution.planning.baseline_planner import TEST, BaselineExecutionPlanner, BaselinePlannerConfig
 from model_search.model_snapshot import ModelSnapshot
 
 if __name__ == '__main__':
@@ -34,7 +34,8 @@ if __name__ == '__main__':
     caching_path = '/mount-ssd/cache-dir'
 
     cachingService = TensorCachingService(caching_path)
-    planner = BaselineExecutionPlanner()
+    planner_config = BaselinePlannerConfig(12, 128)
+    planner = BaselineExecutionPlanner(planner_config)
     exec_engine = BaselineExecutionEngine(cachingService)
 
     plan = planner.generate_execution_plan(model_snapshots, dataset_paths)
