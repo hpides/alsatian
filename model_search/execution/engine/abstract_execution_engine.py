@@ -11,7 +11,7 @@ from model_search.executionsteplogger import ExecutionStepLogger
 class ExecutionEngine(ABC):
 
     def __init__(self, cachingService: TensorCachingService):
-        self.cachingService: TensorCachingService = cachingService
+        self.caching_service: TensorCachingService = cachingService
         self.logger = ExecutionStepLogger()
         self.bench = Benchmarker(torch.device(CUDA))
 

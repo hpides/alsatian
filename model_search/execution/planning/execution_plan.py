@@ -26,6 +26,7 @@ class ExecutionStep(ABC):
         self._id = _id
         self.execution_status: ExecutionStatus = ExecutionStatus.OPEN
         self.execution_result = None
+        self.execution_logs = None
 
 
 # class ExtractFeaturesStep(ExecutionStep):
@@ -53,11 +54,12 @@ class BaselineExtractFeaturesStep(ExecutionStep):
 class ScoreModelStep(ExecutionStep):
 
     def __init__(self, _id: str, scoring_method: ScoringMethod, test_feature_cache_prefixes: [str],
-                 train_feature_cache_prefixes: [str]):
+                 train_feature_cache_prefixes: [str], num_classes: int):
         super().__init__(_id)
         self.scoring_method: ScoringMethod = scoring_method
         self.test_feature_cache_prefixes: [str] = test_feature_cache_prefixes
         self.train_feature_cache_prefixes: [str] = train_feature_cache_prefixes
+        self.num_classes: int = num_classes
 
 
 class ModifyCacheStep(ExecutionStep):

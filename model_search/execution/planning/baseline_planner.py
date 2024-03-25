@@ -29,7 +29,7 @@ class BaselineExecutionPlanner(ExecutionPlanner):
             test_feature_prefix = f'{snapshot._id}-{TEST}'
             execution_steps.append(
                 BaselineExtractFeaturesStep(
-                    _id=f'{snapshot._id}-extract-test',
+                    _id=f'{snapshot._id}-extract-test-0',
                     model_snapshot=snapshot,
                     data_info=DatasetInformation(
                         data_set_class, dataset_paths[TEST], num_workers, batch_size, inference_transform),
@@ -41,7 +41,7 @@ class BaselineExecutionPlanner(ExecutionPlanner):
             train_feature_prefix = f'{snapshot._id}-{TRAIN}'
             execution_steps.append(
                 BaselineExtractFeaturesStep(
-                    _id=f'{snapshot._id}-extract-train',
+                    _id=f'{snapshot._id}-extract-train-0',
                     model_snapshot=snapshot,
                     data_info=DatasetInformation(
                         data_set_class, dataset_paths[TRAIN], num_workers, batch_size, inference_transform),
@@ -54,8 +54,9 @@ class BaselineExecutionPlanner(ExecutionPlanner):
                 ScoreModelStep(
                     _id=f'{snapshot._id}-score',
                     scoring_method=ScoringMethod.FC,
-                    test_feature_cache_prefixes=test_feature_prefix,
-                    train_feature_cache_prefixes=train_feature_prefix,
+                    test_feature_cache_prefixes=[test_feature_prefix],
+                    train_feature_cache_prefixes=[train_feature_prefix],
+                    num_classes=100
                 )
             )
 

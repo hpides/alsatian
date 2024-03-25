@@ -135,6 +135,20 @@ class TensorCachingService:
         if self.id_exists(_id):
             raise KeyError(f'{_id} already cached')
 
+    def all_ids_with_prefix(self, prefix):
+        result = []
+        for cache in [self._gpu_cache, self._cpu_cache, self._persistent_cache]:
+            result += self._all_ids_with_prefix(prefix, cache)
+        return result
+
+
+    def _all_ids_with_prefix(self, prefix, cache):
+        result = []
+        for k in cache.keys():
+            if prefix in k:
+                result.append(k)
+        return result
+
 
 if __name__ == '__main__':
     cs = TensorCachingService('./')

@@ -15,3 +15,4 @@ __pycache__
 /experiments/opt_parameters/num_workers_and_batch_size/eval/plots-32-cores/
 /global_utils/dummy_data/
 /experiments/bert_sentiment/aclImdb/
+/data/imagenette-dummy/

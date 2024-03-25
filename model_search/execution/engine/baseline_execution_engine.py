@@ -1,16 +1,20 @@
 import time
 
 import torch
+from torch.utils.data import DataLoader
 
+from custom.data_loaders.cache_service_dataset import CacheServiceDataset
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.models.init_models import initialize_model
 from global_utils.constants import LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, MODEL_TO_DEVICE, CUDA, INPUT, LABEL, \
-    LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES
+    LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, CALC_PROXY_SCORE
 from model_search.caching_service import TensorCachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.abstract_execution_engine import ExecutionEngine
-from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep
+from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep, ScoreModelStep
+from model_search.executionsteplogger import ExecutionStepLogger
 from model_search.model_snapshot import ModelSnapshot
+from model_search.proxies.nn_proxy import linear_proxy
 
 
 def load_model_state(state_dict_path):
@@ -76,28 +80,32 @@ class BaselineExecutionEngine(ExecutionEngine):
         return model
 
     def execute_step(self, exex_step: ExecutionStep):
+        # reset logger for every step
+        self.logger = ExecutionStepLogger()
         if isinstance(exex_step, BaselineExtractFeaturesStep):
             self.execute_baseline_extract_features_step(exex_step)
+        elif isinstance(exex_step, ScoreModelStep):
+            self.execute_score_model_step(exex_step)
         else:
             raise NotImplementedError
 
-    def execute_baseline_extract_features_step(self, exex_step: BaselineExtractFeaturesStep):
+    def execute_baseline_extract_features_step(self, exec_step: BaselineExtractFeaturesStep):
         # initialize model
-        model = self.init_model(exex_step.model_snapshot)
+        model = self.init_model(exec_step.model_snapshot)
 
         # init data loader
-        if exex_step.inp_data.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
-            data = CustomImageFolder(exex_step.inp_data.dataset_path, exex_step.inp_data.transform)
+        if exec_step.inp_data.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
+            data = CustomImageFolder(exec_step.inp_data.dataset_path, exec_step.inp_data.transform)
         else:
             raise NotImplementedError
         data_loader = torch.utils.data.DataLoader(
-            data, batch_size=exex_step.inp_data.batch_size, shuffle=False,
-            num_workers=exex_step.inp_data.num_workers)
+            data, batch_size=exec_step.inp_data.batch_size, shuffle=False,
+            num_workers=exec_step.inp_data.num_workers)
 
         # extract features
-        batch_measures = {}
         start = time.perf_counter()
         for i, (inputs, labels) in enumerate(data_loader):
+            batch_measures = {}
             batch_measures[LOAD_DATA] = time.perf_counter() - start
 
             measurement, inputs = self.bench.micro_benchmark_cpu(load_data_to_device, inputs)
@@ -107,11 +115,32 @@ class BaselineExecutionEngine(ExecutionEngine):
             measurement, features = self.bench.micro_benchmark_gpu(inference, inputs, model)
             batch_measures[INFERENCE] = measurement
 
-            features_cache_id = f'{exex_step.feature_cache_prefix}-{INPUT}-{i}'
-            labels_cache_id = f'{exex_step.feature_cache_prefix}-{LABEL}-{i}'
-            self.cachingService.cache_persistent(features_cache_id, features)
-            self.cachingService.cache_persistent(labels_cache_id, labels)
+            features_cache_id = f'{exec_step.feature_cache_prefix}-{INPUT}-{i}'
+            labels_cache_id = f'{exec_step.feature_cache_prefix}-{LABEL}-{i}'
+            self.caching_service.cache_persistent(features_cache_id, features)
+            self.caching_service.cache_persistent(labels_cache_id, labels)
 
             self.logger.append_value(BATCH_MEASURES, batch_measures)
 
             start = time.perf_counter()
+
+        exec_step.execution_logs = self.logger
+
+    def execute_score_model_step(self, exex_step: ScoreModelStep):
+        train_loader = self._get_proxy_data_loader(exex_step.train_feature_cache_prefixes)
+        test_loader = self._get_proxy_data_loader(exex_step.test_feature_cache_prefixes)
+        measurement, score = self.bench.benchmark_end_to_end(
+            linear_proxy, train_loader, test_loader, exex_step.num_classes, device=torch.device(CUDA)
+        )
+        self.logger.log_value(CALC_PROXY_SCORE, measurement)
+        exex_step.execution_result = {'score': score}
+        exex_step.execution_logs = self.logger
+
+    def _get_proxy_data_loader(self, cache_prefixes):
+        data = CacheServiceDataset(
+            self.caching_service,
+            [f'{pre}-{INPUT}' for pre in cache_prefixes],
+            [f'{pre}-{LABEL}' for pre in cache_prefixes]
+        )
+        data_loader = DataLoader(data, batch_size=1, num_workers=2)
+        return data_loader

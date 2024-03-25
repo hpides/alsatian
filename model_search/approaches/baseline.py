@@ -27,8 +27,8 @@ if __name__ == '__main__':
     ]
 
     dataset_paths = {
-        TRAIN: '/tmp/pycharm_project_924/data/imagenette2/train',
-        TEST: '/tmp/pycharm_project_924/data/imagenette2/val'
+        TRAIN: '/tmp/pycharm_project_924/data/imagenette-dummy/train',
+        TEST: '/tmp/pycharm_project_924/data/imagenette-dummy/val'
     }
 
     caching_path = '/mount-ssd/cache-dir'
@@ -39,3 +39,4 @@ if __name__ == '__main__':
 
     plan = planner.generate_execution_plan(model_snapshots, dataset_paths)
     exec_engine.execute_plan(plan)
+    print('done')
