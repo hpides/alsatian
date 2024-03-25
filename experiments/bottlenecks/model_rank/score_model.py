@@ -14,7 +14,7 @@ from global_utils.device import get_device
 from global_utils.dummy_dataset import get_input_shape, DummyDataset
 from global_utils.model_operations import split_model, get_split_index
 from global_utils.size import state_dict_size_mb
-from search.proxies.nn_proxy import linear_proxy
+from model_search.proxies.nn_proxy import linear_proxy
 
 
 def score_model_exp(exp_args: ExpArgs):

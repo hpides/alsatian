@@ -1,3 +1,6 @@
+from global_utils.ids import random_short_id
+
+
 class ModelSnapshot:
     """Simples form of representing a model"""
 
@@ -9,6 +12,7 @@ class ModelSnapshot:
         """
         self.architecture_name: str = architecture_name
         self.state_dict_path: str = state_dict_path
+        self._id = f'{architecture_name}-{random_short_id()}'
 
     def __repr__(self):
         return self.__str__()

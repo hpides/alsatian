@@ -1,12 +1,79 @@
-from abc import abstractmethod
+import time
 
+import torch
+
+from custom.data_loaders.custom_image_folder import CustomImageFolder
+from custom.models.init_models import initialize_model
+from global_utils.constants import LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, MODEL_TO_DEVICE, CUDA, INPUT, LABEL, \
+    LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES
+from model_search.caching_service import TensorCachingService
+from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.abstract_execution_engine import ExecutionEngine
 from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep
+from model_search.model_snapshot import ModelSnapshot
 
 
+def load_model_state(state_dict_path):
+    state_dict = torch.load(state_dict_path)
+    return state_dict
+
+
+def load_state_dict_in_model(model, state_dict):
+    model.load_state_dict(state_dict)
+
+
+def load_model_to_device(model, device):
+    model.to(device)
+
+
+def load_data_to_device(batch):
+    batch = batch.to(CUDA)
+    return batch
+
+
+def inference(batch, model):
+    with torch.no_grad():
+        out = model(batch)
+        return out
 
 
 class BaselineExecutionEngine(ExecutionEngine):
+
+    def __init__(self, cachingService: TensorCachingService):
+
+        super().__init__(cachingService)
+
+    def load_snapshot(self, snapshot: ModelSnapshot):
+        state_dict_path = snapshot.state_dict_path
+        measurement, state_dict = self.bench.micro_benchmark_cpu(load_model_state, state_dict_path)
+        self.logger.log_value(LOAD_STATE_DICT, measurement)
+
+        # if self.config.simulate_loading_snapshot:
+        #     self.log_simulated_loading_time(state_dict)
+
+        return state_dict
+
+    def initialize_model(self, snapshot: ModelSnapshot):
+        kwargs = {'pretrained': False, 'new_num_classes': None, 'features_only': True, 'sequential_model': True,
+                  'freeze_feature_extractor': False}
+        measurement, model = self.bench.micro_benchmark_cpu(initialize_model, snapshot.architecture_name, **kwargs)
+        self.logger.log_value(INIT_MODEL, measurement)
+
+        return model
+
+    def init_model(self, snapshot: ModelSnapshot):
+        # load the snapshot from storage
+        state_dict = self.load_snapshot(snapshot)
+        # initialize model
+        model = self.initialize_model(snapshot)
+        # load state to model
+        measurement, _ = self.bench.micro_benchmark_cpu(load_state_dict_in_model, model, state_dict)
+        self.logger.log_value(STATE_TO_MODEL, measurement)
+        # load model to device, measure cpu time
+        measurement, _ = self.bench.micro_benchmark_cpu(load_model_to_device, model, CUDA)
+        self.logger.log_value(MODEL_TO_DEVICE, measurement)
+
+        return model
 
     def execute_step(self, exex_step: ExecutionStep):
         if isinstance(exex_step, BaselineExtractFeaturesStep):
@@ -14,6 +81,37 @@ class BaselineExecutionEngine(ExecutionEngine):
         else:
             raise NotImplementedError
 
-    def execute_baseline_extract_features_step(self, exex_step):
-        # TODO -> look into already existing code
-        pass
+    def execute_baseline_extract_features_step(self, exex_step: BaselineExtractFeaturesStep):
+        # initialize model
+        model = self.init_model(exex_step.model_snapshot)
+
+        # init data loader
+        if exex_step.inp_data.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
+            data = CustomImageFolder(exex_step.inp_data.dataset_path, exex_step.inp_data.transform)
+        else:
+            raise NotImplementedError
+        data_loader = torch.utils.data.DataLoader(
+            data, batch_size=exex_step.inp_data.batch_size, shuffle=False,
+            num_workers=exex_step.inp_data.num_workers)
+
+        # extract features
+        batch_measures = {}
+        start = time.perf_counter()
+        for i, (inputs, labels) in enumerate(data_loader):
+            batch_measures[LOAD_DATA] = time.perf_counter() - start
+
+            measurement, inputs = self.bench.micro_benchmark_cpu(load_data_to_device, inputs)
+            batch_measures[DATA_TO_DEVICE] = measurement
+
+            model.eval()
+            measurement, features = self.bench.micro_benchmark_gpu(inference, inputs, model)
+            batch_measures[INFERENCE] = measurement
+
+            features_cache_id = f'{exex_step.feature_cache_prefix}-{INPUT}-{i}'
+            labels_cache_id = f'{exex_step.feature_cache_prefix}-{LABEL}-{i}'
+            self.cachingService.cache_persistent(features_cache_id, features)
+            self.cachingService.cache_persistent(labels_cache_id, labels)
+
+            self.logger.append_value(BATCH_MEASURES, batch_measures)
+
+            start = time.perf_counter()
