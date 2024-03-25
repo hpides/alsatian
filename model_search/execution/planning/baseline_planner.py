@@ -1,12 +1,9 @@
 from custom.data_loaders.imagenet_transfroms import inference_transform
+from global_utils.constants import TRAIN, TEST
 from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass
 from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, CacheLocation, \
     BaselineExtractFeaturesStep, ScoreModelStep, ScoringMethod
 from model_search.model_snapshot import ModelSnapshot
-
-TRAIN = 'train'
-
-TEST = 'test'
 
 
 class BaselinePlannerConfig:
@@ -27,7 +24,6 @@ class BaselineExecutionPlanner(ExecutionPlanner):
         # 2) extract train features
         # 3) score model based on features
 
-        # TODO take this information as parameters
         data_set_class = DatasetClass.CUSTOM_IMAGE_FOLDER
         num_workers = self.config.num_workers
         batch_size = self.config.batch_size

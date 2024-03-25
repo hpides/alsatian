@@ -31,3 +31,7 @@ INPUT = 'input'
 LABEL = 'label'
 BATCH_MEASURES = 'batch_measures'
 
+TRAIN = 'train'
+TEST = 'test'
+
+
