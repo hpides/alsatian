@@ -87,17 +87,24 @@ class BaselineExecutionEngine(ExecutionEngine):
         elif isinstance(exex_step, ScoreModelStep):
             self.execute_score_model_step(exex_step)
         else:
-            raise NotImplementedError
+            raise TypeError
 
     def execute_baseline_extract_features_step(self, exec_step: BaselineExtractFeaturesStep):
-        # initialize model
-        model = self.init_model(exec_step.model_snapshot)
 
         # init data loader
         if exec_step.inp_data.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
             data = CustomImageFolder(exec_step.inp_data.dataset_path, exec_step.inp_data.transform)
         else:
             raise NotImplementedError
+
+        self._extract_features(data, exec_step)
+
+    def _extract_features(self, data, exec_step):
+
+        # initialize model
+        model = self.init_model(exec_step.model_snapshot)
+
+        # init data loader
         data_loader = torch.utils.data.DataLoader(
             data, batch_size=exec_step.inp_data.batch_size, shuffle=False,
             num_workers=exec_step.inp_data.num_workers)
@@ -123,12 +130,13 @@ class BaselineExecutionEngine(ExecutionEngine):
             self.logger.append_value(BATCH_MEASURES, batch_measures)
 
             start = time.perf_counter()
-
         exec_step.execution_logs = self.logger
 
     def execute_score_model_step(self, exex_step: ScoreModelStep):
         train_loader = self._get_proxy_data_loader(exex_step.train_feature_cache_prefixes)
         test_loader = self._get_proxy_data_loader(exex_step.test_feature_cache_prefixes)
+        print(len(test_loader))
+        print(len(train_loader))
         measurement, score = self.bench.benchmark_end_to_end(
             linear_proxy, train_loader, test_loader, exex_step.num_classes, device=torch.device(CUDA)
         )

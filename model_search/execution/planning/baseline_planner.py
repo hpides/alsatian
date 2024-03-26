@@ -65,4 +65,4 @@ class BaselineExecutionPlanner(ExecutionPlanner):
                 )
             )
 
-            return ExecutionPlan(execution_steps)
+        return ExecutionPlan(execution_steps)
