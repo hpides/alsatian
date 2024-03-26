@@ -29,18 +29,6 @@ class ExecutionStep(ABC):
         self.execution_logs = None
 
 
-# class ExtractFeaturesStep(ExecutionStep):
-#     def __init__(self, model_snapshot: RichModelSnapshot, data_info: DataInfo, cache_indices: [int] = None,
-#                  start_processing_idx: int = None, cache_locations=CacheLocation.SSD):
-#         super().__init__()
-#         self.model_snapshot: RichModelSnapshot = model_snapshot
-#         self.input_data_information: DataInfo = data_info
-#         self.cache_indices: [int] = cache_indices
-#         self.start_processing_idx: int = start_processing_idx
-#         # TODO use this to specify where things should be cached to (e.g. not everything will fit on GPU cache)
-#         # set it to dict for fine granular specification
-#         self.cache_locations = cache_locations
-
 class BaselineExtractFeaturesStep(ExecutionStep):
     def __init__(self, _id: str, model_snapshot: ModelSnapshot, data_info: DatasetInformation,
                  feature_cache_prefix: str, cache_locations=CacheLocation.SSD):

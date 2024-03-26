@@ -8,15 +8,15 @@ from model_search.executionsteplogger import ExecutionStepLogger
 
 class ShiftExecutionEngine(BaselineExecutionEngine):
 
-    def execute_step(self, exex_step: ExecutionStep):
+    def execute_step(self, exec_step: ExecutionStep):
         # reset logger for every step
         self.logger = ExecutionStepLogger()
-        if isinstance(exex_step, ShiftExtractFeaturesStep):
-            self.execute_shift_extract_features_step(exex_step)
-        elif isinstance(exex_step, BaselineExtractFeaturesStep):
-            self.execute_baseline_extract_features_step(exex_step)
-        elif isinstance(exex_step, ScoreModelStep):
-            self.execute_score_model_step(exex_step)
+        if isinstance(exec_step, ShiftExtractFeaturesStep):
+            self.execute_shift_extract_features_step(exec_step)
+        elif isinstance(exec_step, BaselineExtractFeaturesStep):
+            self.execute_baseline_extract_features_step(exec_step)
+        elif isinstance(exec_step, ScoreModelStep):
+            self.execute_score_model_step(exec_step)
         else:
             raise TypeError
 
