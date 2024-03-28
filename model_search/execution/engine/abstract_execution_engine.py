@@ -17,6 +17,7 @@ class ExecutionEngine(ABC):
 
     def execute_plan(self, execution_plan: ExecutionPlan):
         for exex_step in execution_plan.execution_steps:
+            print(f'execute: {exex_step._id}')
             self.execute_step(exex_step)
 
     @abstractmethod

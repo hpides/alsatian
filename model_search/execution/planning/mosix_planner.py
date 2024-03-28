@@ -3,7 +3,7 @@ from global_utils.constants import TEST, TRAIN
 from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass, \
     CachedDatasetInformation, DataInfo
 from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, CacheLocation, \
-    ScoreModelStep
+    ScoreModelStep, ScoringMethod
 from model_search.execution.planning.shift_planner import SCORE
 from model_search.model_snapshot import ModelSnapshot, RichModelSnapshot
 
@@ -129,54 +129,129 @@ class MosixExecutionPlanner(ExecutionPlanner):
         execution_steps.append(step)
         train_feature_prefix = f'{snapshot._id}-{TRAIN}-l-{layer_range[-1]}-ds-{data_range[0]}-{data_range[1]}'
         step = MosixExtractFeaturesStep(
-            _id=f'{snapshot._id}-extract-test',
+            _id=f'{snapshot._id}-extract-train',
             model_snapshot=snapshot,
             data_info=CachedDatasetInformation(
-                f'{model_snapshots[0]._id}-{TRAIN}-l-{layer_range[0]}-ds-{data_range[0]}-{data_range[1]}', num_workers, batch_size),
+                f'{model_snapshots[0]._id}-{TRAIN}-l-{layer_range[0]}-ds-{data_range[0]}-{data_range[1]}', num_workers,
+                batch_size),
             data_range=data_range,
             layer_range=layer_range,
             cache_config=CachingConfig(id_prefix=train_feature_prefix, location=CacheLocation.SSD)
         )
         execution_steps.append(step)
+        ###################################################
+        ###################################################
 
-        # layer_range = [7, 10]
-        # test_feature_prefix = f'{snapshot._id}-{TEST}-l-{layer_range[-1]}'
-        # step = MosixExtractFeaturesStep(
-        #     _id=f'{snapshot._id}-extract-test',
-        #     model_snapshot=snapshot,
-        #     data_info=CachedDatasetInformation(
-        #         f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
-        #     data_range=None,  # use all data
-        #     layer_range=layer_range,
-        #     cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
-        # )
-        # execution_steps.append(step)
-        # layer_range = [10]
-        # test_feature_prefix = f'{snapshot._id}-{TEST}-l-{END}'
-        # step = MosixExtractFeaturesStep(
-        #     _id=f'{snapshot._id}-extract-test',
-        #     model_snapshot=snapshot,
-        #     data_info=CachedDatasetInformation(
-        #         f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
-        #     data_range=None,  # use all data
-        #     layer_range=layer_range,
-        #     cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
-        # )
-        # execution_steps.append(step)
-        #
-        # snapshot = model_snapshots[1]
-        # layer_range = [10]
-        # test_feature_prefix = f'{snapshot._id}-{TEST}-l-{END}'
-        # step = MosixExtractFeaturesStep(
-        #     _id=f'{snapshot._id}-extract-test',
-        #     model_snapshot=snapshot,
-        #     data_info=CachedDatasetInformation(  # reference previous model snapshot intermediates as input
-        #         f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
-        #     data_range=None,  # use all data
-        #     layer_range=layer_range,
-        #     cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
-        # )
-        # execution_steps.append(step)
+        layer_range = [7, 10]
+        test_feature_prefix = f'{snapshot._id}-{TEST}-l-{layer_range[-1]}'
+        step = MosixExtractFeaturesStep(
+            _id=f'{snapshot._id}-extract-test',
+            model_snapshot=snapshot,
+            data_info=CachedDatasetInformation(
+                f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+            data_range=None,  # use all data
+            layer_range=layer_range,
+            cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+        )
+        execution_steps.append(step)
+        train_feature_prefix = f'{snapshot._id}-{TRAIN}-l-{layer_range[-1]}-ds-{data_range[0]}-{data_range[1]}'
+        step = MosixExtractFeaturesStep(
+            _id=f'{snapshot._id}-extract-train',
+            model_snapshot=snapshot,
+            data_info=CachedDatasetInformation(
+                f'{model_snapshots[0]._id}-{TRAIN}-l-{layer_range[0]}-ds-{data_range[0]}-{data_range[1]}', num_workers,
+                batch_size),
+            data_range=data_range,
+            layer_range=layer_range,
+            cache_config=CachingConfig(id_prefix=train_feature_prefix, location=CacheLocation.SSD)
+        )
+        execution_steps.append(step)
+        ###################################################
+        ###################################################
+
+        layer_range = [10]
+        test_feature_prefix = f'{snapshot._id}-{TEST}-l-{END}'
+        step = MosixExtractFeaturesStep(
+            _id=f'{snapshot._id}-extract-test',
+            model_snapshot=snapshot,
+            data_info=CachedDatasetInformation(
+                f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+            data_range=None,  # use all data
+            layer_range=layer_range,
+            cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+        )
+        execution_steps.append(step)
+        train_feature_prefix = f'{snapshot._id}-{TRAIN}-l-{END}-ds-{data_range[0]}-{data_range[1]}'
+        step = MosixExtractFeaturesStep(
+            _id=f'{snapshot._id}-extract-train',
+            model_snapshot=snapshot,
+            data_info=CachedDatasetInformation(
+                f'{model_snapshots[0]._id}-{TRAIN}-l-{layer_range[0]}-ds-{data_range[0]}-{data_range[1]}', num_workers,
+                batch_size),
+            data_range=data_range,
+            layer_range=layer_range,
+            cache_config=CachingConfig(id_prefix=train_feature_prefix, location=CacheLocation.SSD)
+        )
+        execution_steps.append(step)
+        ###################################################
+        ###################################################
+
+        step = ScoreModelStep(
+            _id=f'{snapshot._id}-{SCORE}',
+            scoring_method=ScoringMethod.FC,
+            test_feature_cache_prefixes=[test_feature_prefix],
+            train_feature_cache_prefixes=[train_feature_prefix],
+            test_label_feature_cache_prefixes=
+            train_label_feature_cache_prefixes =
+            num_classes=100
+        )
+        execution_steps.append(step)
+        ###################################################
+        ###################################################
+
+        snapshot = model_snapshots[1]
+        layer_range = [10]
+        test_feature_prefix = f'{snapshot._id}-{TEST}-l-{END}'
+        step = MosixExtractFeaturesStep(
+            _id=f'{snapshot._id}-extract-test',
+            model_snapshot=snapshot,
+            data_info=CachedDatasetInformation(  # reference previous model snapshot intermediates as input
+                f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+            data_range=None,  # use all data
+            layer_range=layer_range,
+            cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+        )
+        execution_steps.append(step)
+        train_feature_prefix = f'{snapshot._id}-{TRAIN}-l-{END}-ds-{data_range[0]}-{data_range[1]}'
+        step = MosixExtractFeaturesStep(
+            _id=f'{snapshot._id}-extract-train',
+            model_snapshot=snapshot,
+            data_info=CachedDatasetInformation(
+                f'{model_snapshots[0]._id}-{TRAIN}-l-{layer_range[0]}-ds-{data_range[0]}-{data_range[1]}', num_workers,
+                batch_size),
+            data_range=data_range,
+            layer_range=layer_range,
+            cache_config=CachingConfig(id_prefix=train_feature_prefix, location=CacheLocation.SSD)
+        )
+        execution_steps.append(step)
+        print(f'step_id: {snapshot._id}-extract-train')
+        print(f'expected_prefix: {train_feature_prefix}')
+        ###################################################
+        ###################################################
+
+        step = ScoreModelStep(
+            _id=f'{snapshot._id}-{SCORE}',
+            scoring_method=ScoringMethod.FC,
+            test_feature_cache_prefixes=[test_feature_prefix],
+            train_feature_cache_prefixes=[train_feature_prefix],
+            test_label_feature_cache_prefixes=
+            train_label_feature_cache_prefixes =
+            num_classes=100
+        )
+        execution_steps.append(step)
+        ###################################################
+        ###################################################
+
         #
         # snapshot = model_snapshots[2]
         # layer_range = [7]
