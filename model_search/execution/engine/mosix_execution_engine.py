@@ -32,6 +32,8 @@ class MosixExecutionEngine(BaselineExecutionEngine):
                  model_caching_service: CachingService):
         super().__init__(tensor_caching_service)
         self.model_caching_service = model_caching_service
+        self._prev_layer_hashes = []
+        self._prev_sub_model = None
 
     def execute_step(self, exec_step: ExecutionStep):
         # reset logger for every step
@@ -112,6 +114,13 @@ class MosixExecutionEngine(BaselineExecutionEngine):
         return data_loader
 
     def _init_model(self, exec_step):
+        relevant_layers = self._get_relevant_layers(exec_step)
+
+        if self._prev_layer_hashes == [layer.state_dict_hash for layer in relevant_layers]:
+            return self._prev_sub_model
+        elif not set(self._prev_layer_hashes).isdisjoint([layer.state_dict_hash for layer in relevant_layers]):
+            raise NotImplementedError
+
         # get a base model we can load parameters and that we split later to get the sub model
         if not self.model_caching_service.id_exists(BASE_MODEL):
             model: torch.nn.Module = self.initialize_model(exec_step.model_snapshot)
@@ -120,10 +129,11 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             model: torch.nn.Module = self.model_caching_service.get_item(BASE_MODEL)
 
         # only load the state of the updated/relevant layers
-        relevant_layers = self._get_relevant_layers(exec_step)
+        self._prev_layer_hashes = []
         for layer in relevant_layers:
             state_dict = torch.load(layer.state_dict_path)
             model.load_state_dict(state_dict, strict=False)
+            self._prev_layer_hashes.append(layer.state_dict_hash)
 
         # split the base model to extract the model we are interested in
         sub_models = split_model(model, exec_step.layer_range)
@@ -134,6 +144,8 @@ class MosixExecutionEngine(BaselineExecutionEngine):
         # load the model to the device
         measurement, _ = self.bench.micro_benchmark_cpu(load_model_to_device, sub_model, CUDA)
         self.logger.log_value(MODEL_TO_DEVICE, measurement)
+
+        self._prev_sub_model = sub_model
 
         return sub_model
 
