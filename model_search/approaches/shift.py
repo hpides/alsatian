@@ -7,7 +7,7 @@ from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.models.init_models import initialize_model
 from global_utils.global_constants import TRAIN
 from global_utils.model_names import RESNET_18
-from model_search.caching_service import TensorCachingService
+from model_search.caching_service import CachingService
 from model_search.execution.engine.shift_execution_engine import ShiftExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST
 from model_search.execution.planning.shift_planner import ShiftPlannerConfig, ShiftExecutionPlanner
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     }
 
     caching_path = '/mount-ssd/cache-dir'
-    cachingService = TensorCachingService(caching_path)
+    cachingService = CachingService(caching_path)
     planner_config = ShiftPlannerConfig(12, 128)
     planner = ShiftExecutionPlanner(planner_config)
     exec_engine = ShiftExecutionEngine(cachingService)

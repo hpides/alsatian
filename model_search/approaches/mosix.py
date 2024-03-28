@@ -7,7 +7,7 @@ from custom.models.init_models import initialize_model
 from global_utils.global_constants import TRAIN
 from global_utils.model_names import RESNET_18
 from model_search.approaches.shift import get_data_ranges, prune_snapshots
-from model_search.caching_service import TensorCachingService
+from model_search.caching_service import CachingService
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST
 from model_search.execution.planning.mosix_planner import MosixExecutionPlanner, MosixPlannerConfig
@@ -57,10 +57,11 @@ if __name__ == '__main__':
     }
 
     caching_path = '/mount-ssd/cache-dir'
-    cachingService = TensorCachingService(caching_path)
+    tensor_caching_service = CachingService(caching_path)
+    model_caching_service = CachingService(caching_path)
     planner_config = MosixPlannerConfig(12, 128)
     planner = MosixExecutionPlanner(planner_config)
-    exec_engine = MosixExecutionEngine(cachingService)
+    exec_engine = MosixExecutionEngine(tensor_caching_service, model_caching_service)
 
     train_data = CustomImageFolder(dataset_paths[TRAIN])
     ranges = get_data_ranges(len(list(model_snapshots.values())), len(train_data))

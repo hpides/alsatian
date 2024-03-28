@@ -116,6 +116,7 @@ def generate_model_layers(model, save_path, name_prefix=None):
             state_dict_path = os.path.join(save_path, f'l-{layer_i}.pt')
 
         if not os.path.exists(state_dict_path):
+            os.makedirs(os.path.dirname(state_dict_path), exist_ok=True)
             torch.save(layer_state, state_dict_path)
         layers.append(
             LayerState(state_dict_path, state_dict_hash(layer_state))

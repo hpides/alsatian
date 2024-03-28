@@ -1,9 +1,13 @@
 from custom.data_loaders.imagenet_transfroms import inference_transform
 from global_utils.constants import TEST, TRAIN
-from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass
+from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass, \
+    CachedDatasetInformation, DataInfo
 from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, CacheLocation, \
-    BaselineExtractFeaturesStep, ScoreModelStep, ScoringMethod
+    ScoreModelStep
+from model_search.execution.planning.shift_planner import SCORE
 from model_search.model_snapshot import ModelSnapshot, RichModelSnapshot
+
+END = 'end'
 
 
 class MosixPlannerConfig:
@@ -12,24 +16,53 @@ class MosixPlannerConfig:
         self.batch_size = batch_size
 
 
-class MosixExtractFeaturesStep(BaselineExtractFeaturesStep):
+class CachingConfig:
+    def __init__(self, id_prefix: str = None, location: CacheLocation = CacheLocation.SSD):
+        """
+        Specifying where and under what id to cache
+        :param id_prefix: is a string that defines the prefix of cached features, e.g. prefix="feat" ->
+        all features could be cached with ids: "feat-1", "feat-2", ...
+        :param location: defines where to cache e.g. on SSD, in RAM or on GPU
+        """
+        self.id_prefix = id_prefix
+        self.location = location
+
+
+class MosixExtractFeaturesStep:
     def __init__(
             self,
             _id: str,
             model_snapshot: RichModelSnapshot,
-            data_info: DatasetInformation,
-            feature_cache_prefix: str,
-            data_range: [int],
-            cache_indices: [int],
-            start_processing_idx: int,
-            cache_locations: {int: CacheLocation}
+            data_info: DataInfo,
+            layer_range: [int] = None,
+            data_range: [int] = None,
+            cache_config: CachingConfig = None,
     ):
-        super().__init__(_id, model_snapshot, data_info, feature_cache_prefix)
-        self.data_range: [int] = data_range
-        self.cache_indices: [int] = cache_indices
-        self.start_processing_idx: int = start_processing_idx
-        self.cache_indices = cache_indices
-        self.cache_locations: {int: CacheLocation} = cache_locations
+        """
+        Defines one sub-step of the feature extraction process by defining ...
+        :param _id:
+        :param model_snapshot: what snapshot should be used for the model
+        :param data_info: what data should be used as input
+        :param data_range: if only a subset of the data should be used -> specify start and end index of the dataset
+        :param layer_range: if only a subpart of the model should be used -> specify the start/end layer/block indices
+        if only one number is given it defines the start index with and open end
+        :param cache_config: if output shall be cached specify how and where to cache
+        """
+        self._id = _id
+        self.model_snapshot = model_snapshot
+        self.data_info = data_info
+        self.data_range = data_range
+        self.layer_range = layer_range
+        self.cache_config = cache_config
+
+    @property
+    def cache_labels(self) -> bool:
+        # we want to cache also the labels if we actually have to load the original data
+        return self.layer_range[0] == 0 and isinstance(self.data_info, DatasetInformation)
+
+    @property
+    def open_layer_range(self) -> bool:
+        return len(self.layer_range) == 1
 
 
 class MosixExecutionPlanner(ExecutionPlanner):
@@ -50,67 +83,103 @@ class MosixExecutionPlanner(ExecutionPlanner):
         execution_steps = []
         if first_iteration:
             snapshot = model_snapshots[0]
-            test_feature_prefix = f'{snapshot._id}-{TEST}'
+            layer_range = [0, 5]
+            test_feature_prefix = f'{snapshot._id}-{TEST}-l-{layer_range[-1]}'
             step = MosixExtractFeaturesStep(
-                _id=f'{snapshot._id}-extract-test-0',
+                _id=f'{snapshot._id}-extract-test',
                 model_snapshot=snapshot,
                 data_info=DatasetInformation(
                     data_set_class, dataset_paths[TEST], num_workers, batch_size, inference_transform),
-                feature_cache_prefix=test_feature_prefix,
-                data_range=None,
-                cache_indices=[5, 10, 15],
-                start_processing_idx=0,
-                cache_locations={
-                    5: CacheLocation.SSD,
-                    10: CacheLocation.CPU,
-                    15: CacheLocation.GPU
-                }
+                data_range=None,  # use all data
+                layer_range=layer_range,
+                cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+            )
+
+            # from here on load cached intermediates so use different batch size and num workers
+            num_workers = 2
+            batch_size = 2
+
+            execution_steps.append(step)
+            layer_range = [5, 7]
+            test_feature_prefix = f'{snapshot._id}-{TEST}-l-{layer_range[-1]}'
+            step = MosixExtractFeaturesStep(
+                _id=f'{snapshot._id}-extract-test',
+                model_snapshot=snapshot,
+                data_info=CachedDatasetInformation(
+                    f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+                data_range=None,  # use all data
+                layer_range=layer_range,
+                cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+            )
+            execution_steps.append(step)
+            layer_range = [7, 10]
+            test_feature_prefix = f'{snapshot._id}-{TEST}-l-{layer_range[-1]}'
+            step = MosixExtractFeaturesStep(
+                _id=f'{snapshot._id}-extract-test',
+                model_snapshot=snapshot,
+                data_info=CachedDatasetInformation(
+                    f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+                data_range=None,  # use all data
+                layer_range=layer_range,
+                cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+            )
+            execution_steps.append(step)
+            layer_range = [10]
+            test_feature_prefix = f'{snapshot._id}-{TEST}-l-{END}'
+            step = MosixExtractFeaturesStep(
+                _id=f'{snapshot._id}-extract-test',
+                model_snapshot=snapshot,
+                data_info=CachedDatasetInformation(
+                    f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+                data_range=None,  # use all data
+                layer_range=layer_range,
+                cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
             )
             execution_steps.append(step)
 
-            start_indices = [5, 10, 15]
-            for i in range(3):
-                snapshot = model_snapshots[i + 1]
-                test_feature_prefix = f'{snapshot._id}-{TEST}'
-                step = MosixExtractFeaturesStep(
-                    _id=f'{snapshot._id}-extract-test-0',
-                    model_snapshot=snapshot,
-                    data_info=DatasetInformation(
-                        data_set_class, dataset_paths[TEST], num_workers, batch_size, inference_transform),
-                    feature_cache_prefix=test_feature_prefix,
-                    data_range=None,
-                    cache_indices=[],
-                    start_processing_idx=start_indices[i],
-                    cache_locations={}
-                )
-                execution_steps.append(step)
+            snapshot = model_snapshots[1]
+            layer_range = [10]
+            test_feature_prefix = f'{snapshot._id}-{TEST}-l-{END}'
+            step = MosixExtractFeaturesStep(
+                _id=f'{snapshot._id}-extract-test',
+                model_snapshot=snapshot,
+                data_info=CachedDatasetInformation(  # reference previous model snapshot intermediates as input
+                    f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+                data_range=None,  # use all data
+                layer_range=layer_range,
+                cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+            )
+            execution_steps.append(step)
 
-        # # for train data we always have to extract features
-        # for snapshot in model_snapshots:
-        #     # extract train features
-        #     train_feature_prefix = self._register_train_feature_prefix(snapshot, train_dataset_range)
-        #     execution_steps.append(
-        #         MosixExtractFeaturesStep(
-        #             _id=f'{snapshot._id}-extract-train-{train_dataset_range[0]}-{train_dataset_range[1]}',
-        #             model_snapshot=snapshot,
-        #             data_info=DatasetInformation(
-        #                 data_set_class, dataset_paths[TRAIN], num_workers, batch_size, inference_transform),
-        #             cache_locations=CacheLocation.SSD,
-        #             feature_cache_prefix=train_feature_prefix,
-        #             data_range=train_dataset_range
-        #         )
-        #     )
-        #     # score model based on train and test features
-        #     test_feature_prefix = f'{snapshot._id}-{TEST}'
-        #     execution_steps.append(
-        #         ScoreModelStep(
-        #             _id=f'{snapshot._id}-{SCORE}',
-        #             scoring_method=ScoringMethod.FC,
-        #             test_feature_cache_prefixes=[test_feature_prefix],
-        #             train_feature_cache_prefixes=self._train_feature_prefixes[snapshot._id],
-        #             num_classes=100
-        #         )
-        #     )
+            snapshot = model_snapshots[2]
+            layer_range = [7]
+            test_feature_prefix = f'{snapshot._id}-{TEST}-l-{END}'
+            step = MosixExtractFeaturesStep(
+                _id=f'{snapshot._id}-extract-test',
+                model_snapshot=snapshot,
+                data_info=CachedDatasetInformation(  # reference previous model snapshot intermediates as input
+                    f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+                data_range=None,  # use all data
+                layer_range=layer_range,
+                cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+            )
+            execution_steps.append(step)
+
+            snapshot = model_snapshots[3]
+            layer_range = [5]
+            test_feature_prefix = f'{snapshot._id}-{TEST}-l-{END}'
+            step = MosixExtractFeaturesStep(
+                _id=f'{snapshot._id}-extract-test',
+                model_snapshot=snapshot,
+                data_info=CachedDatasetInformation(  # reference previous model snapshot intermediates as input
+                    f'{model_snapshots[0]._id}-{TEST}-l-{layer_range[0]}', num_workers, batch_size),
+                data_range=None,  # use all data
+                layer_range=layer_range,
+                cache_config=CachingConfig(id_prefix=test_feature_prefix, location=CacheLocation.SSD)
+            )
+            execution_steps.append(step)
+
+        # TODO train phase and model scoring is missing, also automated generation of plan and best order is missing
 
         return ExecutionPlan(execution_steps)
 

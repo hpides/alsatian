@@ -18,7 +18,7 @@ def transform_to_sequential(model, include_seq=False, split_classes=None):
     return seq_model
 
 
-def split_model(model, index, include_layer_names=False):
+def split_model_in_two(model, index, include_layer_names=False):
     assert index <= len(model), "split index larger than available layers"
     layers = list_of_layers(model)
     entire_model = transform_to_sequential(model)
@@ -33,6 +33,28 @@ def split_model(model, index, include_layer_names=False):
         return (first_part, layer_names[:name_split_index]), (second_part, layer_names[name_split_index:])
     else:
         return first_part, second_part
+
+
+def split_model(model, indices):
+    assert all(indices[i] <= indices[i + 1] for i in range(len(indices) - 1))
+    assert indices[-1] <= len(model), "split index larger than available layers"
+    layers = list_of_layers(model)
+    model_parts = []
+    start_indices = [0] + indices
+    end_indices = indices + [len(model)]
+    for start, end in zip(start_indices, end_indices):
+        model_part = torch.nn.Sequential(*(list(layers[start:end])))
+        model_parts.append(model_part)
+
+    return model_parts
+
+
+def merge_models(models):
+    layers = []
+    for model in models:
+        layers += model.children()
+
+    return torch.nn.Sequential(*(list(layers)))
 
 
 def list_of_layers(model: torch.nn.Sequential, include_seq=False, split_classes=None):
@@ -70,8 +92,8 @@ def get_split_index(split_index, model_name):
 
 
 def merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential, _index):
-    base_model_one, head_one = split_model(base_model, _index)
-    base_model_two, head_two = split_model(to_merge, _index)
+    base_model_one, head_one = split_model_in_two(base_model, _index)
+    base_model_two, head_two = split_model_in_two(to_merge, _index)
 
     class MergedHeadModel(nn.Module):
         def __init__(self, head_one, head_two):
@@ -90,6 +112,7 @@ def merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential,
         MergedHeadModel(head_one, head_two)
     )
     return merged_model
+
 
 def merge_n_models(models, models_indices):
     # IMPORTANT: Indices must be sorted

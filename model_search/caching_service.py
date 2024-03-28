@@ -1,17 +1,17 @@
 import os
 
 import torch.nn.functional
-from torch import Tensor
 
 from global_utils.benchmark_util import CPU
 from global_utils.constants import CUDA
+from model_search.execution.planning.execution_plan import CacheLocation
 
 
-class TensorCachingService:
+class CachingService:
 
     def __init__(self, persistent_path: os.path):
         """
-        :param persistent_path: the path on the file system used to cache tensors on persistent storage
+        :param persistent_path: the path on the file system used to cache items on persistent storage
         """
         self.ssd_path = persistent_path
         self._gpu_cache = {}
@@ -36,7 +36,7 @@ class TensorCachingService:
                 path = os.path.join(self.ssd_path, filename)
                 self._delete_file(path)
 
-    def get_tensor(self, _id):
+    def get_item(self, _id):
         if _id in self._gpu_cache:
             return self._gpu_cache[_id]
         elif _id in self._cpu_cache:
@@ -46,7 +46,7 @@ class TensorCachingService:
         else:
             raise KeyError(f'{_id} does not exist in any cache')
 
-    def remove_tensor(self, _id, remove_immediately=False):
+    def remove_item(self, _id, remove_immediately=False):
         if _id in self._gpu_cache:
             del self._gpu_cache[_id]
         elif _id in self._cpu_cache:
@@ -59,21 +59,37 @@ class TensorCachingService:
         else:
             raise KeyError(f'{_id} does not exist in any cache')
 
-    def cache_on_gpu(self, _id, data: Tensor):
+    def cache_on_location(self, _id, data, location: CacheLocation):
+        if location == CacheLocation.GPU:
+            self.cache_on_gpu(_id, data)
+        elif location == CacheLocation.CPU:
+            self.cache_on_cpu(_id, data)
+        elif location == CacheLocation.SSD:
+            self.cache_persistent(_id, data)
+
+    def cache_on_gpu(self, _id, data):
         self._check_id_not_exists(_id)
         if data.is_cuda:
             self._gpu_cache[_id] = data
         else:
             self._gpu_cache[_id] = data.to(CUDA)
 
-    def cache_on_cpu(self, _id, data: Tensor):
+    def cache_on_cpu(self, _id, data):
         self._check_id_not_exists(_id)
-        if data.is_cuda:
+        if self._is_cuda(data):
             self._cpu_cache[_id] = data.to(CPU)
         else:
             self._cpu_cache[_id] = data
 
-    def cache_persistent(self, _id, data: Tensor):
+    def _is_cuda(self, data):
+        if isinstance(data, torch.Tensor):
+            return data.is_cuda
+        elif isinstance(data, torch.nn.Module):
+            return next(data.parameters()).is_cuda
+        else:
+            raise NotImplementedError
+
+    def cache_persistent(self, _id, data):
         self._check_id_not_exists(_id)
         if data.is_cuda:
             data = data.to(CPU)
@@ -141,7 +157,6 @@ class TensorCachingService:
             result += self._all_ids_with_prefix(prefix, cache)
         return result
 
-
     def _all_ids_with_prefix(self, prefix, cache):
         result = []
         for k in cache.keys():
@@ -151,7 +166,7 @@ class TensorCachingService:
 
 
 if __name__ == '__main__':
-    cs = TensorCachingService('./')
+    cs = CachingService('./')
     for i in range(5):
         t = torch.rand(1024, 3, 224, 224)
         cs.cache_on_gpu(str(i), t)

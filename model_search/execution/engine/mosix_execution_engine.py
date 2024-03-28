@@ -1,19 +1,37 @@
 import time
 
 import torch
+from torch.utils.data import DataLoader
 
+from custom.data_loaders.cache_service_dataset import CacheServiceDataset
 from custom.data_loaders.custom_image_folder import CustomImageFolder
-from global_utils.constants import LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES
-from model_search.execution.data_handling.data_information import DatasetClass
+from global_utils.constants import LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, INPUT, LABEL, CUDA, \
+    MODEL_TO_DEVICE
+from global_utils.model_operations import split_model
+from model_search.caching_service import CachingService
+from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass, \
+    CachedDatasetInformation
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine, load_data_to_device, \
-    inference
+    inference, load_model_to_device
 from model_search.execution.planning.execution_plan import ExecutionStep, ScoreModelStep
-from model_search.execution.planning.mosix_planner import MosixExtractFeaturesStep
+from model_search.execution.planning.mosix_planner import MosixExtractFeaturesStep, CachingConfig
 from model_search.executionsteplogger import ExecutionStepLogger
-from model_search.model_snapshot import RichModelSnapshot
+
+BASE_MODEL = 'base_model'
+
+
+def cat_tensors(tensors: [torch.Tensor]):
+    # TODO don't know yet if its smart to concat the tensors, because most likely we create a copy even is this really
+    #  faster than just using a smaller batch size?
+    return torch.cat(tensors, dim=0)
 
 
 class MosixExecutionEngine(BaselineExecutionEngine):
+
+    def __init__(self, tensor_caching_service: CachingService,
+                 model_caching_service: CachingService):
+        super().__init__(tensor_caching_service)
+        self.model_caching_service = model_caching_service
 
     def execute_step(self, exec_step: ExecutionStep):
         # reset logger for every step
@@ -25,55 +43,104 @@ class MosixExecutionEngine(BaselineExecutionEngine):
         else:
             raise TypeError
 
-    def execute_mosix_extract_features_step(self, exec_step):
-        # init data loader
-        if exec_step.inp_data.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
-            data = CustomImageFolder(exec_step.inp_data.dataset_path, exec_step.inp_data.transform)
-        else:
-            raise NotImplementedError
+    def execute_mosix_extract_features_step(self, exec_step: MosixExtractFeaturesStep):
+        partial_model = self._init_model(exec_step)
+        data_loader = self._get_data_loader(exec_step)
+        cache_conf = exec_step.cache_config
+        cache_labels = exec_step.cache_labels
+        self._extract_features_part_model(partial_model, data_loader, cache_conf, cache_labels)
 
-        if exec_step.data_range is not None:
-            data.set_subrange(exec_step.data_range[0], exec_step.data_range[1])
-
-        self._extract_features(data, exec_step)
-
-    def _extract_features(self, data, exec_step):
-
-        # initialize model
-        model = self.init_model(exec_step.model_snapshot)
-
-        # init data loader
-        # TODO dynamically adjust batch size and nuber of workers
-        # TODO adjust to cached data loader if feasible
-        data_loader = torch.utils.data.DataLoader(
-            data, batch_size=exec_step.inp_data.batch_size, shuffle=False,
-            num_workers=exec_step.inp_data.num_workers)
+    def _extract_features_part_model(self, partial_model, data_loader, cache_conf: CachingConfig, cache_labels):
 
         # extract features
         start = time.perf_counter()
-        for i, (inputs, labels) in enumerate(data_loader):
+        for i, (batch) in enumerate(data_loader):
+
+            if cache_labels:
+                inputs, labels = batch
+            else:
+                inputs = batch
+
             batch_measures = {}
             batch_measures[LOAD_DATA] = time.perf_counter() - start
 
-            # TODO might do the data loading by the caching manager, lets see ...
             measurement, inputs = self.bench.micro_benchmark_cpu(load_data_to_device, inputs)
             batch_measures[DATA_TO_DEVICE] = measurement
 
-            model.eval()
-            # TODO this we need to adjust to split into multiple models to cache at all points we want to cahce
-            measurement, features = self.bench.micro_benchmark_gpu(inference, inputs, model)
+            partial_model.eval()
+            measurement, features = self.bench.micro_benchmark_gpu(inference, inputs, partial_model)
             batch_measures[INFERENCE] = measurement
-            features_cache_id = f'{exec_step.feature_cache_prefix}-{INPUT}-{i}'
-            labels_cache_id = f'{exec_step.feature_cache_prefix}-{LABEL}-{i}'
-            # TODO also cache according to the planned cache, not just always persistent caching
-            self.caching_service.cache_persistent(features_cache_id, features)
-            self.caching_service.cache_persistent(labels_cache_id, labels)
+
+            features_cache_id = f'{cache_conf.id_prefix}-{INPUT}-{i}'
+            self.caching_service.cache_on_location(features_cache_id, features, cache_conf.location)
+
+            if cache_labels:
+                labels_cache_id = f'{cache_conf.id_prefix}-{LABEL}-{i}'
+                self.caching_service.cache_on_location(labels_cache_id, labels, cache_conf.location)
 
             self.logger.append_value(BATCH_MEASURES, batch_measures)
 
             start = time.perf_counter()
-        exec_step.execution_logs = self.logger
+        # TODO fix the logging
+        # exec_step.execution_logs = self.logger
 
-    def init_model(self, snapshot: RichModelSnapshot):
-        # TODO
-        pass
+    def _get_data_loader(self, exec_step: MosixExtractFeaturesStep):
+        if (isinstance(exec_step.data_info, DatasetInformation)
+                and exec_step.data_info.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER):
+            data = CustomImageFolder(exec_step.data_info.dataset_path, exec_step.data_info.transform)
+            # init data loader
+            data_loader = torch.utils.data.DataLoader(
+                data, batch_size=exec_step.data_info.batch_size, shuffle=False,
+                num_workers=exec_step.data_info.num_workers
+            )
+
+            if exec_step.data_range is not None:
+                data.set_subrange(exec_step.data_range[0], exec_step.data_range[1])
+
+        elif isinstance(exec_step.data_info, CachedDatasetInformation):
+            data = CacheServiceDataset(
+                self.caching_service,
+                [f'{exec_step.data_info.data_prefix}-{INPUT}'],
+                None
+            )
+            data_loader = torch.utils.data.DataLoader(
+                data, batch_size=exec_step.data_info.batch_size, shuffle=False,
+                num_workers=exec_step.data_info.num_workers, collate_fn=cat_tensors
+            )
+        else:
+            raise NotImplementedError
+        return data_loader
+
+    def _init_model(self, exec_step):
+        # get a base model we can load parameters and that we split later to get the sub model
+        if not self.model_caching_service.id_exists(BASE_MODEL):
+            model: torch.nn.Module = self.initialize_model(exec_step.model_snapshot)
+            self.model_caching_service.cache_on_cpu(BASE_MODEL, model)
+        else:
+            model: torch.nn.Module = self.model_caching_service.get_item(BASE_MODEL)
+
+        # only load the state of the updated/relevant layers
+        relevant_layers = self._get_relevant_layers(exec_step)
+        for layer in relevant_layers:
+            state_dict = torch.load(layer.state_dict_path)
+            model.load_state_dict(state_dict, strict=False)
+
+        # split the base model to extract the model we are interested in
+        sub_models = split_model(model, exec_step.layer_range)
+        # at index 0 is always the base part of the model that we want to skip
+        # at index above 1 is always the part we will process in a later step
+        sub_model = sub_models[1]
+
+        # load the model to the device
+        measurement, _ = self.bench.micro_benchmark_cpu(load_model_to_device, sub_model, CUDA)
+        self.logger.log_value(MODEL_TO_DEVICE, measurement)
+
+        return sub_model
+
+    def _get_relevant_layers(self, exec_step):
+        layer_range = exec_step.layer_range
+        if exec_step.open_layer_range:
+            relevant_layers = exec_step.model_snapshot.layer_states[layer_range[0]:]
+        else:
+            relevant_layers = exec_step.model_snapshot.layer_states[layer_range[0]: layer_range[1]]
+        return relevant_layers
