@@ -21,7 +21,7 @@ if __name__ == '__main__':
         model = initialize_model(model_name, pretrained=True, sequential_model=True)
         info = model_resource_info(model, SPLIT_INDEXES[model_name], [3, 224, 224], inference_time=True)
 
-        exp_id = f'{config_section}-batch_size-{exp_args.batch_size}'
+        exp_id = f'{config_section}-model-name-{model_name}-batch_size-{exp_args.batch_size}'
         write_measurements_and_args_to_json_file(
             measurements=info,
             args=exp_args.get_dict(),
