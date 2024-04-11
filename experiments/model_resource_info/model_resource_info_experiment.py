@@ -3,7 +3,7 @@ import os
 
 from custom.models.init_models import initialize_model
 from custom.models.split_indices import SPLIT_INDEXES
-from experiments.opt_parameters.data_loading.experiment_args import ExpArgs
+from experiments.model_resource_info.exp_args import ExpArgs
 from global_utils.model_names import VISION_MODEL_CHOICES
 from global_utils.model_resource_info import model_resource_info
 from global_utils.write_results import write_measurements_and_args_to_json_file
