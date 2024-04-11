@@ -22,3 +22,9 @@ CPU = 'cpu'
 
 CUDA = 'cuda'
 
+NUM_PARAMS = 'num_params'
+NUM_PARAMS_MB = 'num_params_mb'
+GPU_INF_TIMES = 'gpu_inf_times'
+OUTPUT_SHAPE = 'output_shape'
+OUTPUT_SIZE = 'output_size'
+OUTPUT_SIZE_MB = 'output_size_mb'
