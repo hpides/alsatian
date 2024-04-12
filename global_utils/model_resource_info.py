@@ -27,7 +27,8 @@ def model_resource_info(model: torch.nn.Module, split_indices: [int], input_shap
                         inference_time=False, add_mb_info=True):
     benchmarker = Benchmarker(torch.device(CUDA))
     sorted_split_indices = sorted(split_indices) + [INF]
-    prev_idx = None
+    prev_number_params = 0
+    prev_inf_times = None
     result = {}
     # measure all values incrementally by increasing the model size and then taking diffs
     for idx in sorted_split_indices:
@@ -37,12 +38,11 @@ def model_resource_info(model: torch.nn.Module, split_indices: [int], input_shap
         bench_model = _get_bench_model(idx, model)
 
         # get the number of parameters
-        if prev_idx is None:
-            result[idx][NUM_PARAMS] = number_parameters(bench_model.state_dict())
-        else:
-            result[idx][NUM_PARAMS] = number_parameters(bench_model.state_dict()) - result[prev_idx][NUM_PARAMS]
+        number_of_params = number_parameters(bench_model.state_dict())
+        result[idx][NUM_PARAMS] = number_of_params - prev_number_params
+        prev_number_params = number_of_params
 
-            # measure inference time on GPU
+        # measure inference time on GPU
         inf_times = []
         output = None
 
@@ -55,23 +55,23 @@ def model_resource_info(model: torch.nn.Module, split_indices: [int], input_shap
         bench_model.to(CUDA)
         for inp, _ in data_loader:
             msr, output = benchmarker.micro_benchmark_gpu(_inference, bench_model, inp, CUDA)
-            inf_times.append(msr)
+        inf_times.append(msr)
 
         result[idx][OUTPUT_SHAPE] = list(output.shape)
         result[idx][OUTPUT_SIZE] = _multiply_list(list(output.shape))
 
         if inference_time:
             # trow away first three measurements and take the last 5
-            if prev_idx is None:
-                result[idx][GPU_INF_TIMES] = inf_times[3:]
+            inf_times = inf_times[3:]
+            if prev_inf_times is None:
+                result[idx][GPU_INF_TIMES] = inf_times
             else:
-                result[idx][GPU_INF_TIMES] = list(map(float.__sub__, inf_times[3:], result[prev_idx][GPU_INF_TIMES]))
+                result[idx][GPU_INF_TIMES] = list(map(float.__sub__, inf_times, prev_inf_times))
+            prev_inf_times = inf_times
 
         if add_mb_info:
             result[idx][NUM_PARAMS_MB] = result[idx][NUM_PARAMS] * 4 * 10 ** -6
-            result[idx][OUTPUT_SIZE_MB] = result[idx][OUTPUT_SIZE] * 4 * 10 ** -6
-
-        prev_idx = idx
+        result[idx][OUTPUT_SIZE_MB] = result[idx][OUTPUT_SIZE] * 4 * 10 ** -6
 
     return result
 
