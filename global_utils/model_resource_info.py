@@ -5,7 +5,7 @@ from custom.models.init_models import initialize_model
 from custom.models.split_indices import SPLIT_INDEXES
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import NUM_PARAMS, CUDA, OUTPUT_SHAPE, GPU_INF_TIMES, OUTPUT_SIZE, NUM_PARAMS_MB, \
-    OUTPUT_SIZE_MB
+    OUTPUT_SIZE_MB, CPU
 from global_utils.dummy_dataset import DummyDataset
 from global_utils.model_names import RESNET_50
 from global_utils.model_operations import split_model
@@ -25,7 +25,8 @@ def _inference(model, batch, device):
 
 def model_resource_info(model: torch.nn.Module, split_indices: [int], input_shape: [int], batch_size=32,
                         inference_time=False, add_mb_info=True):
-    benchmarker = Benchmarker(torch.device(CUDA))
+    device = torch.device(CUDA if torch.cuda.is_available() else CPU)
+    benchmarker = Benchmarker(device)
     sorted_split_indices = sorted(split_indices) + [INF]
     prev_number_params = 0
     prev_inf_times = None
@@ -52,10 +53,10 @@ def model_resource_info(model: torch.nn.Module, split_indices: [int], input_shap
         data_loader = DataLoader(dummy_data, batch_size=batch_size, shuffle=False)
 
         bench_model.eval()
-        bench_model.to(CUDA)
+        bench_model.to(device)
         for inp, _ in data_loader:
-            msr, output = benchmarker.micro_benchmark_gpu(_inference, bench_model, inp, CUDA)
-        inf_times.append(msr)
+            msr, output = benchmarker.micro_benchmark(_inference, bench_model, inp, device)
+            inf_times.append(msr)
 
         result[idx][OUTPUT_SHAPE] = list(output.shape)
         result[idx][OUTPUT_SIZE] = _multiply_list(list(output.shape))
