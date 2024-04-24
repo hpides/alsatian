@@ -1,3 +1,5 @@
+from statistics import mean
+
 import matplotlib.pyplot as plt
 
 from experiments.plot_shared.file_parsing import get_raw_data
@@ -9,6 +11,8 @@ def plot(data, metric, output_path=None):
     # Extract keys and values from the dictionary
     keys = list(data.keys())
     values = [v[metric] for v in list(data.values())]
+    if metric == 'gpu_inf_times':
+        values = [mean(v) for v in values]
 
     # Plot the data as connected dots
     plt.plot(keys, values, marker='o', linestyle='-')
@@ -29,7 +33,7 @@ if __name__ == '__main__':
     root_dir = '/Users/nils/Downloads/model_resource_info'
     model_names = VISION_MODEL_CHOICES
     batch_size = 32
-    metrics = ['num_params', 'num_params_mb', 'output_size_mb']
+    metrics = ['num_params', 'num_params_mb', 'output_size_mb', 'gpu_inf_times']
 
     for model_name in model_names:
         _id = f'model_name-{model_name}-batch_size-{batch_size}'
