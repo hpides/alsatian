@@ -5,7 +5,7 @@ repository_url=github.com/slin96/model-search-paper.git
 script_to_start=experiments/model_resource_info/model_resource_info_experiment.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
-branch=model-info
+branch=reuse-vs-recompute
 repo_name=model-search-paper
 
 # Function to read the access token from file
