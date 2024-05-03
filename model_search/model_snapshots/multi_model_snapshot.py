@@ -46,20 +46,21 @@ class MultiModelSnapshot:
 
     def _merge_layers_in_model(self, current_root: MultiModelSnapshotNode, layer_states: [LayerState],
                                snapshot_id: str):
-        # compare if we find matching child
-        multi_model_children = [edge.child for edge in current_root.edges]
-        current_layer_state = layer_states[0]
-        match = self._find_layer_match(multi_model_children, current_layer_state)
+        if len(layer_states) > 0:
+            # compare if we find matching child
+            multi_model_children = [edge.child for edge in current_root.edges]
+            current_layer_state = layer_states[0]
+            match = self._find_layer_match(multi_model_children, current_layer_state)
 
-        if match is not None:
-            # if we find matching child
-            # mark that current node belongs to multiple models
-            current_root.model_ids.append(snapshot_id)
-            # deduplicate: forget about current layer state and continue merging
-            self._merge_layers_in_model(match, layer_states[1:], snapshot_id)
-        else:
-            # if we do not find matching child create new edge and connect
-            self._append_layers_to_node(current_root, layer_states, snapshot_id)
+            if match is not None:
+                # if we find matching child
+                # mark that current node belongs to multiple models
+                current_root.model_ids.append(snapshot_id)
+                # deduplicate: forget about current layer state and continue merging
+                self._merge_layers_in_model(match, layer_states[1:], snapshot_id)
+            else:
+                # if we do not find matching child create new edge and connect
+                self._append_layers_to_node(current_root, layer_states, snapshot_id)
 
     def _find_layer_match(self, multi_model_children: [MultiModelSnapshotNode], current_layer_state: LayerState):
         for node in multi_model_children:

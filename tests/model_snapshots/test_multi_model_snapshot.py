@@ -79,18 +79,18 @@ class TestTensorCachingService(unittest.TestCase):
         layer_count += 1
 
         current_node = child_nodes[0]
-        model_id = "test_arch1-sd_path1"
+        model_ids = ["test_arch1-sd_path1"]
         layer_states = model_1_layer_states
-        self._check_tail(current_node, layer_count, layer_states, model_id)
+        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
 
         current_node = child_nodes[1]
-        model_id = "test_arch2-sd_path2"
+        model_ids = ["test_arch2-sd_path2"]
         layer_states = model_2_layer_states
-        self._check_tail(current_node, layer_count, layer_states, model_id)
+        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
 
-    def _check_tail(self, current_node, layer_count, layer_states, model_id):
-        for i in range(layer_count, layer_count + 2):
-            self.assertEqual(current_node.model_ids, [model_id])
+    def _check_tail(self, current_node, layer_start, num_layers, layer_states, model_ids):
+        for i in range(layer_start, layer_start + num_layers):
+            self.assertEqual(current_node.model_ids, model_ids)
             # test only one child
             self.assertEqual(len(current_node.edges), 1)
             # test if referenced node has correct hashes
@@ -98,3 +98,22 @@ class TestTensorCachingService(unittest.TestCase):
             current_node = current_node.edges[0].child
         # last node has no child
         self.assertEqual(len(current_node.edges), 0)
+
+    def test_add_same_snapshot_twice(self):
+        # add the first model
+        mm_snapshot = MultiModelSnapshot()
+        model_1_layer_states = [self.layer_state_1_1, self.layer_state_1_2, self.layer_state_1_3, self.layer_state_1_4,
+                                self.layer_state_1_5, self.layer_state_1_6]
+        snapshot = RichModelSnapshot("test_arch1", "sd_path1", "sd_hash1", model_1_layer_states)
+        mm_snapshot.add_snapshot(snapshot)
+
+        # add the second model
+        model_2_layer_states = [self.layer_state_1_1, self.layer_state_1_2, self.layer_state_1_3, self.layer_state_1_4,
+                                self.layer_state_1_5, self.layer_state_1_6]
+        snapshot = RichModelSnapshot("test_arch2", "sd_path2", "sd_hash2", model_2_layer_states)
+        mm_snapshot.add_snapshot(snapshot)
+
+        current_node = mm_snapshot.root
+        model_ids = ["test_arch1-sd_path1", "test_arch2-sd_path2"]
+        layer_states = model_1_layer_states
+        self._check_tail(current_node, 0, 6, layer_states, model_ids)
