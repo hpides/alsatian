@@ -13,7 +13,7 @@ from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.abstract_execution_engine import ExecutionEngine
 from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep, ScoreModelStep
 from model_search.executionsteplogger import ExecutionStepLogger
-from model_search.model_snapshot import ModelSnapshot
+from model_search.model_snapshots.model_snapshot import ModelSnapshot
 from model_search.proxies.nn_proxy import linear_proxy
 
 
@@ -60,7 +60,7 @@ class BaselineExecutionEngine(ExecutionEngine):
     def initialize_model(self, snapshot: ModelSnapshot):
         kwargs = {'pretrained': False, 'new_num_classes': None, 'features_only': True, 'sequential_model': True,
                   'freeze_feature_extractor': False}
-        measurement, model = self.bench.micro_benchmark_cpu(initialize_model, snapshot.architecture_name, **kwargs)
+        measurement, model = self.bench.micro_benchmark_cpu(initialize_model, snapshot.architecture_id, **kwargs)
         self.logger.log_value(INIT_MODEL, measurement)
 
         return model

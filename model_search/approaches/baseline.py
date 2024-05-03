@@ -8,7 +8,7 @@ from global_utils.model_names import RESNET_18
 from model_search.caching_service import CachingService
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST, BaselineExecutionPlanner, BaselinePlannerConfig
-from model_search.model_snapshot import ModelSnapshot
+from model_search.model_snapshots.model_snapshot import ModelSnapshot
 
 if __name__ == '__main__':
     model_name = RESNET_18

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 from model_search.execution.data_handling.data_information import DatasetInformation
-from model_search.model_snapshot import ModelSnapshot
+from model_search.model_snapshots.model_snapshot import ModelSnapshot
 
 
 class ExecutionStatus(Enum):

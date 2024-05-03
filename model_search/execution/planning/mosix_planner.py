@@ -5,7 +5,7 @@ from model_search.execution.data_handling.data_information import DatasetInforma
 from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, CacheLocation, \
     ScoreModelStep, ScoringMethod
 from model_search.execution.planning.shift_planner import SCORE
-from model_search.model_snapshot import ModelSnapshot, RichModelSnapshot
+from model_search.model_snapshots.model_snapshot import ModelSnapshot, RichModelSnapshot
 
 END = 'end'
 

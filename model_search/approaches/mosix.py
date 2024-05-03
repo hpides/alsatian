@@ -11,7 +11,7 @@ from model_search.caching_service import CachingService
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST
 from model_search.execution.planning.mosix_planner import MosixExecutionPlanner, MosixPlannerConfig
-from model_search.model_snapshot import RichModelSnapshot, generate_model_layers
+from model_search.model_snapshots.model_snapshot import RichModelSnapshot, generate_model_layers
 
 
 def _dummy_layer_states():

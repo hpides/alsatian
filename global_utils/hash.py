@@ -43,6 +43,7 @@ def tensor_hash(tensor: torch.tensor, device: torch.device = None) -> str:
 
     return md5.hexdigest()
 
+
 def architecture_hash(model: torch.nn.Module) -> str:
     md5 = hashlib.md5()
     md5.update(bytes(repr(model), 'utf-8'))

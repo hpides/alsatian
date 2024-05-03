@@ -11,7 +11,7 @@ from model_search.caching_service import CachingService
 from model_search.execution.engine.shift_execution_engine import ShiftExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST
 from model_search.execution.planning.shift_planner import ShiftPlannerConfig, ShiftExecutionPlanner
-from model_search.model_snapshot import ModelSnapshot
+from model_search.model_snapshots.model_snapshot import ModelSnapshot
 
 
 def get_data_ranges(search_space_len, train_data_len) -> [int]:
