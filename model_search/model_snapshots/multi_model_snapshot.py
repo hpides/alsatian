@@ -24,8 +24,6 @@ class MultiModelSnapshot:
 
     def add_snapshot(self, snapshot: RichModelSnapshot):
         # the assumption is that both models have the same input and thus the same root node
-        # add the new snapshot id to the root node
-        self.root.model_ids.append(snapshot._id)
 
         # if there is no model added so far just add it as a child to the root node
         if len(self.root.edges) == 0:
@@ -36,6 +34,7 @@ class MultiModelSnapshot:
 
     def _append_layers_to_node(self, prev_node, layers, snapshot_id):
         prev = prev_node
+        prev.model_ids.append(snapshot_id)
         for current_layer in layers:
             # connect current layer to previous layer
             new_node = MultiModelSnapshotNode(current_layer)
