@@ -95,15 +95,15 @@ class TestTensorCachingService(unittest.TestCase):
         current_node = child_nodes[0]
         model_ids = ["test_arch1-sd_path1"]
         layer_states = model_1_layer_states
-        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
 
         current_node = child_nodes[1]
         model_ids = ["test_arch2-sd_path2"]
         layer_states = model_2_layer_states
-        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
 
     def _check_tail(self, current_node, layer_start, num_layers, layer_states, model_ids):
-        for i in range(layer_start, layer_start + num_layers):
+        for i in range(layer_start, layer_start + num_layers - 1):
             self.assertEqual(current_node.model_ids, model_ids)
             # test only one child
             self.assertEqual(len(current_node.edges), 1)
@@ -130,7 +130,7 @@ class TestTensorCachingService(unittest.TestCase):
         current_node = mm_snapshot.root
         model_ids = ["test_arch1-sd_path1", "test_arch2-sd_path2"]
         layer_states = model_1_layer_states
-        self._check_tail(current_node, 0, 6, layer_states, model_ids)
+        self._check_tail(current_node, 0, 7, layer_states, model_ids)
 
     def test_add_snapshot_to_two_model_mm_different_split_point(self):
         # add the first model
@@ -176,7 +176,7 @@ class TestTensorCachingService(unittest.TestCase):
         current_node = child_nodes[0]
         model_ids = ["test_arch1-sd_path1"]
         layer_states = model_1_layer_states
-        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
 
         current_node = child_nodes[1]
         self.assertEqual(len(current_node.edges), 2)
@@ -189,12 +189,12 @@ class TestTensorCachingService(unittest.TestCase):
         current_node = child_nodes[0]
         model_ids = ["test_arch2-sd_path2"]
         layer_states = model_2_layer_states
-        self._check_tail(current_node, layer_count, 1, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
 
         current_node = child_nodes[1]
         model_ids = ["test_arch3-sd_path3"]
         layer_states = model_3_layer_states
-        self._check_tail(current_node, layer_count, 1, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
 
     def test_add_snapshot_to_two_model_mm_same_split_point(self):
         # add the first model
@@ -239,14 +239,14 @@ class TestTensorCachingService(unittest.TestCase):
         current_node = child_nodes[0]
         model_ids = ["test_arch1-sd_path1"]
         layer_states = model_1_layer_states
-        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
 
         current_node = child_nodes[1]
         model_ids = ["test_arch2-sd_path2"]
         layer_states = model_2_layer_states
-        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
 
         current_node = child_nodes[2]
         model_ids = ["test_arch4-sd_path4"]
         layer_states = model_4_layer_states
-        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
