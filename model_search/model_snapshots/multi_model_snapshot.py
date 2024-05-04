@@ -6,15 +6,23 @@ class MultiModelSnapshotNode:
     def __init__(self, layer_state=None):
         self.layer_state: LayerState = layer_state
         self.edges: [MultiModelSnapshotEdge] = []
-        self.model_ids = []
+        self.snapshot_ids = []
+
+    def get_referencing_edge(self, snapshot_id):
+        matching_edges = [e for e in self.edges if e.references_snapshot_ids(snapshot_id)]
+        assert len(matching_edges) == 1
+        return matching_edges[0]
 
 
 class MultiModelSnapshotEdge:
 
     def __init__(self, info, parent, child):
-        self.info = ""
+        self.info = info
         self.parent: MultiModelSnapshotNode = parent
         self.child: MultiModelSnapshotNode = child
+
+    def references_snapshot_ids(self, snapshot_ids):
+        return snapshot_ids in self.child.snapshot_ids
 
 
 class MultiModelSnapshot:
@@ -32,15 +40,31 @@ class MultiModelSnapshot:
         else:
             self._merge_layers_in_model(self.root, snapshot.layer_states, snapshot._id)
 
+    def prune_snapshot(self, snapshot_id, root=None):
+        # logic: do a "guided" DFS, once we find first node that has only one id equivalent to the given id prune entire branch
+        if root is None:
+            root = self.root
+
+        # if id not found, nothing to prune
+        if snapshot_id in root.snapshot_ids:
+            root.snapshot_ids.remove(snapshot_id)
+            edge = root.get_referencing_edge(snapshot_id)
+            new_root = edge.child
+            if new_root.snapshot_ids == [snapshot_id]:
+                # if this branch only represents the snapshot we want to prune -> prune
+                root.edges.remove(edge)
+            else:
+                self.prune_snapshot(snapshot_id, new_root)
+
     def _append_layers_to_node(self, prev_node, layers, snapshot_id):
         prev = prev_node
-        prev.model_ids.append(snapshot_id)
+        prev.snapshot_ids.append(snapshot_id)
         for current_layer in layers:
             # connect current layer to previous layer
             new_node = MultiModelSnapshotNode(current_layer)
             edge = MultiModelSnapshotEdge("", prev, new_node)
             prev.edges.append(edge)
-            new_node.model_ids.append(snapshot_id)
+            new_node.snapshot_ids.append(snapshot_id)
 
             prev = new_node
 
@@ -55,7 +79,7 @@ class MultiModelSnapshot:
             if match is not None:
                 # if we find matching child
                 # mark that current node belongs to multiple models
-                current_root.model_ids.append(snapshot_id)
+                current_root.snapshot_ids.append(snapshot_id)
                 # deduplicate: forget about current layer state and continue merging
                 self._merge_layers_in_model(match, layer_states[1:], snapshot_id)
             else:

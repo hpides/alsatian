@@ -72,6 +72,9 @@ class TestTensorCachingService(unittest.TestCase):
         mm_snapshot.add_snapshot(self.snapshot1)
         mm_snapshot.add_snapshot(self.snapshot2)
 
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+    def _check_for_snapshot_1_and_2(self, mm_snapshot):
         current_node = mm_snapshot.root
         # for the first three layers no children because merged, afterward split
         layer_count = 0
@@ -83,27 +86,24 @@ class TestTensorCachingService(unittest.TestCase):
             self.assertEqual(current_node.edges[0].child.layer_state, self.model_1_layer_states[i])
             current_node = current_node.edges[0].child
             layer_count += 1
-
         # now current node should be split point
         self.assertEqual(len(current_node.edges), 2)
         self.assertEqual(current_node.snapshot_ids, ["test_arch1-sd_path1", "test_arch2-sd_path2"])
         self.assertEqual(current_node.edges[0].child.layer_state, self.model_1_layer_states[layer_count])
         child_nodes = [edge.child for edge in current_node.edges]
         layer_count += 1
-
         current_node = child_nodes[0]
-        model_ids = ["test_arch1-sd_path1"]
+        snapshot_ids = ["test_arch1-sd_path1"]
         layer_states = self.model_1_layer_states
-        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
-
+        self._check_tail(current_node, layer_count, 3, layer_states, snapshot_ids)
         current_node = child_nodes[1]
-        model_ids = ["test_arch2-sd_path2"]
+        snapshot_ids = ["test_arch2-sd_path2"]
         layer_states = self.model_2_layer_states
-        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, snapshot_ids)
 
-    def _check_tail(self, current_node, layer_start, num_layers, layer_states, model_ids):
+    def _check_tail(self, current_node, layer_start, num_layers, layer_states, snapshot_ids):
         for i in range(layer_start, layer_start + num_layers - 1):
-            self.assertEqual(current_node.snapshot_ids, model_ids)
+            self.assertEqual(current_node.snapshot_ids, snapshot_ids)
             # test only one child
             self.assertEqual(len(current_node.edges), 1)
             # test if referenced node has correct hashes
@@ -121,9 +121,9 @@ class TestTensorCachingService(unittest.TestCase):
         mm_snapshot.add_snapshot(snapshot)
 
         current_node = mm_snapshot.root
-        model_ids = ["test_arch1-sd_path1", "test_arch2-sd_path2"]
+        snapshot_ids = ["test_arch1-sd_path1", "test_arch2-sd_path2"]
         layer_states = self.model_1_layer_states
-        self._check_tail(current_node, 0, 7, layer_states, model_ids)
+        self._check_tail(current_node, 0, 7, layer_states, snapshot_ids)
 
     def test_add_snapshot_to_two_model_mm_different_split_point(self):
         # add the first model
@@ -137,6 +137,9 @@ class TestTensorCachingService(unittest.TestCase):
 
         mm_snapshot.add_snapshot(self.snapshot3)
 
+        self._check_for_snapshots_1_2_3(mm_snapshot)
+
+    def _check_for_snapshots_1_2_3(self, mm_snapshot):
         current_node = mm_snapshot.root
         # for the first three layers no children because merged, afterward split
         layer_count = 0
@@ -149,7 +152,6 @@ class TestTensorCachingService(unittest.TestCase):
             self.assertEqual(current_node.edges[0].child.layer_state, self.model_1_layer_states[i])
             current_node = current_node.edges[0].child
             layer_count += 1
-
         # now current node should be split point
         self.assertEqual(len(current_node.edges), 2)
         self.assertEqual(current_node.snapshot_ids,
@@ -158,12 +160,10 @@ class TestTensorCachingService(unittest.TestCase):
         self.assertEqual(current_node.edges[1].child.layer_state, self.model_2_layer_states[layer_count])
         child_nodes = [edge.child for edge in current_node.edges]
         layer_count += 1
-
         current_node = child_nodes[0]
-        model_ids = ["test_arch1-sd_path1"]
+        snapshot_ids = ["test_arch1-sd_path1"]
         layer_states = self.model_1_layer_states
-        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
-
+        self._check_tail(current_node, layer_count, 3, layer_states, snapshot_ids)
         current_node = child_nodes[1]
         self.assertEqual(len(current_node.edges), 2)
         self.assertEqual(current_node.snapshot_ids, ["test_arch2-sd_path2", "test_arch3-sd_path3"])
@@ -171,16 +171,14 @@ class TestTensorCachingService(unittest.TestCase):
         self.assertEqual(current_node.edges[1].child.layer_state, self.model_3_layer_states[layer_count])
         child_nodes = [edge.child for edge in current_node.edges]
         layer_count += 1
-
         current_node = child_nodes[0]
-        model_ids = ["test_arch2-sd_path2"]
+        snapshot_ids = ["test_arch2-sd_path2"]
         layer_states = self.model_2_layer_states
-        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
-
+        self._check_tail(current_node, layer_count, 2, layer_states, snapshot_ids)
         current_node = child_nodes[1]
-        model_ids = ["test_arch3-sd_path3"]
+        snapshot_ids = ["test_arch3-sd_path3"]
         layer_states = self.model_3_layer_states
-        self._check_tail(current_node, layer_count, 2, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 2, layer_states, snapshot_ids)
 
     def test_add_snapshot_to_two_model_mm_same_split_point(self):
         # add the first model
@@ -216,16 +214,54 @@ class TestTensorCachingService(unittest.TestCase):
         layer_count += 1
 
         current_node = child_nodes[0]
-        model_ids = ["test_arch1-sd_path1"]
+        snapshot_ids = ["test_arch1-sd_path1"]
         layer_states = self.model_1_layer_states
-        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, snapshot_ids)
 
         current_node = child_nodes[1]
-        model_ids = ["test_arch2-sd_path2"]
+        snapshot_ids = ["test_arch2-sd_path2"]
         layer_states = self.model_2_layer_states
-        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, snapshot_ids)
 
         current_node = child_nodes[2]
-        model_ids = ["test_arch4-sd_path4"]
+        snapshot_ids = ["test_arch4-sd_path4"]
         layer_states = self.model_4_layer_states
-        self._check_tail(current_node, layer_count, 3, layer_states, model_ids)
+        self._check_tail(current_node, layer_count, 3, layer_states, snapshot_ids)
+        
+    def test_add_1_2_3_prune_3(self):
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        mm_snapshot.add_snapshot(self.snapshot2)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+        mm_snapshot.add_snapshot(self.snapshot3)
+        mm_snapshot.prune_snapshot(self.snapshot3._id)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+    def test_add_1_2_4_prune_4(self):
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        mm_snapshot.add_snapshot(self.snapshot2)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+        mm_snapshot.add_snapshot(self.snapshot3)
+        mm_snapshot.prune_snapshot(self.snapshot3._id)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+        mm_snapshot.add_snapshot(self.snapshot4)
+        mm_snapshot.prune_snapshot(self.snapshot4._id)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+
+    def test_add_1_2_3_4_prune_4(self):
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        mm_snapshot.add_snapshot(self.snapshot2)
+        mm_snapshot.add_snapshot(self.snapshot3)
+        self._check_for_snapshots_1_2_3(mm_snapshot)
+
+        mm_snapshot.add_snapshot(self.snapshot4)
+        mm_snapshot.prune_snapshot(self.snapshot4._id)
+        self._check_for_snapshots_1_2_3(mm_snapshot)
+        
+        
