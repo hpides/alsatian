@@ -48,6 +48,7 @@ def _adjust_model_randomly(architecture_name: str, base_model: torch.nn.Sequenti
 
 def generate_snapshots(architecture_name: str, num_models: int, distribution: RetrainDistribution,
                        retrain_idxs=None, use_same_base=False) -> [torch.nn.Module]:
+    # TODO for now its fine to not save a snapshot to disk, later we have to save them inbetween because we will run out of memory
     if distribution == RetrainDistribution.HARD_CODED:
         assert retrain_idxs is not None
 
