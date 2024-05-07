@@ -47,7 +47,7 @@ def _adjust_model_randomly(architecture_name: str, base_model: torch.nn.Sequenti
 
 
 def generate_snapshots(architecture_name: str, num_models: int, distribution: RetrainDistribution,
-                       retrain_idxs=None) -> [torch.nn.Module]:
+                       retrain_idxs=None, use_same_base=False) -> [torch.nn.Module]:
     if distribution == RetrainDistribution.HARD_CODED:
         assert retrain_idxs is not None
 
@@ -55,7 +55,10 @@ def generate_snapshots(architecture_name: str, num_models: int, distribution: Re
     pre_trained = initialize_model(architecture_name, pretrained=True, features_only=True)
     generated_models = [pre_trained]
     for i in range(num_models - 1):
-        base_model = random.choice(generated_models)
+        if use_same_base:
+            base_model = generated_models[0]
+        else:
+            base_model = random.choice(generated_models)
         if retrain_idxs:
             new_model = _adjust_model_randomly(architecture_name, base_model, distribution, retrain_idxs[i])
         else:
@@ -68,5 +71,3 @@ def generate_snapshots(architecture_name: str, num_models: int, distribution: Re
 if __name__ == '__main__':
     snaps = generate_snapshots(RESNET_18, 4, RetrainDistribution.HARD_CODED, [5, 7, 9])
     print('test')
-
-

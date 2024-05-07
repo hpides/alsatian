@@ -4,6 +4,7 @@ import torch
 from torch import nn
 
 from custom.models.split_indices import SPLIT_INDEXES
+from global_utils.device import get_device
 
 
 def _in_class_list(child, split_classes):
@@ -138,3 +139,40 @@ def get_model_size(model):
     os.remove('temp_model.pth')
 
     return model_size
+
+
+def state_dict_equal(d1: dict, d2: dict, device: torch.device = None) -> bool:
+    """
+    Compares two given state dicts.
+    :param d1: The first state dict.
+    :param d2: The first state dict.
+    :param device: The device to execute on.
+    :return: Returns if the given state dicts are equal.
+    """
+
+    device = get_device(device)
+
+    if not d1.keys() == d2.keys():
+        return False
+
+    for item1, item2 in zip(d1.items(), d2.items()):
+        layer_name1, weight_tensor1 = item1
+        layer_name2, weight_tensor2 = item2
+
+        weight_tensor1 = weight_tensor1.to(device)
+        weight_tensor2 = weight_tensor2.to(device)
+
+        if not layer_name1 == layer_name2 or not torch.equal(weight_tensor1, weight_tensor2):
+            return False
+
+    return True
+
+
+def tensor_equal(tensor1: torch.tensor, tensor2: torch.tensor):
+    """
+    Compares to given Pytorch tensors.
+    :param tensor1: The first tensor to be compared.
+    :param tensor2: The second tensor to be compared.
+    :return: Returns if the two given tensors are equal.
+    """
+    return torch.equal(tensor1, tensor2)
