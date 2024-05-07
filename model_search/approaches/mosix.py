@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     model_snapshots = {}
     for snap in _model_snapshots:
-        model_snapshots[snap._id] = snap
+        model_snapshots[snap.id] = snap
 
     dataset_paths = {
         TRAIN: '/tmp/pycharm_project_924/data/imagenette-dummy/train',

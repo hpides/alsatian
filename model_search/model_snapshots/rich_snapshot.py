@@ -9,17 +9,19 @@ STATE_DICT_PATH = "state_dict_path"
 
 class LayerState:
 
-    def __init__(self, state_dict_path: str, state_dict_hash: str, architecture_hash: str):
+    def __init__(self, state_dict_path: str, pickled_layer_path: str, state_dict_hash: str, architecture_hash: str):
         """
         Represents the state of a single model layer by
         :param state_dict_path: that path to the state dict for that layer
+        :param pickled_layer_path: path to a pickled version of the layer
         :param state_dict_hash: a hash value for the layer parameters
         :param architecture_hash: a hash value for the architecture
         """
         self.state_dict_path: str = state_dict_path
+        self.pickled_layer_path: str = pickled_layer_path
         self.state_dict_hash: str = state_dict_hash
         self.architecture_hash: str = architecture_hash
-        self._id = f'{architecture_hash}-{state_dict_hash}'
+        self.id = f'{architecture_hash}-{state_dict_hash}'
 
     def __repr__(self):
         return self.__str__()
@@ -29,7 +31,7 @@ class LayerState:
 
     def __eq__(self, other):
         if isinstance(other, LayerState):
-            return self._id == other._id
+            return self.id == other.id
         return False
 
     def _to_dict(self):
@@ -42,7 +44,7 @@ class LayerState:
 
 class RichModelSnapshot(ModelSnapshot):
     """
-    Representing a model snapshot together with some additional infromation
+    Representing a model snapshot together with some additional information
     """
 
     def __init__(self, architecture_name: str, state_dict_path: str, state_dict_hash: str, layer_states: [LayerState]):

@@ -50,10 +50,10 @@ class ShiftExecutionPlanner(ExecutionPlanner):
             # we only need to extract the test features if we are in the first iteration of SH
             for snapshot in model_snapshots:
                 # extract test features
-                test_feature_prefix = f'{snapshot._id}-{TEST}'
+                test_feature_prefix = f'{snapshot.id}-{TEST}'
                 execution_steps.append(
                     BaselineExtractFeaturesStep(
-                        _id=f'{snapshot._id}-extract-test-0',
+                        _id=f'{snapshot.id}-extract-test-0',
                         model_snapshot=snapshot,
                         data_info=DatasetInformation(
                             data_set_class, dataset_paths[TEST], num_workers, batch_size, inference_transform),
@@ -67,7 +67,7 @@ class ShiftExecutionPlanner(ExecutionPlanner):
             train_feature_prefix = self._register_train_feature_prefix(snapshot, train_dataset_range)
             execution_steps.append(
                 ShiftExtractFeaturesStep(
-                    _id=f'{snapshot._id}-extract-train-{train_dataset_range[0]}-{train_dataset_range[1]}',
+                    _id=f'{snapshot.id}-extract-train-{train_dataset_range[0]}-{train_dataset_range[1]}',
                     model_snapshot=snapshot,
                     data_info=DatasetInformation(
                         data_set_class, dataset_paths[TRAIN], num_workers, batch_size, inference_transform),
@@ -77,13 +77,13 @@ class ShiftExecutionPlanner(ExecutionPlanner):
                 )
             )
             # score model based on train and test features
-            test_feature_prefix = f'{snapshot._id}-{TEST}'
+            test_feature_prefix = f'{snapshot.id}-{TEST}'
             execution_steps.append(
                 ScoreModelStep(
-                    _id=f'{snapshot._id}-{SCORE}',
+                    _id=f'{snapshot.id}-{SCORE}',
                     scoring_method=ScoringMethod.FC,
                     test_feature_cache_prefixes=[test_feature_prefix],
-                    train_feature_cache_prefixes=self._train_feature_prefixes[snapshot._id],
+                    train_feature_cache_prefixes=self._train_feature_prefixes[snapshot.id],
                     num_classes=100
                 )
             )
@@ -99,8 +99,8 @@ class ShiftExecutionPlanner(ExecutionPlanner):
         return sorted(scores)
 
     def _register_train_feature_prefix(self, snapshot, train_dataset_range):
-        train_feature_prefix = f'{snapshot._id}-{TRAIN}-{train_dataset_range[0]}-{train_dataset_range[1]}'
-        if not snapshot._id in self._train_feature_prefixes:
-            self._train_feature_prefixes[snapshot._id] = []
-        self._train_feature_prefixes[snapshot._id].append(train_feature_prefix)
+        train_feature_prefix = f'{snapshot.id}-{TRAIN}-{train_dataset_range[0]}-{train_dataset_range[1]}'
+        if not snapshot.id in self._train_feature_prefixes:
+            self._train_feature_prefixes[snapshot.id] = []
+        self._train_feature_prefixes[snapshot.id].append(train_feature_prefix)
         return train_feature_prefix

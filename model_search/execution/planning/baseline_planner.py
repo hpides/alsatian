@@ -31,10 +31,10 @@ class BaselineExecutionPlanner(ExecutionPlanner):
         for snapshot in model_snapshots:
             execution_steps = []
             # extract test features
-            test_feature_prefix = f'{snapshot._id}-{TEST}'
+            test_feature_prefix = f'{snapshot.id}-{TEST}'
             execution_steps.append(
                 BaselineExtractFeaturesStep(
-                    _id=f'{snapshot._id}-extract-test-0',
+                    _id=f'{snapshot.id}-extract-test-0',
                     model_snapshot=snapshot,
                     data_info=DatasetInformation(
                         data_set_class, dataset_paths[TEST], num_workers, batch_size, inference_transform),
@@ -43,10 +43,10 @@ class BaselineExecutionPlanner(ExecutionPlanner):
                 )
             )
             # extract train features
-            train_feature_prefix = f'{snapshot._id}-{TRAIN}'
+            train_feature_prefix = f'{snapshot.id}-{TRAIN}'
             execution_steps.append(
                 BaselineExtractFeaturesStep(
-                    _id=f'{snapshot._id}-extract-train-0',
+                    _id=f'{snapshot.id}-extract-train-0',
                     model_snapshot=snapshot,
                     data_info=DatasetInformation(
                         data_set_class, dataset_paths[TRAIN], num_workers, batch_size, inference_transform),
@@ -57,7 +57,7 @@ class BaselineExecutionPlanner(ExecutionPlanner):
             # score model based on train and test features
             execution_steps.append(
                 ScoreModelStep(
-                    _id=f'{snapshot._id}-score',
+                    _id=f'{snapshot.id}-score',
                     scoring_method=ScoringMethod.FC,
                     test_feature_cache_prefixes=[test_feature_prefix],
                     train_feature_cache_prefixes=[train_feature_prefix],
