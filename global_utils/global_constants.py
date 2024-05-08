@@ -4,6 +4,7 @@ TIME_DATA_LOADING = 'time-data-loading'
 TIME = 'time'
 VAL = 'val'
 TRAIN = 'train'
+TEST = 'test'
 
 MEASUREMENTS = "measurements"
 

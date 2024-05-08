@@ -29,9 +29,11 @@ class MultiModelSnapshot:
 
     def __init__(self):
         self.root: MultiModelSnapshotNode = MultiModelSnapshotNode()
+        self.snapshot_ids = set()
 
     def add_snapshot(self, snapshot: RichModelSnapshot):
         # the assumption is that both models have the same input and thus the same root node
+        self.snapshot_ids.add(snapshot.id)
 
         # if there is no model added so far just add it as a child to the root node
         if len(self.root.edges) == 0:
@@ -41,6 +43,8 @@ class MultiModelSnapshot:
             self._merge_layers_in_model(self.root, snapshot.layer_states, snapshot.id)
 
     def prune_snapshot(self, snapshot_id, root=None):
+        self.snapshot_ids.remove(snapshot_id)
+
         # logic: do a "guided" DFS, once we find first node that has only one id equivalent to the given id prune entire branch
         if root is None:
             root = self.root
@@ -55,6 +59,10 @@ class MultiModelSnapshot:
                 root.edges.remove(edge)
             else:
                 self.prune_snapshot(snapshot_id, new_root)
+
+    def prune_snapshots(self, snapshot_ids):
+        for _id in snapshot_ids:
+            self.prune_snapshot(_id)
 
     def _append_layers_to_node(self, prev_node, layers, snapshot_id):
         prev = prev_node

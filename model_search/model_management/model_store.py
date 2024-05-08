@@ -30,7 +30,7 @@ class ModelStore:
         for layer_state in rich_snapshot.layer_states:
             self.layers[layer_state.id] = layer_state
 
-    def get_snapshot(self, snapshot_id: str):
+    def get_snapshot(self, snapshot_id: str) -> RichModelSnapshot:
         return self.models[snapshot_id]
 
     def get_model(self, snapshot_id: str) -> torch.nn.Module:
