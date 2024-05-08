@@ -18,13 +18,11 @@ class TestModelStore(unittest.TestCase):
         np.random.seed(42)
         torch.manual_seed(42)
         # Define test save path
-        self.save_path = '/Users/nils/uni/programming/model-search-paper/tmp_dir'
+        self.save_path = '/mount-fs/tmp-dir'
 
         pre_trained_model = initialize_model(RESNET_18, features_only=True, pretrained=True)
         retrain_idxs = [5, 7, 9]
-        split_idxs = [len(pre_trained_model) - i for i in retrain_idxs]
-        save_path = '/Users/nils/uni/programming/model-search-paper/tmp_dir'
-        self.snapshots = generate_snapshots(RESNET_18, 1, RetrainDistribution.HARD_CODED, save_path=save_path,
+        self.snapshots = generate_snapshots(RESNET_18, 1, RetrainDistribution.HARD_CODED, save_path=self.save_path,
                                             retrain_idxs=retrain_idxs, use_same_base=True)
 
         self.model_store = ModelStore(self.save_path)

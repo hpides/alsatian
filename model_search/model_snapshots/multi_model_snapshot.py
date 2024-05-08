@@ -43,7 +43,7 @@ class MultiModelSnapshot:
             self._merge_layers_in_model(self.root, snapshot.layer_states, snapshot.id)
 
     def prune_snapshot(self, snapshot_id, root=None):
-        self.snapshot_ids.remove(snapshot_id)
+        self.snapshot_ids.discard(snapshot_id)
 
         # logic: do a "guided" DFS, once we find first node that has only one id equivalent to the given id prune entire branch
         if root is None:

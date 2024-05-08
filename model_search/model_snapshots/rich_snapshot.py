@@ -32,7 +32,7 @@ class LayerState:
 
     def __eq__(self, other):
         if isinstance(other, LayerState):
-            return self.architecture_hash == other.architecture_hash and self.state_dict_hash == other.state_dict_path
+            return self.architecture_hash == other.architecture_hash and self.state_dict_hash == other.state_dict_hash
         return False
 
     def _to_dict(self):
