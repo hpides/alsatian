@@ -29,21 +29,24 @@ class TestModelStore(unittest.TestCase):
 
         self.model_store = ModelStore(self.save_path)
 
-    def test_get_model(self):
+    def test_get_snapshot(self):
         self.model_store.add_snapshot(self.snapshots[0])
         retrieved_snapshot = self.model_store.get_snapshot(self.snapshots[0].id)
         self.assertEqual(self.snapshots[0], retrieved_snapshot)
 
-    def test_get_composed_model(self):
-        # # Test whether get_composed_model method returns a sequential model
-        # layer_state_ids = [list(self.model_store.layers.keys())[0]]
-        # composed_model = self.model_store.get_composed_model(layer_state_ids)
-        # self.assertIsInstance(composed_model, torch.nn.Sequential)
+    def test_get_model(self):
+        self.model_store.add_snapshot(self.snapshots[0])
+        retrieved_snapshot = self.model_store.get_snapshot(self.snapshots[0].id)
+        sd1 = self.snapshots[0].init_model_from_snapshot().state_dict()
+        sd2 = retrieved_snapshot.init_model_from_snapshot().state_dict()
+        self.assertTrue(state_dict_equal(sd1, sd2))
 
-    def test_add_snapshot(self):
-        # # Test whether add_snapshot method correctly adds a snapshot to the model store
-        # self.assertEqual(len(self.model_store.models), 1)
-        # self.assertEqual(len(self.model_store.layers), 1)
+    # def test_get_composed_model(self):
+    #     # # Test whether get_composed_model method returns a sequential model
+    #     # layer_state_ids = [list(self.model_store.layers.keys())[0]]
+    #     # composed_model = self.model_store.get_composed_model(layer_state_ids)
+    #     # self.assertIsInstance(composed_model, torch.nn.Sequential)
+    #
 
 
 if __name__ == '__main__':
