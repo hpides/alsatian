@@ -15,7 +15,7 @@ def generate_snapshot_id(architecture_name, state_dict_hash):
 class ModelSnapshot:
     """Simplest form of representing a model"""
 
-    def __init__(self, architecture_name: str, state_dict_path: str, state_dict_hash: str, id: str):
+    def __init__(self, architecture_name: str, state_dict_path: str,  state_dict_hash: str, id: str):
         """
         :param architecture_name: the name of the model architecture that can be used to initialize a Pytorch model
          following a specific architecture, can also be an abstract name like a hash
@@ -35,7 +35,7 @@ class ModelSnapshot:
 
     def __eq__(self, other):
         if isinstance(other, ModelSnapshot):
-            return self.architecture_id == other.architecture_id and self.state_dict_hash == other.state_dict_path
+            return self.architecture_id == other.architecture_id and self.state_dict_hash == other.state_dict_hash
         return False
 
     def _to_dict(self):

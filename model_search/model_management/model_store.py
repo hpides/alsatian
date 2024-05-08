@@ -30,8 +30,11 @@ class ModelStore:
         for layer_state in rich_snapshot.layer_states:
             self.layers[layer_state.id] = layer_state
 
+    def get_snapshot(self, snapshot_id: str):
+        return self.models[snapshot_id]
+
     def get_model(self, snapshot_id: str) -> torch.nn.Module:
-        snapshot: ModelSnapshot = self.models[snapshot_id]
+        snapshot: ModelSnapshot = self.get_snapshot(snapshot_id)
         return snapshot.init_model_from_snapshot()
 
     def get_composed_model(self, layer_state_ids: [str]) -> torch.nn.Module:
@@ -54,10 +57,13 @@ class ModelStore:
         file_name_prefix = filename.replace('.pt', '')
         layer_states = self._gen_model_layers(model, self.save_path, name_prefix=file_name_prefix)
 
+        dict_hash = state_dict_hash(state_dict)
+        architecture_name = snapshot.architecture_id
         rich_model_snapshot = RichModelSnapshot(
-            architecture_name=snapshot.architecture_id,
+            architecture_name=architecture_name,
             state_dict_path=snapshot.state_dict_path,
-            state_dict_hash=state_dict_hash(state_dict),
+            state_dict_hash=dict_hash,
+            id=snapshot.id,
             layer_states=layer_states
         )
         return rich_model_snapshot
