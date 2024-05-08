@@ -24,7 +24,7 @@ class TestModelStore(unittest.TestCase):
         retrain_idxs = [5, 7, 9]
         split_idxs = [len(pre_trained_model) - i for i in retrain_idxs]
         save_path = '/Users/nils/uni/programming/model-search-paper/tmp_dir'
-        self.snapshots = generate_snapshots(RESNET_18, 4, RetrainDistribution.HARD_CODED, save_path=save_path,
+        self.snapshots = generate_snapshots(RESNET_18, 1, RetrainDistribution.HARD_CODED, save_path=save_path,
                                             retrain_idxs=retrain_idxs, use_same_base=True)
 
         self.model_store = ModelStore(self.save_path)
@@ -41,12 +41,12 @@ class TestModelStore(unittest.TestCase):
         sd2 = retrieved_snapshot.init_model_from_snapshot().state_dict()
         self.assertTrue(state_dict_equal(sd1, sd2))
 
-    # def test_get_composed_model(self):
-    #     # # Test whether get_composed_model method returns a sequential model
-    #     # layer_state_ids = [list(self.model_store.layers.keys())[0]]
-    #     # composed_model = self.model_store.get_composed_model(layer_state_ids)
-    #     # self.assertIsInstance(composed_model, torch.nn.Sequential)
-    #
+    def test_get_composed_model(self):
+        self.model_store.add_snapshot(self.snapshots[0])
+        retrieved_snapshot = self.model_store.get_snapshot(self.snapshots[0].id)
+        sd1 = self.snapshots[0].init_model_from_snapshot().state_dict()
+        retrieved_model = self.model_store.get_composed_model([ls.id for ls in retrieved_snapshot.layer_states])
+        self.assertTrue(state_dict_equal(sd1, retrieved_model.state_dict()))
 
 
 if __name__ == '__main__':
