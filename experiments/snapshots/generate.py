@@ -1,11 +1,14 @@
+import os.path
 import random
 from enum import Enum
 
 import torch.nn
 
 from custom.models.init_models import initialize_model
+from global_utils.hash import state_dict_hash
 from global_utils.model_names import RESNET_18
 from global_utils.model_operations import split_model_in_two
+from model_search.model_snapshots.base_snapshot import ModelSnapshot, generate_snapshot_id
 
 
 class RetrainDistribution(Enum):
@@ -46,27 +49,43 @@ def _adjust_model_randomly(architecture_name: str, base_model: torch.nn.Sequenti
     return new_model
 
 
-def generate_snapshots(architecture_name: str, num_models: int, distribution: RetrainDistribution,
-                       retrain_idxs=None, use_same_base=False) -> [torch.nn.Module]:
-    # TODO for now its fine to not save a snapshot to disk, later we have to save them inbetween because we will run out of memory
+def generate_snapshots(architecture_name: str, num_models: int, distribution: RetrainDistribution, save_path: str,
+                       retrain_idxs=None, use_same_base=False, ) -> [torch.nn.Module]:
     if distribution == RetrainDistribution.HARD_CODED:
         assert retrain_idxs is not None
 
     # always start with a model pretrained on Imagenet
-    pre_trained = initialize_model(architecture_name, pretrained=True, features_only=True)
-    generated_models = [pre_trained]
+    model = initialize_model(architecture_name, pretrained=True, features_only=True)
+    snapshot = generate_snapshot(architecture_name, model, save_path)
+
+    generated_snapshots = [snapshot]
     for i in range(num_models - 1):
         if use_same_base:
-            base_model = generated_models[0]
+            base_snapshot = generated_snapshots[0]
         else:
-            base_model = random.choice(generated_models)
+            base_snapshot = random.choice(generated_snapshots)
+
+        base_model = base_snapshot.init_model_from_snapshot()
         if retrain_idxs:
             new_model = _adjust_model_randomly(architecture_name, base_model, distribution, retrain_idxs[i])
         else:
             new_model = _adjust_model_randomly(architecture_name, base_model, distribution)
-        generated_models.append(new_model)
 
-    return generated_models
+        new_snapshot = generate_snapshot(architecture_name, new_model, save_path)
+        generated_snapshots.append(new_snapshot)
+
+    return generated_snapshots
+
+
+def generate_snapshot(architecture_name, model, save_path):
+    pre_trained_state = model.state_dict()
+    sd_hash = state_dict_hash(pre_trained_state)
+    snapshot_id = generate_snapshot_id(architecture_name, sd_hash)
+    state_dict_path = os.path.join(save_path, f'{snapshot_id}.pt')
+    if not os.path.exists(state_dict_path):
+        torch.save(pre_trained_state, state_dict_path)
+    snapshot = ModelSnapshot(architecture_name, state_dict_path, sd_hash, snapshot_id)
+    return snapshot
 
 
 if __name__ == '__main__':

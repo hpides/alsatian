@@ -1,3 +1,4 @@
+from global_utils.ids import random_short_id
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 ARCHITECTURE_HASH = "architecture_hash"
@@ -21,7 +22,7 @@ class LayerState:
         self.pickled_layer_path: str = pickled_layer_path
         self.state_dict_hash: str = state_dict_hash
         self.architecture_hash: str = architecture_hash
-        self.id = f'{architecture_hash}-{state_dict_hash}'
+        self.id = f'{architecture_hash}-{state_dict_hash}-{random_short_id()}'
 
     def __repr__(self):
         return self.__str__()
@@ -31,7 +32,7 @@ class LayerState:
 
     def __eq__(self, other):
         if isinstance(other, LayerState):
-            return self.id == other.id
+            return self.architecture_hash == other.architecture_hash and self.state_dict_hash == other.state_dict_path
         return False
 
     def _to_dict(self):

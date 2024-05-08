@@ -1,12 +1,21 @@
+import torch
+
+from custom.models.init_models import initialize_model
+from global_utils.ids import random_short_id
+
 STATE_DICT_PATH = "state_dict_path"
 
 ARCHITECTURE_ID = "architecture_id"
 
 
+def generate_snapshot_id(architecture_name, state_dict_hash):
+    return f'{architecture_name}-{state_dict_hash}-{random_short_id()}'
+
+
 class ModelSnapshot:
     """Simplest form of representing a model"""
 
-    def __init__(self, architecture_name: str, state_dict_path: str):
+    def __init__(self, architecture_name: str, state_dict_path: str, state_dict_hash: str, id: str):
         """
         :param architecture_name: the name of the model architecture that can be used to initialize a Pytorch model
          following a specific architecture, can also be an abstract name like a hash
@@ -14,8 +23,9 @@ class ModelSnapshot:
         """
         self.architecture_id: str = architecture_name
         self.state_dict_path: str = state_dict_path
+        self.state_dict_hash: str = state_dict_hash
         # a model is defined by its architecture and the parameters
-        self._id = f'{self.architecture_id}-{self.state_dict_path}'
+        self.id = id
 
     def __repr__(self):
         return self.__str__()
@@ -25,7 +35,7 @@ class ModelSnapshot:
 
     def __eq__(self, other):
         if isinstance(other, ModelSnapshot):
-            return self._id == other._id
+            return self.architecture_id == other.architecture_id and self.state_dict_hash == other.state_dict_path
         return False
 
     def _to_dict(self):
@@ -33,3 +43,9 @@ class ModelSnapshot:
             ARCHITECTURE_ID: self.architecture_id,
             STATE_DICT_PATH: self.state_dict_path
         }
+
+    def init_model_from_snapshot(self):
+        model = initialize_model(self.architecture_id, sequential_model=True, features_only=True)
+        state_dict = torch.load(self.state_dict_path)
+        model.load_state_dict(state_dict)
+        return model

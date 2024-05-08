@@ -23,7 +23,7 @@ class ModelStore:
         else:
             rich_model_snapshot = model_snapshot
 
-        self.models[rich_model_snapshot._id] = rich_model_snapshot
+        self.models[rich_model_snapshot.id] = rich_model_snapshot
         self._index_layers(rich_model_snapshot)
 
     def _index_layers(self, rich_snapshot: RichModelSnapshot):
@@ -32,7 +32,7 @@ class ModelStore:
 
     def get_model(self, snapshot_id: str) -> torch.nn.Module:
         snapshot: ModelSnapshot = self.models[snapshot_id]
-        return self._init_model_from_snapshot(snapshot)
+        return snapshot.init_model_from_snapshot()
 
     def get_composed_model(self, layer_state_ids: [str]) -> torch.nn.Module:
         # returns a sequential model, that is a sequential model chained of the layer states given
@@ -61,12 +61,6 @@ class ModelStore:
             layer_states=layer_states
         )
         return rich_model_snapshot
-
-    def _init_model_from_snapshot(self, snapshot):
-        model = initialize_model(snapshot.architecture_id, sequential_model=True, features_only=True)
-        state_dict = torch.load(snapshot.state_dict_path)
-        model.load_state_dict(state_dict)
-        return model
 
     def _gen_model_layers(self, model, save_path, name_prefix=None):
         layers = []

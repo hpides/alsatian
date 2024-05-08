@@ -235,7 +235,7 @@ class TestTensorCachingService(unittest.TestCase):
         self._check_for_snapshot_1_and_2(mm_snapshot)
 
         mm_snapshot.add_snapshot(self.snapshot3)
-        mm_snapshot.prune_snapshot(self.snapshot3._id)
+        mm_snapshot.prune_snapshot(self.snapshot3.id)
         self._check_for_snapshot_1_and_2(mm_snapshot)
 
     def test_add_1_2_4_prune_4(self):
@@ -245,11 +245,11 @@ class TestTensorCachingService(unittest.TestCase):
         self._check_for_snapshot_1_and_2(mm_snapshot)
 
         mm_snapshot.add_snapshot(self.snapshot3)
-        mm_snapshot.prune_snapshot(self.snapshot3._id)
+        mm_snapshot.prune_snapshot(self.snapshot3.id)
         self._check_for_snapshot_1_and_2(mm_snapshot)
 
         mm_snapshot.add_snapshot(self.snapshot4)
-        mm_snapshot.prune_snapshot(self.snapshot4._id)
+        mm_snapshot.prune_snapshot(self.snapshot4.id)
         self._check_for_snapshot_1_and_2(mm_snapshot)
 
 
@@ -261,7 +261,7 @@ class TestTensorCachingService(unittest.TestCase):
         self._check_for_snapshots_1_2_3(mm_snapshot)
 
         mm_snapshot.add_snapshot(self.snapshot4)
-        mm_snapshot.prune_snapshot(self.snapshot4._id)
+        mm_snapshot.prune_snapshot(self.snapshot4.id)
         self._check_for_snapshots_1_2_3(mm_snapshot)
         
         

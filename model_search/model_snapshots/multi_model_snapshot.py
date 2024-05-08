@@ -35,10 +35,10 @@ class MultiModelSnapshot:
 
         # if there is no model added so far just add it as a child to the root node
         if len(self.root.edges) == 0:
-            self._append_layers_to_node(self.root, snapshot.layer_states, snapshot._id)
+            self._append_layers_to_node(self.root, snapshot.layer_states, snapshot.id)
 
         else:
-            self._merge_layers_in_model(self.root, snapshot.layer_states, snapshot._id)
+            self._merge_layers_in_model(self.root, snapshot.layer_states, snapshot.id)
 
     def prune_snapshot(self, snapshot_id, root=None):
         # logic: do a "guided" DFS, once we find first node that has only one id equivalent to the given id prune entire branch
