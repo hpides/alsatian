@@ -1,6 +1,17 @@
 from model_search.model_snapshots.rich_snapshot import RichModelSnapshot, LayerState
 
 
+# This class represents two things
+
+# On the one hand it represents a set of model snapshots merged into one multi-model snapshot. In this case
+# - a node/vertex represents a layer of a model snapshot (and can belong to multiple base models)
+# - an edge represents the connection to other layers (while in a regular model one layer will often only point to one
+# next layer, in this case a layer can point to multiple next layers of different model snapshots)
+
+# On the other hand it represents an execution tree that is the base for our planning algorithm. In this case
+# - a node/vertex represents a (persisted intermediate) OUTPUT of the corresponding layer in the multi-model snapshot
+# - an edge that represent takling the (persisted) output of layer i (parent) to produce compute layer i+1 (child) and save its output
+
 class MultiModelSnapshotNode:
 
     def __init__(self, layer_state=None):

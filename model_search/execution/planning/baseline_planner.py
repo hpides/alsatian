@@ -3,7 +3,7 @@ from global_utils.constants import TRAIN, TEST
 from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass
 from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, CacheLocation, \
     BaselineExtractFeaturesStep, ScoreModelStep, ScoringMethod
-from model_search.model_snapshots.model_snapshot import ModelSnapshot
+from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 
 class BaselinePlannerConfig:

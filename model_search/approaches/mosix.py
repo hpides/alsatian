@@ -10,6 +10,12 @@ from model_search.execution.planning.mosix_planner import MosixExecutionPlanner,
 from model_search.model_management.model_store import ModelStore
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
+
+def devide_snapshots(ranking):
+    cut = len(ranking) // 2
+    return ranking[cut:], ranking[:cut]
+
+
 if __name__ == '__main__':
     save_path = '/mount-fs/tmp-dir'
 
@@ -37,7 +43,7 @@ if __name__ == '__main__':
         TEST: '/tmp/pycharm_project_924/data/imagenette-dummy/val'
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
-    ranges = get_data_ranges(len(list(model_snapshots.values())), len(train_data))
+    ranges = get_data_ranges(len(model_snapshots), len(train_data))
 
     # initialize execution planner
     planner_config = MosixPlannerConfig(12, 128)
