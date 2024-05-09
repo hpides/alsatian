@@ -30,11 +30,12 @@ class CachingService:
 
     def remove_unreferenced_files(self):
         cached_files = set(self._gpu_cache.keys()) | set(self._cpu_cache.keys()) | set(self._persistent_cache.keys())
-        for filename in os.listdir(self.ssd_path):
-            file_id, file_extension = os.path.splitext(filename)
-            if file_extension == ".pt" and file_id not in cached_files:
-                path = os.path.join(self.ssd_path, filename)
-                self._delete_file(path)
+        if os.path.exists(self.ssd_path):
+            for filename in os.listdir(self.ssd_path):
+                file_id, file_extension = os.path.splitext(filename)
+                if file_extension == ".pt" and file_id not in cached_files:
+                    path = os.path.join(self.ssd_path, filename)
+                    self._delete_file(path)
 
     def get_item(self, _id):
         if _id in self._gpu_cache:

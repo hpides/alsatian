@@ -1,3 +1,4 @@
+import os
 import random
 import unittest
 
@@ -14,20 +15,25 @@ ID_1 = 'id1'
 
 
 class TestGenerateSnapshots(unittest.TestCase):
+
     def setUp(self):
         random.seed(42)
         np.random.seed(42)
         torch.manual_seed(42)
 
+        self.persistent_path = "./test_data"
+        os.makedirs(self.persistent_path, exist_ok=True)
+
     def tearDown(self):
-        pass
+        for file in os.listdir(self.persistent_path):
+            os.remove(os.path.join(self.persistent_path, file))
+        os.rmdir(self.persistent_path)
 
     def test_with_hardcoded_layer_indices(self):
         pre_trained_model = initialize_model(RESNET_18, features_only=True, pretrained=True)
         retrain_idxs = [5, 7, 9]
         split_idxs = [len(pre_trained_model) - i for i in retrain_idxs]
-        save_path = '/Users/nils/uni/programming/model-search-paper/tmp_dir'
-        snaps = generate_snapshots(RESNET_18, 4, RetrainDistribution.HARD_CODED, save_path=save_path,
+        snaps = generate_snapshots(RESNET_18, 4, RetrainDistribution.HARD_CODED, save_path=self.persistent_path,
                                    retrain_idxs=retrain_idxs, use_same_base=True)
 
         models = [snap.init_model_from_snapshot() for snap in snaps]
