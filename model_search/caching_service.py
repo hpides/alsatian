@@ -156,6 +156,7 @@ class CachingService:
         result = []
         for cache in [self._gpu_cache, self._cpu_cache, self._persistent_cache]:
             result += self._all_ids_with_prefix(prefix, cache)
+        result.sort()
         return result
 
     def _all_ids_with_prefix(self, prefix, cache):

@@ -7,6 +7,8 @@ from global_utils.constants import CUDA
 from model_search.caching_service import CachingService
 
 ID_1 = 'id1'
+ID_1_2 = 'id1.2'
+ID_3 = 'id3'
 
 
 class TestTensorCachingService(unittest.TestCase):
@@ -78,3 +80,12 @@ class TestTensorCachingService(unittest.TestCase):
     def test_get_tensor_non_existing(self):
         with self.assertRaises(KeyError):
             self.service.get_item('non_existing_id')
+
+    def test_all_ids_with_prefix(self):
+        self.service.cache_on_gpu(ID_1_2, self.tensor2)
+        self.service.cache_on_cpu(ID_3, self.tensor3)
+        self.service.cache_on_cpu(ID_1, self.tensor1)
+
+        result = self.service.all_ids_with_prefix("id1")
+        expected = [ID_1, ID_1_2]
+        self.assertEqual(expected, result)
