@@ -90,17 +90,18 @@ class ShiftExecutionPlanner(ExecutionPlanner):
 
         return ExecutionPlan(execution_steps)
 
-    def get_sorted_model_scores(self, plan: ExecutionPlan):
-        scores = []
-        for step in plan.execution_steps:
-            if isinstance(step, ScoreModelStep):
-                scores.append([step.execution_result[SCORE], step._id.replace(f'-{SCORE}', '')])
-
-        return sorted(scores)
-
     def _register_train_feature_prefix(self, snapshot, train_dataset_range):
         train_feature_prefix = f'{snapshot.id}-{TRAIN}-{train_dataset_range[0]}-{train_dataset_range[1]}'
         if not snapshot.id in self._train_feature_prefixes:
             self._train_feature_prefixes[snapshot.id] = []
         self._train_feature_prefixes[snapshot.id].append(train_feature_prefix)
         return train_feature_prefix
+
+
+def get_sorted_model_scores(execution_steps):
+    scores = []
+    for step in execution_steps:
+        if isinstance(step, ScoreModelStep):
+            scores.append([step.execution_result[SCORE], step._id.replace(f'-{SCORE}', '')])
+
+    return sorted(scores)

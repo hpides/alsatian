@@ -6,14 +6,18 @@ from global_utils.model_names import RESNET_18
 from model_search.approaches.shift import get_data_ranges
 from model_search.caching_service import CachingService
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
-from model_search.execution.planning.mosix_planner import MosixExecutionPlanner, MosixPlannerConfig
+from model_search.execution.planning.mosix_planner import MosixExecutionPlanner, MosixPlannerConfig, \
+    get_sorted_model_scores
 from model_search.model_management.model_store import ModelStore
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
 
-def divide_snapshots(ranking):
+def divide_snapshots(execution_steps):
+    ranking = get_sorted_model_scores(execution_steps)
+    print(ranking)
+    snapshot_ids = [s[1] for s in ranking]
     cut = len(ranking) // 2
-    return ranking[cut:], ranking[:cut]
+    return snapshot_ids[cut:], snapshot_ids[:cut]
 
 
 if __name__ == '__main__':
@@ -58,9 +62,9 @@ if __name__ == '__main__':
     # executing by iterating over the data ranges
     first_iteration = True
     for data_range in data_ranges:
-        execution_plan = planner.generate_execution_plan(mm_snapshot, dataset_paths, data_range, True)
-        snapshot_ranking = exec_engine.execute_plan(execution_plan)
-        pruned_snapshot_ids, keep_snapshot_ids = divide_snapshots(snapshot_ranking)
+        execution_plan = planner.generate_execution_plan(mm_snapshot, dataset_paths, data_range, first_iteration)
+        exec_engine.execute_plan(execution_plan)
+        pruned_snapshot_ids, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
         mm_snapshot.prune_snapshots(pruned_snapshot_ids)
         first_iteration = False
 

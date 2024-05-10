@@ -50,19 +50,15 @@ class MosixExecutionEngine(BaselineExecutionEngine):
     def execute_mosix_extract_features_step(self, exec_step: MosixExtractFeaturesStep):
         partial_model = self._init_model(exec_step)
         data_loader = self._get_data_loader(exec_step)
-        cache_conf = exec_step.cache_config
-        extract_labels = exec_step.extract_labels
-        dataset_type = exec_step.data_info.dataset_type
-        self._extract_features_part_model(partial_model, data_loader, cache_conf, extract_labels, dataset_type)
+        self._extract_features_part_model(partial_model, data_loader, exec_step)
 
-    def _extract_features_part_model(self, partial_model, data_loader, cache_conf: CachingConfig, extract_labels,
-                                     dataset_type):
+    def _extract_features_part_model(self, partial_model, data_loader, exec_step):
 
         # extract features
         start = time.perf_counter()
         for i, (batch) in enumerate(data_loader):
 
-            if extract_labels:
+            if exec_step.extract_labels:
                 inputs, labels = batch
             else:
                 inputs = batch
@@ -77,18 +73,31 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             measurement, features = self.bench.micro_benchmark_gpu(inference, inputs, partial_model)
             batch_measures[INFERENCE] = measurement
 
-            features_cache_id = f'{cache_conf.id_prefix}-{dataset_type}-{INPUT}-{i}'
-            self.caching_service.cache_on_location(features_cache_id, features, cache_conf.location)
+            features_cache_id = f'{self._get_input_cache_prefix(exec_step)}-{i}'
+            print('cache:', features_cache_id)
+            self.caching_service.cache_on_location(features_cache_id, features, exec_step.cache_config.location)
 
-            if extract_labels:
-                labels_cache_id = f'{dataset_type}-{LABEL}-{i}'
-                self.caching_service.cache_on_location(labels_cache_id, labels, cache_conf.location)
+            if exec_step.extract_labels:
+                labels_cache_id = f'{self._get_label_cache_prefix(exec_step)}-{i}'
+                self.caching_service.cache_on_location(labels_cache_id, labels, exec_step.cache_config.location)
 
             self.logger.append_value(BATCH_MEASURES, batch_measures)
 
             start = time.perf_counter()
         # TODO fix the logging
         # exec_step.execution_logs = self.logger
+
+    def _get_input_cache_prefix(self, exec_step):
+        prefix = f'{exec_step.cache_config.id_prefix}-{exec_step.data_info.dataset_type}-{INPUT}'
+        if exec_step.data_info.dataset_type == TRAIN:
+            prefix += f'-{exec_step.data_range[0]}'
+        return prefix
+
+    def _get_label_cache_prefix(self, exec_step):
+        prefix = f'{exec_step.data_info.dataset_type}-{LABEL}'
+        if exec_step.data_info.dataset_type == TRAIN:
+            prefix += f'-{exec_step.data_range[0]}'
+        return prefix
 
     def _get_data_loader(self, exec_step: MosixExtractFeaturesStep):
         if (isinstance(exec_step.data_info, DatasetInformation)
@@ -105,9 +114,14 @@ class MosixExecutionEngine(BaselineExecutionEngine):
 
         elif isinstance(exec_step.data_info, CachedDatasetInformation):
             data_info = exec_step.data_info
+
+            data_prefix = f'{exec_step.input_node_id}-{data_info.dataset_type}-{INPUT}'
+            if exec_step.data_info.dataset_type == TRAIN:
+                data_prefix += f'-{exec_step.data_range[0]}'
+
             data = CacheServiceDataset(
                 self.caching_service,
-                [f'{exec_step.input_node_id}-{data_info.dataset_type}-{INPUT}'],
+                [data_prefix],
                 None
             )
             data_loader = torch.utils.data.DataLoader(

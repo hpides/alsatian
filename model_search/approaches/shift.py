@@ -10,7 +10,8 @@ from global_utils.model_names import RESNET_18
 from model_search.caching_service import CachingService
 from model_search.execution.engine.shift_execution_engine import ShiftExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST
-from model_search.execution.planning.shift_planner import ShiftPlannerConfig, ShiftExecutionPlanner
+from model_search.execution.planning.shift_planner import ShiftPlannerConfig, ShiftExecutionPlanner, \
+    get_sorted_model_scores
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 
@@ -39,9 +40,9 @@ def get_data_ranges(search_space_len, train_data_len) -> [int]:
     return ranges
 
 
-def prune_snapshots(model_snapshots, planner, plan):
+def prune_snapshots(model_snapshots, plan):
     print(model_snapshots)
-    ranking = planner.get_sorted_model_scores(plan)
+    ranking = get_sorted_model_scores(plan.execution_steps)
     print(ranking)
     for _, s_id in ranking[:len(ranking) // 2]:
         model_snapshots.pop(s_id)
@@ -99,7 +100,7 @@ if __name__ == '__main__':
     for _range in ranges:
         plan = planner.generate_execution_plan(list(model_snapshots.values()), dataset_paths, _range, first_iteration)
         exec_engine.execute_plan(plan)
-        prune_snapshots(model_snapshots, planner, plan)
+        prune_snapshots(model_snapshots, plan)
         first_iteration = False
 
     print('done')
