@@ -42,12 +42,13 @@ class BaselineExtractFeaturesStep(ExecutionStep):
 class ScoreModelStep(ExecutionStep):
 
     def __init__(self, _id: str, scoring_method: ScoringMethod, test_feature_cache_prefixes: [str],
-                 train_feature_cache_prefixes: [str], num_classes: int):
+                 train_feature_cache_prefixes: [str], num_classes: int, scored_models = None):
         super().__init__(_id)
         self.scoring_method: ScoringMethod = scoring_method
         self.test_feature_cache_prefixes: [str] = test_feature_cache_prefixes
         self.train_feature_cache_prefixes: [str] = train_feature_cache_prefixes
         self.num_classes: int = num_classes
+        self.scored_models = scored_models
 
 
 class ModifyCacheStep(ExecutionStep):

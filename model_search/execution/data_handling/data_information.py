@@ -17,17 +17,14 @@ class DataInfo(ABC):
 
 class DatasetInformation(DataInfo):
     def __init__(self, data_set_class: DatasetClass, dataset_path: str, num_workers: int, batch_size: int,
-                 transform: Optional[Callable] = None):
+                 dataset_type: str, transform: Optional[Callable] = None):
         super().__init__(num_workers, batch_size, transform)
         self.data_set_class: DatasetClass = data_set_class
         self.dataset_path: str = dataset_path
+        self.dataset_type = dataset_type
 
 
 class CachedDatasetInformation(DataInfo):
-    def __init__(self, data_prefix: str, num_workers: int, batch_size: int, transform: Optional[Callable] = None):
+    def __init__(self, num_workers: int, batch_size: int, dataset_type, transform: Optional[Callable] = None):
         super().__init__(num_workers, batch_size, transform)
-        self.data_prefix = data_prefix
-
-
-class CachedData(DataInfo):
-    pass
+        self.dataset_type = dataset_type

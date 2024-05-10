@@ -17,6 +17,7 @@ def dfs_execution_plan(mm_root: MultiModelSnapshotNode) -> [MultiModelSnapshotEd
         current_exec_unit.append(current_edge)
 
         current_node = current_edge.child
+
         stack += list(reversed(current_node.edges))
 
     # add the final exec unit

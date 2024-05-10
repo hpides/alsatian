@@ -1,4 +1,4 @@
-from model_search.model_snapshots.rich_snapshot import RichModelSnapshot, LayerState
+from model_search.model_snapshots.rich_snapshot import RichModelSnapshot, LayerState, ROOT, generate_root_layer
 
 
 # This class represents two things
@@ -12,6 +12,7 @@ from model_search.model_snapshots.rich_snapshot import RichModelSnapshot, LayerS
 # - a node/vertex represents a (persisted intermediate) OUTPUT of the corresponding layer in the multi-model snapshot
 # - an edge that represent takling the (persisted) output of layer i (parent) to produce compute layer i+1 (child) and save its output
 
+
 class MultiModelSnapshotNode:
 
     def __init__(self, layer_state=None):
@@ -23,6 +24,10 @@ class MultiModelSnapshotNode:
         matching_edges = [e for e in self.edges if e.references_snapshot_ids(snapshot_id)]
         assert len(matching_edges) == 1
         return matching_edges[0]
+
+    @property
+    def is_root_node(self) -> bool:
+        return self.layer_state.id == ROOT
 
 
 class MultiModelSnapshotEdge:
@@ -36,10 +41,15 @@ class MultiModelSnapshotEdge:
         return snapshot_ids in self.child.snapshot_ids
 
 
+def generate_root_node():
+    layer_state = generate_root_layer()
+    return MultiModelSnapshotNode(layer_state)
+
+
 class MultiModelSnapshot:
 
     def __init__(self):
-        self.root: MultiModelSnapshotNode = MultiModelSnapshotNode()
+        self.root: MultiModelSnapshotNode = generate_root_node()
         self.snapshot_ids = set()
 
     def add_snapshot(self, snapshot: RichModelSnapshot):

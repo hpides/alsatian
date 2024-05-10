@@ -99,6 +99,9 @@ class ModelStore:
                 LayerState(state_dict_path, pickled_layer_path, state_dict_hash(layer_state), architecture_hash(layer))
             )
 
+        # mark the last layer as a leaf
+        layers[-1].is_leaf = True
+
         return layers
 
     def _init_layer(self, _id) -> torch.nn.Module:

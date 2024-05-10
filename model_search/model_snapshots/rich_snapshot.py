@@ -2,15 +2,15 @@ from global_utils.ids import random_short_id
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 ARCHITECTURE_HASH = "architecture_hash"
-
 STATE_DICT_HASH = "state_dict_hash"
-
 STATE_DICT_PATH = "state_dict_path"
+ROOT = "root"
 
 
 class LayerState:
 
-    def __init__(self, state_dict_path: str, pickled_layer_path: str, state_dict_hash: str, architecture_hash: str):
+    def __init__(self, state_dict_path: str, pickled_layer_path: str, state_dict_hash: str, architecture_hash: str,
+                 is_leaf: bool = False):
         """
         Represents the state of a single model layer by
         :param state_dict_path: that path to the state dict for that layer
@@ -23,6 +23,7 @@ class LayerState:
         self.state_dict_hash: str = state_dict_hash
         self.architecture_hash: str = architecture_hash
         self.id = f'{architecture_hash}-{state_dict_hash}-{random_short_id()}'
+        self.is_leaf = is_leaf
 
     def __repr__(self):
         return self.__str__()
@@ -41,6 +42,16 @@ class LayerState:
             STATE_DICT_HASH: self.state_dict_hash,
             ARCHITECTURE_HASH: self.architecture_hash
         }
+
+    @property
+    def is_root_layer(self) -> bool:
+        return self.id == ROOT
+
+
+def generate_root_layer():
+    layer_state = LayerState("", "", "", "")
+    layer_state.id = ROOT
+    return layer_state
 
 
 class RichModelSnapshot(ModelSnapshot):

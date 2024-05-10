@@ -11,7 +11,7 @@ from model_search.model_management.model_store import ModelStore
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
 
-def devide_snapshots(ranking):
+def divide_snapshots(ranking):
     cut = len(ranking) // 2
     return ranking[cut:], ranking[:cut]
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         TEST: '/tmp/pycharm_project_924/data/imagenette-dummy/val'
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
-    ranges = get_data_ranges(len(model_snapshots), len(train_data))
+    data_ranges = get_data_ranges(len(model_snapshots), len(train_data))
 
     # initialize execution planner
     planner_config = MosixPlannerConfig(12, 128)
@@ -53,13 +53,15 @@ if __name__ == '__main__':
     caching_path = '/mount-ssd/cache-dir'
     tensor_caching_service = CachingService(caching_path)
     model_caching_service = CachingService(caching_path)
-    exec_engine = MosixExecutionEngine(tensor_caching_service, model_caching_service)
+    exec_engine = MosixExecutionEngine(tensor_caching_service, model_caching_service, model_store)
 
     # executing by iterating over the data ranges
-    for _range in ranges:
-        execution_plan = planner.generate_execution_plan(mm_snapshot)
+    first_iteration = True
+    for data_range in data_ranges:
+        execution_plan = planner.generate_execution_plan(mm_snapshot, dataset_paths, data_range, True)
         snapshot_ranking = exec_engine.execute_plan(execution_plan)
-        pruned_snapshot_ids, keep_snapshot_ids = devide_snapshots(snapshot_ranking)
+        pruned_snapshot_ids, keep_snapshot_ids = divide_snapshots(snapshot_ranking)
         mm_snapshot.prune_snapshots(pruned_snapshot_ids)
+        first_iteration = False
 
     print('done')
