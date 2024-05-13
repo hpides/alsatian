@@ -6,6 +6,7 @@ from global_utils.global_constants import TRAIN, TEST
 from global_utils.model_names import RESNET_18
 from model_search.approaches.shift import get_data_ranges
 from model_search.caching_service import CachingService
+from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
 from model_search.execution.planning.execution_plan import ScoreModelStep
 from model_search.execution.planning.mosix_planner import MosixExecutionPlanner, MosixPlannerConfig
@@ -32,6 +33,7 @@ def divide_snapshots(execution_steps):
 
 
 if __name__ == '__main__':
+    save_path = '/mount-fs/tmp-dir'
 
     # generate some dummy snapshots
     pre_trained_model = initialize_model(RESNET_18, features_only=True, pretrained=True)
@@ -41,7 +43,6 @@ if __name__ == '__main__':
                                          retrain_idxs=retrain_idxs, use_same_base=True)
 
     # add the snapshots to a model store
-    save_path = '/mount-fs/tmp-dir'
     model_store = ModelStore(save_path)
     for snapshot in model_snapshots:
         model_store.add_snapshot(snapshot)
@@ -61,7 +62,7 @@ if __name__ == '__main__':
     data_ranges = get_data_ranges(len(model_snapshots), len(train_data))
 
     # initialize execution planner
-    planner_config = MosixPlannerConfig(12, 128)
+    planner_config = MosixPlannerConfig(12, 128, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     planner = MosixExecutionPlanner(planner_config)
 
     # setup execution engine

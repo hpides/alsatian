@@ -14,9 +14,11 @@ END = 'end'
 
 
 class MosixPlannerConfig:
-    def __init__(self, num_workers: int, batch_size: int):
+    def __init__(self, num_workers: int, batch_size: int, dataset_class: DatasetClass, dataset_paths: dict):
         self.num_workers = num_workers
         self.batch_size = batch_size
+        self.dataset_class = dataset_class
+        self.dataset_paths = dataset_paths
 
 
 class CachingConfig:
@@ -74,14 +76,22 @@ class MosixExecutionPlanner(ExecutionPlanner):
             # if first, iteration we also have to extract the test features
             if first_iteration:
                 ext_test_step = self._create_feature_ext_step(
-                    exec_unit, dataset_paths, TEST, self.config.num_workers, self.config.batch_size, None,
-                    CacheLocation.SSD, extract_labels)
+                    exec_unit=exec_unit,
+                    dataset_type=TEST,
+                    data_range=None,  # use all data
+                    cache_location=CacheLocation.SSD,
+                    extract_labels=extract_labels
+                )
                 execution_steps.append(ext_test_step)
 
             # add extract feature step on subset of train data
             ext_train_step = self._create_feature_ext_step(
-                exec_unit, dataset_paths, TRAIN, self.config.num_workers, self.config.batch_size, train_dataset_range,
-                CacheLocation.SSD, extract_labels)
+                exec_unit=exec_unit,
+                dataset_type=TRAIN,
+                data_range=train_dataset_range,
+                cache_location=CacheLocation.SSD,
+                extract_labels=extract_labels
+            )
             execution_steps.append(ext_train_step)
 
             # if the execution unit contains a leaf we also have to add step to score the model based on the extracted features
@@ -101,9 +111,8 @@ class MosixExecutionPlanner(ExecutionPlanner):
 
         return ExecutionPlan(execution_steps)
 
-    def _create_feature_ext_step(self, exec_unit: [MultiModelSnapshotEdge], dataset_paths, dataset_type, num_workers,
-                                 batch_size, data_range, cache_location, extract_labels):
-        data_set_class = DatasetClass.CUSTOM_IMAGE_FOLDER
+    def _create_feature_ext_step(self, exec_unit: [MultiModelSnapshotEdge], dataset_type, data_range, cache_location,
+                                 extract_labels):
 
         # we have to execute all nodes that are children
         exec_snapshot_nodes = [u.child for u in exec_unit]
@@ -115,11 +124,7 @@ class MosixExecutionPlanner(ExecutionPlanner):
         # the output_id is the id of the last layer
         output_node_id = exec_unit[-1].child.layer_state.id
 
-        if extract_labels:
-            data_info = DatasetInformation(
-                data_set_class, dataset_paths[dataset_type], num_workers, batch_size, dataset_type, inference_transform)
-        else:
-            data_info = CachedDatasetInformation(num_workers, batch_size, dataset_type)
+        data_info = self._create_dataset_info(dataset_type, extract_labels)
 
         step = MosixExtractFeaturesStep(
             _id=f'{input_node_id}--{output_node_id}--{dataset_type}',
@@ -134,5 +139,19 @@ class MosixExecutionPlanner(ExecutionPlanner):
 
         return step
 
-
-
+    def _create_dataset_info(self, dataset_type, extract_labels):
+        if extract_labels:
+            data_info = DatasetInformation(
+                self.config.dataset_class,
+                self.config.dataset_paths[dataset_type],
+                self.config.num_workers,
+                self.config.batch_size,
+                dataset_type,
+                inference_transform
+            )
+        else:
+            data_info = CachedDatasetInformation(
+                self.config.num_workers,
+                self.config.batch_size,
+                dataset_type)
+        return data_info
