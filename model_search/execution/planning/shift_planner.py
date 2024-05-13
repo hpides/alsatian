@@ -56,7 +56,7 @@ class ShiftExecutionPlanner(ExecutionPlanner):
                         _id=f'{snapshot.id}-extract-test-0',
                         model_snapshot=snapshot,
                         data_info=DatasetInformation(
-                            data_set_class, dataset_paths[TEST], num_workers, batch_size, inference_transform),
+                            data_set_class, dataset_paths[TEST], num_workers, batch_size, TEST, inference_transform),
                         cache_locations=CacheLocation.SSD,
                         feature_cache_prefix=test_feature_prefix
                     )
@@ -70,7 +70,7 @@ class ShiftExecutionPlanner(ExecutionPlanner):
                     _id=f'{snapshot.id}-extract-train-{train_dataset_range[0]}-{train_dataset_range[1]}',
                     model_snapshot=snapshot,
                     data_info=DatasetInformation(
-                        data_set_class, dataset_paths[TRAIN], num_workers, batch_size, inference_transform),
+                        data_set_class, dataset_paths[TRAIN], num_workers, batch_size, TRAIN, inference_transform),
                     cache_locations=CacheLocation.SSD,
                     feature_cache_prefix=train_feature_prefix,
                     data_range=train_dataset_range
