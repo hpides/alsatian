@@ -1,6 +1,7 @@
 import torch
 
 from custom.models.init_models import initialize_model
+from global_utils.hash import state_dict_hash
 from global_utils.ids import random_short_id
 
 STATE_DICT_PATH = "state_dict_path"
@@ -15,7 +16,7 @@ def generate_snapshot_id(architecture_name, state_dict_hash):
 class ModelSnapshot:
     """Simplest form of representing a model"""
 
-    def __init__(self, architecture_name: str, state_dict_path: str,  state_dict_hash: str, id: str):
+    def __init__(self, architecture_name: str, state_dict_path: str, sdict_hash: str = None, id: str = None):
         """
         :param architecture_name: the name of the model architecture that can be used to initialize a Pytorch model
          following a specific architecture, can also be an abstract name like a hash
@@ -23,9 +24,18 @@ class ModelSnapshot:
         """
         self.architecture_id: str = architecture_name
         self.state_dict_path: str = state_dict_path
-        self.state_dict_hash: str = state_dict_hash
+
+        if sdict_hash is None:
+            state_dict = torch.load(state_dict_path)
+            self.state_dict_hash = state_dict_hash(state_dict)
+        else:
+            self.state_dict_hash: str = sdict_hash
+
         # a model is defined by its architecture and the parameters
-        self.id = id
+        if id is None:
+            self.id = generate_snapshot_id(architecture_name, self.state_dict_hash)
+        else:
+            self.id = id
 
     def __repr__(self):
         return self.__str__()
