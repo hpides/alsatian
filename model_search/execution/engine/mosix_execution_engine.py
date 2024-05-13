@@ -13,7 +13,7 @@ from model_search.execution.data_handling.data_information import DatasetInforma
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine, load_data_to_device, \
     inference, load_model_to_device
 from model_search.execution.planning.execution_plan import ExecutionStep, ScoreModelStep
-from model_search.execution.planning.mosix_planner import MosixExtractFeaturesStep, CachingConfig
+from model_search.execution.planning.mosix_planner import MosixExtractFeaturesStep, CacheConfig
 from model_search.executionsteplogger import ExecutionStepLogger
 from model_search.model_management.model_store import ModelStore
 from model_search.proxies.nn_proxy import linear_proxy
@@ -73,25 +73,21 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             measurement, features = self.bench.micro_benchmark_gpu(inference, inputs, partial_model)
             batch_measures[INFERENCE] = measurement
 
-            features_cache_id = f'{self._get_input_cache_prefix(exec_step)}-{i}'
+            features_cache_id = f'{exec_step.inp_write_cache_config.id_prefix}-{i}'
             print('cache:', features_cache_id)
-            self.caching_service.cache_on_location(features_cache_id, features, exec_step.cache_config.location)
+            self.caching_service.cache_on_location(features_cache_id, features,
+                                                   exec_step.inp_write_cache_config.location)
 
             if exec_step.extract_labels:
-                labels_cache_id = f'{self._get_label_cache_prefix(exec_step)}-{i}'
-                self.caching_service.cache_on_location(labels_cache_id, labels, exec_step.cache_config.location)
+                labels_cache_id = f'{exec_step.label_write_cache_config.id_prefix}-{i}'
+                self.caching_service.cache_on_location(labels_cache_id, labels,
+                                                       exec_step.label_write_cache_config.location)
 
             self.logger.append_value(BATCH_MEASURES, batch_measures)
 
             start = time.perf_counter()
         # TODO fix the logging
         # exec_step.execution_logs = self.logger
-
-    def _get_input_cache_prefix(self, exec_step):
-        prefix = f'{exec_step.cache_config.id_prefix}-{exec_step.data_info.dataset_type}-{INPUT}'
-        if exec_step.data_info.dataset_type == TRAIN:
-            prefix += f'-{exec_step.data_range[0]}'
-        return prefix
 
     def _get_label_cache_prefix(self, exec_step):
         prefix = f'{exec_step.data_info.dataset_type}-{LABEL}'
@@ -113,11 +109,7 @@ class MosixExecutionEngine(BaselineExecutionEngine):
                 data.set_subrange(exec_step.data_range[0], exec_step.data_range[1])
 
         elif isinstance(exec_step.data_info, CachedDatasetInformation):
-            data_info = exec_step.data_info
-
-            data_prefix = f'{exec_step.input_node_id}-{data_info.dataset_type}-{INPUT}'
-            if exec_step.data_info.dataset_type == TRAIN:
-                data_prefix += f'-{exec_step.data_range[0]}'
+            data_prefix = exec_step.inp_read_cache_config.id_prefix
 
             data = CacheServiceDataset(
                 self.caching_service,
