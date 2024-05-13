@@ -59,7 +59,6 @@ class MosixExecutionPlanner(ExecutionPlanner):
 
     def __init__(self, config: MosixPlannerConfig):
         self.config: MosixPlannerConfig = config
-        self._train_feature_prefixes = {}
 
     def generate_execution_plan(self, mm_snapshot: MultiModelSnapshot, dataset_paths: dict,
                                 train_dataset_range: [int] = None, first_iteration=False,
@@ -144,11 +143,3 @@ def get_sorted_model_scores(execution_steps):
                 scores.append([step.execution_result[SCORE], snapshot_id])
 
     return sorted(scores)
-
-
-def _register_train_feature_prefix(self, snapshot, train_dataset_range):
-    train_feature_prefix = f'{snapshot.id}-{TRAIN}-{train_dataset_range[0]}-{train_dataset_range[1]}'
-    if not snapshot.id in self._train_feature_prefixes:
-        self._train_feature_prefixes[snapshot.id] = []
-    self._train_feature_prefixes[snapshot.id].append(train_feature_prefix)
-    return train_feature_prefix
