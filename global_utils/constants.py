@@ -34,4 +34,6 @@ BATCH_MEASURES = 'batch_measures'
 TRAIN = 'train'
 TEST = 'test'
 
+SCORE = 'score'
+
 

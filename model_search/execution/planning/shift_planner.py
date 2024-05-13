@@ -1,11 +1,10 @@
 from custom.data_loaders.imagenet_transfroms import inference_transform
-from global_utils.constants import TEST, TRAIN
+from global_utils.constants import TEST, TRAIN, SCORE
 from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass
 from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, CacheLocation, \
     BaselineExtractFeaturesStep, ScoreModelStep, ScoringMethod
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
-SCORE = 'score'
 
 
 class ShiftPlannerConfig:

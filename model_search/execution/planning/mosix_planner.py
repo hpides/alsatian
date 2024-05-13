@@ -135,11 +135,4 @@ class MosixExecutionPlanner(ExecutionPlanner):
         return step
 
 
-def get_sorted_model_scores(execution_steps):
-    scores = []
-    for step in execution_steps:
-        if isinstance(step, ScoreModelStep):
-            for snapshot_id in step.scored_models:
-                scores.append([step.execution_result[SCORE], snapshot_id])
 
-    return sorted(scores)

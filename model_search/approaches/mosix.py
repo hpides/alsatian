@@ -1,15 +1,26 @@
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.models.init_models import initialize_model
 from experiments.snapshots.generate import generate_snapshots, RetrainDistribution
+from global_utils.constants import SCORE
 from global_utils.global_constants import TRAIN, TEST
 from global_utils.model_names import RESNET_18
 from model_search.approaches.shift import get_data_ranges
 from model_search.caching_service import CachingService
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
-from model_search.execution.planning.mosix_planner import MosixExecutionPlanner, MosixPlannerConfig, \
-    get_sorted_model_scores
+from model_search.execution.planning.execution_plan import ScoreModelStep
+from model_search.execution.planning.mosix_planner import MosixExecutionPlanner, MosixPlannerConfig
 from model_search.model_management.model_store import ModelStore
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
+
+
+def get_sorted_model_scores(execution_steps):
+    scores = []
+    for step in execution_steps:
+        if isinstance(step, ScoreModelStep):
+            for snapshot_id in step.scored_models:
+                scores.append([step.execution_result[SCORE], snapshot_id])
+
+    return sorted(scores)
 
 
 def divide_snapshots(execution_steps):
