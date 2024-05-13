@@ -21,7 +21,6 @@ def divide_snapshots(execution_steps):
 
 
 if __name__ == '__main__':
-    save_path = '/mount-fs/tmp-dir'
 
     # generate some dummy snapshots
     pre_trained_model = initialize_model(RESNET_18, features_only=True, pretrained=True)
@@ -31,6 +30,7 @@ if __name__ == '__main__':
                                          retrain_idxs=retrain_idxs, use_same_base=True)
 
     # add the snapshots to a model store
+    save_path = '/mount-fs/tmp-dir'
     model_store = ModelStore(save_path)
     for snapshot in model_snapshots:
         model_store.add_snapshot(snapshot)

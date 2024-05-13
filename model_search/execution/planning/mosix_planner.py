@@ -1,5 +1,5 @@
 from custom.data_loaders.imagenet_transfroms import inference_transform
-from global_utils.constants import TRAIN, TEST, LABEL, INPUT
+from global_utils.constants import TRAIN, TEST, INPUT
 from model_search.execution.data_handling.data_information import DatasetInformation, DataInfo, DatasetClass, \
     CachedDatasetInformation
 from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, ScoreModelStep, \
@@ -53,11 +53,6 @@ class MosixExtractFeaturesStep:
         # we use the id of the last layer as the output cache id
         self.cache_config = CachingConfig(output_node_id, cache_location)
         self.extract_labels = extract_labels
-
-    # @property
-    # def cache_labels(self) -> bool:
-    #     # we want to cache also the labels if we actually have to load the original data
-    #     return self.layers[0].is_root_layer
 
 
 class MosixExecutionPlanner(ExecutionPlanner):
