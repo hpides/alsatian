@@ -1,55 +1,49 @@
-import math
 import os
+import unittest
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from global_utils.deterministic import DETERMINISTIC_EXECUTION, TRUE, check_deterministic_env_var_set, set_deterministic
+from global_utils.global_constants import TEST
 from global_utils.global_constants import TRAIN
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
+from model_search.approaches.mosix import find_best_model
+from model_search.approaches.shift import get_data_ranges, prune_snapshots
 from model_search.caching_service import CachingService
+from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.shift_execution_engine import ShiftExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST
+from model_search.execution.planning.mosix_planner import MosixPlannerConfig
 from model_search.execution.planning.shift_planner import ShiftPlannerConfig, ShiftExecutionPlanner, \
     get_sorted_model_scores
 
 
-def get_data_ranges(search_space_len, train_data_len) -> [int]:
-    ranges = []
-    iterations = math.ceil(math.log(search_space_len, 2))
-    items_to_process = math.ceil(train_data_len / 2 ** iterations)
-    items_seen = 0
-    prev_end = 0
+def _execute_mosix():
+    os.environ[DETERMINISTIC_EXECUTION] = TRUE
 
-    for i in range(iterations):
-        new_end = items_to_process + items_seen
-        ranges.append([prev_end, new_end])
-        prev_end = new_end
-        items_seen += items_to_process
-        items_to_process = items_to_process * 2
-
-    if ranges[-1][1] < train_data_len:
-        # make sure the last range covers all data
-        ranges[-1][1] = train_data_len
+    if check_deterministic_env_var_set():
+        num_workers = 0
+        set_deterministic()
     else:
-        message = (f"train data to small for search space: for a search space with length {search_space_len},"
-                   f" we need a dataset with at least {ranges[-1][1]} items")
-        raise Exception(message)
+        num_workers = 12
 
-    return ranges
+    save_path = '/mount-fs/tmp-dir'
+    model_snapshots, model_store = dummy_snap_and_mstore_four_models(save_path)
+
+    # datasets
+    dataset_paths = {
+        TRAIN: '/tmp/pycharm_project_924/data/imagenette-dummy/train',
+        TEST: '/tmp/pycharm_project_924/data/imagenette-dummy/val'
+    }
+    train_data = CustomImageFolder(dataset_paths[TRAIN])
+
+    planner_config = MosixPlannerConfig(num_workers, 128, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
+    persistent_caching_path = '/mount-ssd/cache-dir'
+
+    return find_best_model(model_snapshots, model_store, dataset_paths, len(train_data), planner_config, persistent_caching_path)
 
 
-def prune_snapshots(model_snapshots, plan):
-    # print(model_snapshots)
-    ranking = get_sorted_model_scores(plan.execution_steps)
-    print(ranking)
-    for _, s_id in ranking[:len(ranking) // 2]:
-        model_snapshots.pop(s_id)
-    # print(model_snapshots)
-
-
-if __name__ == '__main__':
-    # basically for this we do not need deterministic execution, leave the flag here if we want to debug
-    os.environ[DETERMINISTIC_EXECUTION] = ""
-    # os.environ[DETERMINISTIC_EXECUTION] = TRUE
+def _execute_shift():
+    os.environ[DETERMINISTIC_EXECUTION] = TRUE
 
     if check_deterministic_env_var_set():
         num_workers = 0
@@ -87,3 +81,16 @@ if __name__ == '__main__':
         prune_snapshots(model_snapshots, plan)
         first_iteration = False
         ranking = get_sorted_model_scores(plan.execution_steps)
+
+    return ranking
+
+class TestDeterministicOutput(unittest.TestCase):
+
+    def test_mosix_shift(self):
+        mosix_out = _execute_mosix()
+        shift_out = _execute_shift()
+        print(mosix_out)
+        print(shift_out)
+        self.assertEqual(mosix_out, shift_out)
+
+
