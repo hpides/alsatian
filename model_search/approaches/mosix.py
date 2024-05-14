@@ -28,7 +28,7 @@ def divide_snapshots(execution_steps):
     print(ranking)
     snapshot_ids = [s[1] for s in ranking]
     cut = len(ranking) // 2
-    return snapshot_ids[cut:], snapshot_ids[:cut]
+    return snapshot_ids[:cut], snapshot_ids[cut:]
 
 
 def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, train_data_length, planner_config,
