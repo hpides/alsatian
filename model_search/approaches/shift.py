@@ -7,7 +7,7 @@ import torch
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from global_utils.global_constants import TRAIN
-from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore
+from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.caching_service import CachingService
 from model_search.execution.engine.shift_execution_engine import ShiftExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
 
     save_path = '/mount-fs/tmp-dir'
-    _model_snapshots, _ = dummy_snap_and_mstore(save_path)
+    _model_snapshots, _ = dummy_snap_and_mstore_four_models(save_path)
 
     model_snapshots = {}
     for snap in _model_snapshots:

@@ -1,8 +1,14 @@
+import os
+import random
+
+import numpy as np
+import torch
+
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from global_utils.constants import SCORE
 from global_utils.global_constants import TRAIN, TEST
-from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore
-from model_search.approaches.shift import get_data_ranges
+from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
+from model_search.approaches.shift import get_data_ranges, CULABS_CONFIG
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
@@ -64,8 +70,21 @@ def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, t
 
 
 if __name__ == '__main__':
+    deterministic = True
+
+    if deterministic:
+        random.seed(42)
+        np.random.seed(42)
+        torch.manual_seed(42)
+        torch.use_deterministic_algorithms(True)
+        num_workers = 0
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"
+    else:
+        num_workers = 12
+        assert CULABS_CONFIG not in os.environ
+
     save_path = '/mount-fs/tmp-dir'
-    model_snapshots, model_store = dummy_snap_and_mstore(save_path)
+    model_snapshots, model_store = dummy_snap_and_mstore_four_models(save_path)
 
     # datasets
     dataset_paths = {
@@ -74,7 +93,7 @@ if __name__ == '__main__':
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
 
-    planner_config = MosixPlannerConfig(12, 128, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
+    planner_config = MosixPlannerConfig(num_workers, 128, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     persistent_caching_path = '/mount-ssd/cache-dir'
 
     find_best_model(model_snapshots, model_store, len(train_data), planner_config, persistent_caching_path)
