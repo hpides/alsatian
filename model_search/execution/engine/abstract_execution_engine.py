@@ -18,7 +18,7 @@ class ExecutionEngine(ABC):
     def execute_plan(self, execution_plan: ExecutionPlan):
         exex_step_number = 0
         for exex_step in execution_plan.execution_steps:
-            print("EXEC STEP NUMBER:", exex_step_number)
+            print("EXEC STEP NUMBER:", exex_step_number, "===", type(exex_step).__name__)
             self.execute_step(exex_step)
             exex_step_number += 1
 

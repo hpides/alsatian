@@ -28,12 +28,12 @@ class CacheServiceDataset(Dataset):
         self._data_ids = []
         for pre in self.data_prefixes:
             self._data_ids += self.caching_service.all_ids_with_prefix(pre)
-            print("self._data_ids", self._data_ids)
+            # print("self._data_ids", self._data_ids)
 
         if not self._input_only:
             self._label_ids = []
             for pre in self.label_prefixes:
                 self._label_ids += self.caching_service.all_ids_with_prefix(pre)
-                print("self._label_ids", self._label_ids)
+                # print("self._label_ids", self._label_ids)
 
             assert len(self._data_ids) == len(self._label_ids)
