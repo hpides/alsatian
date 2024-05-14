@@ -61,6 +61,10 @@ class MosixExtractFeaturesStep:
         self.label_write_cache_config = label_write_cache_config
         self.extract_labels = extract_labels
 
+    @property
+    def contains_leaf(self):
+        return self.layers[-1].is_leaf
+
 
 def _get_input_cache_config(output_node_id, dataset_type, inp_lbl, data_range=None, write_cache_location=None):
     prefix = f'{output_node_id}-{dataset_type}-{inp_lbl}'

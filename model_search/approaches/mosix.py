@@ -1,14 +1,11 @@
 import os
-import random
-
-import numpy as np
-import torch
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from global_utils.constants import SCORE
+from global_utils.deterministic import DETERMINISTIC_EXECUTION, TRUE, check_deterministic_env_var_set, set_deterministic
 from global_utils.global_constants import TRAIN, TEST
-from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
-from model_search.approaches.shift import get_data_ranges, CULABS_CONFIG
+from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_two_models, dummy_snap_and_mstore_four_models
+from model_search.approaches.shift import get_data_ranges
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
@@ -70,18 +67,13 @@ def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, t
 
 
 if __name__ == '__main__':
-    deterministic = True
+    os.environ[DETERMINISTIC_EXECUTION] = TRUE
 
-    if deterministic:
-        random.seed(42)
-        np.random.seed(42)
-        torch.manual_seed(42)
-        torch.use_deterministic_algorithms(True)
+    if check_deterministic_env_var_set():
         num_workers = 0
-        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"
+        set_deterministic()
     else:
         num_workers = 12
-        assert CULABS_CONFIG not in os.environ
 
     save_path = '/mount-fs/tmp-dir'
     model_snapshots, model_store = dummy_snap_and_mstore_four_models(save_path)

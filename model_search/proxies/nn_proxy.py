@@ -1,6 +1,8 @@
 import torch
 from torch.utils.data import DataLoader
 
+from global_utils.deterministic import check_deterministic_env_var_set, set_deterministic
+
 
 # code adapted form/inspired by: https://github.com/DS3Lab/shift/blob/1db7f15d5fe4261d421f96c1b3a92492c8ca6b07/server/worker_general/general/classifier/_linear.py
 
@@ -11,6 +13,9 @@ def get_input_dimension(batch):
 
 def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, num_classes: int,
                  device: torch.device) -> float:
+    if check_deterministic_env_var_set():
+        set_deterministic()
+
     input_dimension = get_input_dimension(next(iter(train_data_loader)))
 
     # init objects

@@ -8,7 +8,7 @@ from model_search.model_management.model_store import ModelStore, model_store_fr
 
 
 def dummy_snap_and_mstore_two_models(save_path):
-    dummy_model_store_path = '/mount-fs/tmp-dir/dummy-model-store.json'
+    dummy_model_store_path = '/mount-fs/tmp-dir/dummy-model-store-2-models.json'
     if os.path.exists(dummy_model_store_path):
         model_store_dict = read_json_to_dict(dummy_model_store_path)
         model_store = model_store_from_dict(model_store_dict)

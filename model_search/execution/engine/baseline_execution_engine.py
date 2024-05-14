@@ -8,6 +8,7 @@ from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.models.init_models import initialize_model
 from global_utils.constants import LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, MODEL_TO_DEVICE, CUDA, INPUT, LABEL, \
     LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, CALC_PROXY_SCORE
+from global_utils.deterministic import check_deterministic_env_var_set
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.abstract_execution_engine import ExecutionEngine
@@ -150,5 +151,9 @@ class BaselineExecutionEngine(ExecutionEngine):
             [f'{pre}-{INPUT}' for pre in cache_prefixes],
             [f'{pre}-{LABEL}' for pre in cache_prefixes]
         )
-        data_loader = DataLoader(data, batch_size=1, num_workers=2)
+        if check_deterministic_env_var_set():
+            num_workers = 0
+        else:
+            num_workers = 2
+        data_loader = DataLoader(data, batch_size=1, num_workers=num_workers)
         return data_loader

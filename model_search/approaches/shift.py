@@ -1,11 +1,8 @@
-import os
 import math
-import random
-
-import numpy as np
-import torch
+import os
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
+from global_utils.deterministic import DETERMINISTIC_EXECUTION, TRUE, check_deterministic_env_var_set, set_deterministic
 from global_utils.global_constants import TRAIN
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.caching_service import CachingService
@@ -52,19 +49,13 @@ def prune_snapshots(model_snapshots, plan):
 
 
 if __name__ == '__main__':
-    deterministic = True
+    os.environ[DETERMINISTIC_EXECUTION] = TRUE
 
-    if deterministic:
-        random.seed(42)
-        np.random.seed(42)
-        torch.manual_seed(42)
-        torch.use_deterministic_algorithms(True)
+    if check_deterministic_env_var_set():
         num_workers = 0
-        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"
+        set_deterministic()
     else:
         num_workers = 12
-        assert CULABS_CONFIG not in os.environ
-
 
     save_path = '/mount-fs/tmp-dir'
     _model_snapshots, _ = dummy_snap_and_mstore_four_models(save_path)
