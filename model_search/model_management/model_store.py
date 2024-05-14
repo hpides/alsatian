@@ -5,9 +5,34 @@ import torch.nn
 
 from custom.models.init_models import initialize_model
 from global_utils.hash import state_dict_hash, architecture_hash
+from global_utils.json_operations import dict_to_dict
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
-from model_search.model_snapshots.rich_snapshot import RichModelSnapshot, LayerState
+from model_search.model_snapshots.rich_snapshot import RichModelSnapshot, LayerState, rich_model_snapshot_from_dict, \
+    layer_state_from_dict
+
+LAYERS = 'layers'
+
+MODELS = 'models'
+
+SAVE_PATH = 'save_path'
+
+
+def model_store_from_dict(_dict):
+    model_store = ModelStore(_dict[SAVE_PATH])
+
+    models = {}
+    for k, v in _dict[MODELS].items():
+        models[k] = rich_model_snapshot_from_dict(v)
+
+    layers = {}
+    for k, v in _dict[LAYERS].items():
+        layers[k] = layer_state_from_dict(v)
+
+    model_store.models = models
+    model_store.layers = layers
+
+    return model_store
 
 
 class ModelStore:
@@ -16,6 +41,13 @@ class ModelStore:
         self.save_path = save_path
         self.models = {}
         self.layers = {}
+
+    def to_dict(self):
+        result = {}
+        result[SAVE_PATH] = self.save_path
+        result[MODELS] = dict_to_dict(self.models)
+        result[LAYERS] = dict_to_dict(self.layers)
+        return result
 
     def add_snapshot(self, model_snapshot: ModelSnapshot):
         if not isinstance(model_snapshot, RichModelSnapshot):

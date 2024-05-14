@@ -4,9 +4,13 @@ from custom.models.init_models import initialize_model
 from global_utils.hash import state_dict_hash
 from global_utils.ids import random_short_id
 
-STATE_DICT_PATH = "state_dict_path"
+ID = "id"
+
+STATE_DICT_HASH = "state_dict_hash"
 
 ARCHITECTURE_ID = "architecture_id"
+
+SAVE_PATH = "save_path"
 
 
 def generate_snapshot_id(architecture_name, state_dict_hash):
@@ -41,17 +45,19 @@ class ModelSnapshot:
         return self.__str__()
 
     def __str__(self):
-        return str(self._to_dict())
+        return str(self.to_dict())
 
     def __eq__(self, other):
         if isinstance(other, ModelSnapshot):
             return self.architecture_id == other.architecture_id and self.state_dict_hash == other.state_dict_hash
         return False
 
-    def _to_dict(self):
+    def to_dict(self):
         return {
+            SAVE_PATH: self.state_dict_path,
             ARCHITECTURE_ID: self.architecture_id,
-            STATE_DICT_PATH: self.state_dict_path
+            STATE_DICT_HASH: self.state_dict_hash,
+            ID: self.id
         }
 
     def init_model_from_snapshot(self):
@@ -59,3 +65,12 @@ class ModelSnapshot:
         state_dict = torch.load(self.state_dict_path)
         model.load_state_dict(state_dict)
         return model
+
+
+def model_snapshot_from_dict(snapshot_dict) -> ModelSnapshot:
+    save_path = snapshot_dict[SAVE_PATH]
+    architecture_id = snapshot_dict[ARCHITECTURE_ID]
+    state_dict_hash = snapshot_dict[STATE_DICT_HASH]
+    id = snapshot_dict[ID]
+
+    return ModelSnapshot(architecture_id, save_path, state_dict_hash, id)

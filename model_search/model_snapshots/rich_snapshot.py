@@ -1,10 +1,16 @@
 from global_utils.ids import random_short_id
-from model_search.model_snapshots.base_snapshot import ModelSnapshot
+from global_utils.json_operations import dict_to_dict, list_to_dict
+from model_search.model_snapshots.base_snapshot import ModelSnapshot, SAVE_PATH, ARCHITECTURE_ID
 
+
+LEAF = "is_leaf"
+ID = "id"
+LAYER_STATES = "layer_states"
 ARCHITECTURE_HASH = "architecture_hash"
 STATE_DICT_HASH = "state_dict_hash"
 STATE_DICT_PATH = "state_dict_path"
 ROOT = "root"
+PICKLED_LAYER_PATH = "pickled_layer_path"
 
 
 class LayerState:
@@ -29,18 +35,21 @@ class LayerState:
         return self.__str__()
 
     def __str__(self):
-        return str(self._to_dict())
+        return str(self.to_dict())
 
     def __eq__(self, other):
         if isinstance(other, LayerState):
             return self.architecture_hash == other.architecture_hash and self.state_dict_hash == other.state_dict_hash
         return False
 
-    def _to_dict(self):
+    def to_dict(self):
         return {
             STATE_DICT_PATH: self.state_dict_path,
+            PICKLED_LAYER_PATH: self.pickled_layer_path,
             STATE_DICT_HASH: self.state_dict_hash,
-            ARCHITECTURE_HASH: self.architecture_hash
+            ARCHITECTURE_HASH: self.architecture_hash,
+            ID: self.id,
+            LEAF: self.is_leaf
         }
 
     @property
@@ -51,6 +60,18 @@ class LayerState:
 def generate_root_layer():
     layer_state = LayerState("", "", "", "")
     layer_state.id = ROOT
+    return layer_state
+
+
+def layer_state_from_dict(_dict) -> LayerState:
+    layer_state = LayerState(
+        _dict[STATE_DICT_PATH],
+        _dict[PICKLED_LAYER_PATH],
+        _dict[STATE_DICT_HASH],
+        _dict[ARCHITECTURE_HASH],
+        _dict[LEAF]
+    )
+    layer_state.id = _dict[ID]
     return layer_state
 
 
@@ -72,8 +93,19 @@ class RichModelSnapshot(ModelSnapshot):
         super().__init__(architecture_name, state_dict_path, state_dict_hash, id)
         self.layer_states: [LayerState] = layer_states
 
-    def _to_dict(self):
-        base_dict = super()._to_dict()
-        base_dict["state_dict_hash"] = self.state_dict_hash
-        base_dict["layer_states"] = str(self.layer_states)
-        return base_dict
+    def to_dict(self):
+        result = super().to_dict()
+        result[LAYER_STATES] = list_to_dict(self.layer_states)
+        return result
+
+
+def rich_model_snapshot_from_dict(_dict) -> RichModelSnapshot:
+    save_path = _dict[SAVE_PATH]
+    architecture_id = _dict[ARCHITECTURE_ID]
+    state_dict_hash = _dict[STATE_DICT_HASH]
+    id = _dict[ID]
+    layer_states = []
+    for l_state in _dict[LAYER_STATES]:
+        layer_states.append(layer_state_from_dict(l_state))
+
+    return RichModelSnapshot(architecture_id, save_path, state_dict_hash, id, layer_states)
