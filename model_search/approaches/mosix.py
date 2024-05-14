@@ -1,16 +1,20 @@
+import os.path
+
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.models.init_models import initialize_model
 from experiments.snapshots.generate import generate_snapshots, RetrainDistribution
 from global_utils.constants import SCORE
 from global_utils.global_constants import TRAIN, TEST
+from global_utils.json_operations import write_json_to_file, read_json_to_dict
 from global_utils.model_names import RESNET_18
+from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore
 from model_search.approaches.shift import get_data_ranges
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
 from model_search.execution.planning.execution_plan import ScoreModelStep
 from model_search.execution.planning.mosix_planner import MosixExecutionPlanner, MosixPlannerConfig
-from model_search.model_management.model_store import ModelStore
+from model_search.model_management.model_store import ModelStore, model_store_from_dict
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
@@ -68,17 +72,7 @@ def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, t
 if __name__ == '__main__':
     save_path = '/mount-fs/tmp-dir'
 
-    # generate some dummy snapshots
-    pre_trained_model = initialize_model(RESNET_18, features_only=True, pretrained=True)
-    retrain_idxs = [5, 7, 9]
-    split_idxs = [len(pre_trained_model) - i for i in retrain_idxs]
-    model_snapshots = generate_snapshots(RESNET_18, 4, RetrainDistribution.HARD_CODED, save_path=save_path,
-                                         retrain_idxs=retrain_idxs, use_same_base=True)
-
-    # add the snapshots to a model store
-    model_store = ModelStore(save_path)
-    for snapshot in model_snapshots:
-        model_store.add_snapshot(snapshot)
+    model_snapshots, model_store = dummy_snap_and_mstore(save_path)
 
     # datasets
     dataset_paths = {
