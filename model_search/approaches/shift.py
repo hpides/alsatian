@@ -1,4 +1,9 @@
+import os
 import math
+import random
+
+import numpy as np
+import torch
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from global_utils.global_constants import TRAIN
@@ -8,6 +13,8 @@ from model_search.execution.engine.shift_execution_engine import ShiftExecutionE
 from model_search.execution.planning.baseline_planner import TEST
 from model_search.execution.planning.shift_planner import ShiftPlannerConfig, ShiftExecutionPlanner, \
     get_sorted_model_scores
+
+CULABS_CONFIG = 'CUBLAS_WORKSPACE_CONFIG'
 
 
 def get_data_ranges(search_space_len, train_data_len) -> [int]:
@@ -45,6 +52,20 @@ def prune_snapshots(model_snapshots, plan):
 
 
 if __name__ == '__main__':
+    deterministic = True
+
+    if deterministic:
+        random.seed(42)
+        np.random.seed(42)
+        torch.manual_seed(42)
+        torch.use_deterministic_algorithms(True)
+        num_workers = 0
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"
+    else:
+        num_workers = 12
+        assert CULABS_CONFIG not in os.environ
+
+
     save_path = '/mount-fs/tmp-dir'
     _model_snapshots, _ = dummy_snap_and_mstore(save_path)
 
@@ -59,7 +80,7 @@ if __name__ == '__main__':
 
     caching_path = '/mount-ssd/cache-dir'
     cachingService = CachingService(caching_path)
-    planner_config = ShiftPlannerConfig(12, 128)
+    planner_config = ShiftPlannerConfig(num_workers, 128)
     planner = ShiftExecutionPlanner(planner_config)
     exec_engine = ShiftExecutionEngine(cachingService)
 
