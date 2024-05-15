@@ -1,9 +1,9 @@
 from custom.data_loaders.imagenet_transfroms import inference_transform
 from global_utils.constants import TRAIN, TEST, INPUT, LABEL
 from model_search.execution.data_handling.data_information import DatasetInformation, DataInfo, CachedDatasetInformation
-from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, ScoreModelStep, \
+from model_search.execution.planning.execution_plan import ExecutionPlan, ScoreModelStep, \
     CacheLocation, ScoringMethod
-from model_search.execution.planning.planner_config import AdvancedPlannerConfig
+from model_search.execution.planning.planner_config import PlannerConfig
 
 from model_search.model_snapshots.dfs_traversal import dfs_execution_plan
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot, MultiModelSnapshotEdge
@@ -74,10 +74,10 @@ def _get_label_cache_config(dataset_type, inp_lbl, data_range=None, write_cache_
     return CacheConfig(location=write_cache_location, id_prefix=prefix)
 
 
-class MosixExecutionPlanner(ExecutionPlanner):
+class MosixExecutionPlanner:
 
-    def __init__(self, config: AdvancedPlannerConfig):
-        self.config: AdvancedPlannerConfig = config
+    def __init__(self, config: PlannerConfig):
+        self.config: PlannerConfig = config
 
     def generate_execution_plan(self, mm_snapshot: MultiModelSnapshot, train_dataset_range: [int] = None,
                                 first_iteration=False, strategy="DFS") -> ExecutionPlan:

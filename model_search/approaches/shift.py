@@ -11,7 +11,7 @@ from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.shift_execution_engine import ShiftExecutionEngine
 from model_search.execution.planning.baseline_planner import TEST
 from model_search.execution.planning.execution_plan import ScoreModelStep
-from model_search.execution.planning.planner_config import AdvancedPlannerConfig
+from model_search.execution.planning.planner_config import PlannerConfig
 from model_search.execution.planning.shift_planner import ShiftExecutionPlanner
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     }
     train_data_length = len(CustomImageFolder(dataset_paths[TRAIN]))
 
-    planner_config = AdvancedPlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
+    planner_config = PlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     caching_path = '/mount-ssd/cache-dir'
 
     find_best_model(_model_snapshots, train_data_length, planner_config, caching_path)

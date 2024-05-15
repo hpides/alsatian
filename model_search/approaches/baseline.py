@@ -2,8 +2,9 @@ from global_utils.global_constants import TRAIN
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.approaches.shift import get_sorted_model_scores
 from model_search.caching_service import CachingService
+from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine
-from model_search.execution.planning.baseline_planner import TEST, BaselineExecutionPlanner, BaselinePlannerConfig
+from model_search.execution.planning.baseline_planner import TEST, BaselineExecutionPlanner, PlannerConfig
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 
@@ -13,7 +14,7 @@ def find_best_model(model_snapshots: [ModelSnapshot], planner_config, caching_pa
     cachingService = CachingService(caching_path)
     exec_engine = BaselineExecutionEngine(cachingService)
 
-    execution_plan = planner.generate_execution_plan(model_snapshots, dataset_paths)
+    execution_plan = planner.generate_execution_plan(model_snapshots)
     exec_engine.execute_plan(execution_plan)
 
     ranking = get_sorted_model_scores(execution_plan.execution_steps)
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     }
 
     caching_path = '/mount-ssd/cache-dir'
-    planner_config = BaselinePlannerConfig(12, 128, 100)
+    planner_config = PlannerConfig(12, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
 
     ranking = find_best_model(model_snapshots, planner_config, caching_path)
 

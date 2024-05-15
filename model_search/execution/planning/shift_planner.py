@@ -1,9 +1,9 @@
 from custom.data_loaders.imagenet_transfroms import inference_transform
 from global_utils.constants import TEST, TRAIN, SCORE
 from model_search.execution.data_handling.data_information import DatasetInformation
-from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, CacheLocation, \
+from model_search.execution.planning.execution_plan import ExecutionPlan, CacheLocation, \
     BaselineExtractFeaturesStep, ScoreModelStep, ScoringMethod
-from model_search.execution.planning.planner_config import AdvancedPlannerConfig
+from model_search.execution.planning.planner_config import PlannerConfig
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 
@@ -15,10 +15,10 @@ class ShiftExtractFeaturesStep(BaselineExtractFeaturesStep):
         self.data_range: [int] = data_range
 
 
-class ShiftExecutionPlanner(ExecutionPlanner):
+class ShiftExecutionPlanner:
 
-    def __init__(self, config: AdvancedPlannerConfig):
-        self.config: AdvancedPlannerConfig = config
+    def __init__(self, config: PlannerConfig):
+        self.config: PlannerConfig = config
         self._train_feature_prefixes = {}
 
     def generate_execution_plan(self, model_snapshots: [ModelSnapshot], train_dataset_range: [int] = None,

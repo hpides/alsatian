@@ -10,7 +10,7 @@ from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
 from model_search.execution.planning.mosix_planner import MosixExecutionPlanner
-from model_search.execution.planning.planner_config import AdvancedPlannerConfig
+from model_search.execution.planning.planner_config import PlannerConfig
 from model_search.model_management.model_store import ModelStore
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
 
-    planner_config = AdvancedPlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
+    planner_config = PlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     persistent_caching_path = '/mount-ssd/cache-dir'
 
     find_best_model(model_snapshots, len(train_data), planner_config, persistent_caching_path, model_store)
