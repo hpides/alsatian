@@ -23,8 +23,8 @@ class BaselineExecutionPlanner(ExecutionPlanner):
         num_workers = self.config.num_workers
         batch_size = self.config.batch_size
 
+        execution_steps = []
         for snapshot in model_snapshots:
-            execution_steps = []
             # extract test features
             test_feature_prefix = f'{snapshot.id}-{TEST}'
             execution_steps.append(
@@ -46,7 +46,7 @@ class BaselineExecutionPlanner(ExecutionPlanner):
                     data_info=DatasetInformation(
                         data_set_class, dataset_paths[TRAIN], num_workers, batch_size, TRAIN, inference_transform),
                     cache_locations=CacheLocation.SSD,
-                    feature_cache_prefix=train_feature_prefix
+                    feature_cache_prefix=train_feature_prefix,
                 )
             )
             # score model based on train and test features
@@ -57,6 +57,7 @@ class BaselineExecutionPlanner(ExecutionPlanner):
                     test_feature_cache_prefixes=[test_feature_prefix],
                     train_feature_cache_prefixes=[train_feature_prefix],
                     num_classes=self.config.target_classes,
+                    scored_models=[snapshot.id]
                 )
             )
 

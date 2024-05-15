@@ -16,11 +16,8 @@ from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
 
-
-
-
-def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, train_data_length, planner_config,
-                    caching_path):
+def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner_config,
+                    caching_path, model_store: ModelStore):
     # add all the snapshots to a multi-model snapshot
     mm_snapshot = MultiModelSnapshot()
     for snapshot in model_snapshots:
@@ -78,4 +75,4 @@ if __name__ == '__main__':
     planner_config = AdvancedPlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     persistent_caching_path = '/mount-ssd/cache-dir'
 
-    find_best_model(model_snapshots, model_store, len(train_data), planner_config, persistent_caching_path)
+    find_best_model(model_snapshots, len(train_data), planner_config, persistent_caching_path, model_store)

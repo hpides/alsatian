@@ -35,13 +35,13 @@ def get_search_model_inputs():
 def _execute_mosix():
     dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data = get_search_model_inputs()
 
-    return mosix.find_best_model(model_snapshots, model_store, len(train_data), planner_config, persistent_caching_path)
+    return mosix.find_best_model(model_snapshots, len(train_data), planner_config, persistent_caching_path, model_store)
 
 
 def _execute_shift():
     dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data = get_search_model_inputs()
 
-    return shift.find_best_model(model_snapshots, model_store, len(train_data), planner_config, persistent_caching_path)
+    return shift.find_best_model(model_snapshots, len(train_data), planner_config, persistent_caching_path)
 
 
 class TestDeterministicOutput(unittest.TestCase):

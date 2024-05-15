@@ -13,7 +13,6 @@ from model_search.execution.planning.baseline_planner import TEST
 from model_search.execution.planning.execution_plan import ScoreModelStep
 from model_search.execution.planning.planner_config import AdvancedPlannerConfig
 from model_search.execution.planning.shift_planner import ShiftExecutionPlanner
-from model_search.model_management.model_store import ModelStore
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 
@@ -64,8 +63,7 @@ def prune_snapshots(model_snapshots, keep_snapshot_ids):
     return [snap for snap in model_snapshots if snap.id in keep_snapshot_ids]
 
 
-def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, train_data_length,
-                    planner_config, caching_path):
+def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner_config, caching_path):
     planner = ShiftExecutionPlanner(planner_config)
 
     cachingService = CachingService(caching_path)
@@ -110,4 +108,4 @@ if __name__ == '__main__':
     planner_config = AdvancedPlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     caching_path = '/mount-ssd/cache-dir'
 
-    find_best_model(_model_snapshots, model_store, train_data_length, planner_config, caching_path)
+    find_best_model(_model_snapshots, train_data_length, planner_config, caching_path)
