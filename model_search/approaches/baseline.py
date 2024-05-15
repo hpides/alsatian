@@ -34,7 +34,7 @@ if __name__ == '__main__':
     caching_path = '/mount-ssd/cache-dir'
 
     cachingService = CachingService(caching_path)
-    planner_config = BaselinePlannerConfig(12, 128)
+    planner_config = BaselinePlannerConfig(12, 128, 100)
     planner = BaselineExecutionPlanner(planner_config)
     exec_engine = BaselineExecutionEngine(cachingService)
 

@@ -120,7 +120,7 @@ class MosixExecutionPlanner(ExecutionPlanner):
                         _get_input_cache_config(ext_train_step.output_node_id, TEST, INPUT).id_prefix],
                     train_feature_cache_prefixes=[
                         _get_input_cache_config(ext_train_step.output_node_id, TRAIN, INPUT).id_prefix],
-                    num_classes=100,
+                    num_classes=self.config.target_classes,
                     scored_models=last_node_in_unit_child.snapshot_ids)
                 execution_steps.append(score_step)
 

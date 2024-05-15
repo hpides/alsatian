@@ -56,7 +56,7 @@ class BaselineExecutionPlanner(ExecutionPlanner):
                     scoring_method=ScoringMethod.FC,
                     test_feature_cache_prefixes=[test_feature_prefix],
                     train_feature_cache_prefixes=[train_feature_prefix],
-                    num_classes=100
+                    num_classes=self.config.target_classes,
                 )
             )
 

@@ -107,7 +107,7 @@ if __name__ == '__main__':
     }
     train_data_length = len(CustomImageFolder(dataset_paths[TRAIN]))
 
-    planner_config = AdvancedPlannerConfig(num_workers, 128, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
+    planner_config = AdvancedPlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     caching_path = '/mount-ssd/cache-dir'
 
     find_best_model(_model_snapshots, model_store, train_data_length, planner_config, caching_path)

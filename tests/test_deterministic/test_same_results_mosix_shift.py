@@ -27,7 +27,7 @@ def get_search_model_inputs():
         TEST: '/tmp/pycharm_project_924/data/imagenette-dummy/val'
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
-    planner_config = AdvancedPlannerConfig(num_workers, 128, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
+    planner_config = AdvancedPlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     persistent_caching_path = '/mount-ssd/cache-dir'
     return dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data
 

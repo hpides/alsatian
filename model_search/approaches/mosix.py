@@ -75,7 +75,7 @@ if __name__ == '__main__':
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
 
-    planner_config = AdvancedPlannerConfig(num_workers, 128, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
+    planner_config = AdvancedPlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths)
     persistent_caching_path = '/mount-ssd/cache-dir'
 
     find_best_model(model_snapshots, model_store, len(train_data), planner_config, persistent_caching_path)
