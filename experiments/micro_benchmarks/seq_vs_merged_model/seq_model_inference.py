@@ -6,7 +6,7 @@ from custom.models.init_models import initialize_model
 from experiments.micro_benchmarks.seq_vs_merged_model.merged_model_inf import TINY, get_tiny_model
 from global_utils.benchmark_util import Benchmarker
 from global_utils.model_names import RESNET_50
-from global_utils.model_operations import get_split_index, split_model
+from global_utils.model_operations import get_split_index, split_model_in_two, count_parameters
 
 
 def inference(first_model, second_models, random_batches):
@@ -28,6 +28,7 @@ if __name__ == '__main__':
     model_type = TINY
 
     measurements = []
+    param_count = 0
     for i in range(10):
         device = torch.device('cuda')
         second_models = []
@@ -39,7 +40,7 @@ if __name__ == '__main__':
             model = get_tiny_model()
             split_index = 1
 
-        first_model, second = split_model(model, split_index)
+        first_model, second = split_model_in_two(model, split_index)
 
         first_model.eval()
         second.eval()
@@ -54,11 +55,15 @@ if __name__ == '__main__':
                 model = get_tiny_model()
                 random_batches = [torch.rand(10, 10) for _ in range(10)]
 
-            _, second = split_model(model, split_index)
+            _, second = split_model_in_two(model, split_index)
             second.eval()
             second_models.append(second)
 
         bench = Benchmarker(device)
+
+        param_count += count_parameters(first_model)
+        for sm in second_models:
+            param_count += count_parameters(sm)
 
         bench.warm_up_gpu()
         mes, out = bench.micro_benchmark(inference, first_model, second_models, random_batches)
@@ -67,3 +72,4 @@ if __name__ == '__main__':
 
     print(measurements)
     print(f'mean: {mean(measurements)}')
+    print(f'num_params: {param_count}')

@@ -4,6 +4,7 @@ import torch
 from torch import nn
 
 from custom.models.split_indices import SPLIT_INDEXES
+from global_utils.device import get_device
 
 
 def _in_class_list(child, split_classes):
@@ -18,7 +19,7 @@ def transform_to_sequential(model, include_seq=False, split_classes=None):
     return seq_model
 
 
-def split_model(model, index, include_layer_names=False):
+def split_model_in_two(model, index, include_layer_names=False):
     assert index <= len(model), "split index larger than available layers"
     layers = list_of_layers(model)
     entire_model = transform_to_sequential(model)
@@ -33,6 +34,28 @@ def split_model(model, index, include_layer_names=False):
         return (first_part, layer_names[:name_split_index]), (second_part, layer_names[name_split_index:])
     else:
         return first_part, second_part
+
+
+def split_model(model, indices):
+    assert all(indices[i] <= indices[i + 1] for i in range(len(indices) - 1))
+    assert indices[-1] <= len(model), "split index larger than available layers"
+    layers = list_of_layers(model)
+    model_parts = []
+    start_indices = [0] + indices
+    end_indices = indices + [len(model)]
+    for start, end in zip(start_indices, end_indices):
+        model_part = torch.nn.Sequential(*(list(layers[start:end])))
+        model_parts.append(model_part)
+
+    return model_parts
+
+
+def merge_models(models):
+    layers = []
+    for model in models:
+        layers += model.children()
+
+    return torch.nn.Sequential(*(list(layers)))
 
 
 def list_of_layers(model: torch.nn.Sequential, include_seq=False, split_classes=None):
@@ -70,8 +93,8 @@ def get_split_index(split_index, model_name):
 
 
 def merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential, _index):
-    base_model_one, head_one = split_model(base_model, _index)
-    base_model_two, head_two = split_model(to_merge, _index)
+    base_model_one, head_one = split_model_in_two(base_model, _index)
+    base_model_two, head_two = split_model_in_two(to_merge, _index)
 
     class MergedHeadModel(nn.Module):
         def __init__(self, head_one, head_two):
@@ -90,6 +113,7 @@ def merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential,
         MergedHeadModel(head_one, head_two)
     )
     return merged_model
+
 
 def merge_n_models(models, models_indices):
     # IMPORTANT: Indices must be sorted
@@ -115,3 +139,40 @@ def get_model_size(model):
     os.remove('temp_model.pth')
 
     return model_size
+
+
+def state_dict_equal(d1: dict, d2: dict, device: torch.device = None) -> bool:
+    """
+    Compares two given state dicts.
+    :param d1: The first state dict.
+    :param d2: The first state dict.
+    :param device: The device to execute on.
+    :return: Returns if the given state dicts are equal.
+    """
+
+    device = get_device(device)
+
+    if not d1.keys() == d2.keys():
+        return False
+
+    for item1, item2 in zip(d1.items(), d2.items()):
+        layer_name1, weight_tensor1 = item1
+        layer_name2, weight_tensor2 = item2
+
+        weight_tensor1 = weight_tensor1.to(device)
+        weight_tensor2 = weight_tensor2.to(device)
+
+        if not layer_name1 == layer_name2 or not torch.equal(weight_tensor1, weight_tensor2):
+            return False
+
+    return True
+
+
+def tensor_equal(tensor1: torch.tensor, tensor2: torch.tensor):
+    """
+    Compares to given Pytorch tensors.
+    :param tensor1: The first tensor to be compared.
+    :param tensor2: The second tensor to be compared.
+    :return: Returns if the two given tensors are equal.
+    """
+    return torch.equal(tensor1, tensor2)

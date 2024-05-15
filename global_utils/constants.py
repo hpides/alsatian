@@ -19,7 +19,6 @@ STATE_DICT_SIZE = 'state_dict_size'
 PARTIAL_STATE_DICT_SIZE = 'partial_state_dict_size'
 
 CPU = 'cpu'
-
 CUDA = 'cuda'
 
 NUM_PARAMS = 'num_params'
@@ -28,3 +27,13 @@ GPU_INF_TIMES = 'gpu_inf_times'
 OUTPUT_SHAPE = 'output_shape'
 OUTPUT_SIZE = 'output_size'
 OUTPUT_SIZE_MB = 'output_size_mb'
+INPUT = 'input'
+LABEL = 'label'
+BATCH_MEASURES = 'batch_measures'
+
+TRAIN = 'train'
+TEST = 'test'
+
+SCORE = 'score'
+
+

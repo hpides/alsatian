@@ -4,6 +4,8 @@ from typing import Any, Callable, Optional, Tuple
 from torchvision.datasets import ImageFolder
 from torchvision.datasets.folder import default_loader
 
+from global_utils.deterministic import check_deterministic_env_var_set
+
 
 class CustomImageFolder(ImageFolder):
     """
@@ -18,7 +20,7 @@ class CustomImageFolder(ImageFolder):
             loader: Callable[[str], Any] = default_loader,
             is_valid_file: Optional[Callable[[str], bool]] = None,
             number_images: int = 0,
-            return_samples_only=True
+            return_samples_only=True,
     ):
         super().__init__(
             root,
@@ -30,6 +32,9 @@ class CustomImageFolder(ImageFolder):
         if number_images > 0:
             self.imgs = random.choices(self.imgs, k=number_images)
             self.samples = self.imgs
+
+        if check_deterministic_env_var_set():
+            random.seed(42)
 
         random.shuffle(self.samples)
         self.all_samples = self.samples

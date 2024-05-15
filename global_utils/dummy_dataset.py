@@ -3,7 +3,7 @@ import os
 import torch
 
 from global_utils.file_names import clean_file_name
-from global_utils.model_operations import split_model
+from global_utils.model_operations import split_model_in_two
 
 
 def get_input_shape(split_index, model, number_items, item_shape):
@@ -11,7 +11,7 @@ def get_input_shape(split_index, model, number_items, item_shape):
 
     data = DummyDataset(number_items=number_items, input_shape=item_shape, label_shape=(1,),
                         directory='', saved_items=0)
-    first, second = split_model(model, split_index)
+    first, second = split_model_in_two(model, split_index)
     shape = _second_model_input_shape(data, first, device)
 
     return shape
