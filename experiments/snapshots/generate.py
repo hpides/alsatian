@@ -5,8 +5,9 @@ from enum import Enum
 import torch.nn
 
 from custom.models.init_models import initialize_model
+from experiments.snapshots.retrain_distribution import normal_retrain_layer_dist_last_few, normal_retrain_layer_dist_25, \
+    normal_retrain_layer_dist_50
 from global_utils.hash import state_dict_hash
-from global_utils.model_names import RESNET_18
 from global_utils.model_operations import split_model_in_two
 from model_search.model_snapshots.base_snapshot import ModelSnapshot, generate_snapshot_id
 
@@ -22,12 +23,6 @@ class RetrainDistribution(Enum):
 def _num_retrained_layers(max_number, distribution: RetrainDistribution) -> int:
     if distribution == RetrainDistribution.RANDOM:
         return random.randint(0, max_number)
-    elif distribution == RetrainDistribution.TOP_LAYERS:
-        raise NotImplementedError
-    elif distribution == RetrainDistribution.TWENTY_FIVE_PERCENT:
-        raise NotImplementedError
-    elif distribution == RetrainDistribution.FIFTY_PERCENT:
-        raise NotImplementedError
     else:
         raise ValueError(f"invalid distribution: {distribution}")
 
@@ -51,21 +46,31 @@ def _adjust_model_randomly(architecture_name: str, base_model: torch.nn.Sequenti
 
 def generate_snapshots(architecture_name: str, num_models: int, distribution: RetrainDistribution, save_path: str,
                        retrain_idxs=None, use_same_base=False, ) -> [torch.nn.Module]:
-    if distribution == RetrainDistribution.HARD_CODED:
-        assert retrain_idxs is not None
-
     # always start with a model pretrained on Imagenet
     model = initialize_model(architecture_name, pretrained=True, features_only=True)
     snapshot = generate_snapshot(architecture_name, model, save_path)
+    base_snapshot = snapshot
+    base_model = base_snapshot.init_model_from_snapshot()
+
+    if distribution == RetrainDistribution.HARD_CODED:
+        assert retrain_idxs is not None
+    elif distribution == RetrainDistribution.TOP_LAYERS:
+        retrain_idxs = normal_retrain_layer_dist_last_few(len(base_model), num_models - 1)
+    elif distribution == RetrainDistribution.TWENTY_FIVE_PERCENT:
+        retrain_idxs = normal_retrain_layer_dist_25(len(base_model), num_models - 1)
+    elif distribution == RetrainDistribution.FIFTY_PERCENT:
+        retrain_idxs = normal_retrain_layer_dist_50(len(base_model), num_models - 1)
+    else:
+        raise NotImplementedError
+
+    print('retrain_idxs', retrain_idxs)
 
     generated_snapshots = [snapshot]
     for i in range(num_models - 1):
-        if use_same_base:
-            base_snapshot = generated_snapshots[0]
-        else:
+        if not use_same_base:
             base_snapshot = random.choice(generated_snapshots)
+            base_model = base_snapshot.init_model_from_snapshot()
 
-        base_model = base_snapshot.init_model_from_snapshot()
         if retrain_idxs:
             new_model = _adjust_model_randomly(architecture_name, base_model, distribution, retrain_idxs[i])
         else:
@@ -86,8 +91,3 @@ def generate_snapshot(architecture_name, model, save_path):
         torch.save(pre_trained_state, state_dict_path)
     snapshot = ModelSnapshot(architecture_name, state_dict_path, sd_hash, snapshot_id)
     return snapshot
-
-
-if __name__ == '__main__':
-    snaps = generate_snapshots(RESNET_18, 4, RetrainDistribution.HARD_CODED, [5, 7, 9])
-    print('test')
