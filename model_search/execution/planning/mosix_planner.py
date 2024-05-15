@@ -1,23 +1,15 @@
 from custom.data_loaders.imagenet_transfroms import inference_transform
 from global_utils.constants import TRAIN, TEST, INPUT, LABEL
-from model_search.execution.data_handling.data_information import DatasetInformation, DataInfo, DatasetClass, \
-    CachedDatasetInformation
+from model_search.execution.data_handling.data_information import DatasetInformation, DataInfo, CachedDatasetInformation
 from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, ScoreModelStep, \
     CacheLocation, ScoringMethod
+from model_search.execution.planning.planner_config import AdvancedPlannerConfig
 
 from model_search.model_snapshots.dfs_traversal import dfs_execution_plan
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot, MultiModelSnapshotEdge
 from model_search.model_snapshots.rich_snapshot import LayerState
 
 END = 'end'
-
-
-class MosixPlannerConfig:
-    def __init__(self, num_workers: int, batch_size: int, dataset_class: DatasetClass, dataset_paths: dict):
-        self.num_workers = num_workers
-        self.batch_size = batch_size
-        self.dataset_class = dataset_class
-        self.dataset_paths = dataset_paths
 
 
 class CacheConfig:
@@ -84,12 +76,11 @@ def _get_label_cache_config(dataset_type, inp_lbl, data_range=None, write_cache_
 
 class MosixExecutionPlanner(ExecutionPlanner):
 
-    def __init__(self, config: MosixPlannerConfig):
-        self.config: MosixPlannerConfig = config
+    def __init__(self, config: AdvancedPlannerConfig):
+        self.config: AdvancedPlannerConfig = config
 
-    def generate_execution_plan(self, mm_snapshot: MultiModelSnapshot, dataset_paths: dict,
-                                train_dataset_range: [int] = None, first_iteration=False,
-                                strategy="DFS") -> ExecutionPlan:
+    def generate_execution_plan(self, mm_snapshot: MultiModelSnapshot, train_dataset_range: [int] = None,
+                                first_iteration=False, strategy="DFS") -> ExecutionPlan:
         execution_units = dfs_execution_plan(mm_snapshot.root)
 
         execution_steps = []
