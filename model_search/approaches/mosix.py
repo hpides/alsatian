@@ -5,11 +5,10 @@ from global_utils.constants import SCORE
 from global_utils.deterministic import DETERMINISTIC_EXECUTION, check_deterministic_env_var_set, set_deterministic
 from global_utils.global_constants import TRAIN, TEST
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
-from model_search.approaches.shift import get_data_ranges, divide_snapshots
+from model_search.approaches.shift import get_data_ranges, divide_snapshots, get_sorted_model_scores
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
-from model_search.execution.planning.execution_plan import ScoreModelStep
 from model_search.execution.planning.mosix_planner import MosixExecutionPlanner
 from model_search.execution.planning.planner_config import AdvancedPlannerConfig
 from model_search.model_management.model_store import ModelStore
@@ -17,14 +16,7 @@ from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
 
-def get_sorted_model_scores(execution_steps):
-    scores = []
-    for step in execution_steps:
-        if isinstance(step, ScoreModelStep):
-            for snapshot_id in step.scored_models:
-                scores.append([step.execution_result[SCORE], snapshot_id])
 
-    return sorted(scores)
 
 
 def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, train_data_length, planner_config,
@@ -54,7 +46,7 @@ def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, t
     for data_range in data_ranges:
         execution_plan = planner.generate_execution_plan(mm_snapshot, data_range, first_iteration)
         exec_engine.execute_plan(execution_plan)
-        pruned_snapshot_ids, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps, get_sorted_model_scores)
+        pruned_snapshot_ids, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
         mm_snapshot.prune_snapshots(pruned_snapshot_ids)
         first_iteration = False
         ranking = get_sorted_model_scores(execution_plan.execution_steps)

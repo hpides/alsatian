@@ -77,7 +77,8 @@ class ShiftExecutionPlanner(ExecutionPlanner):
                     scoring_method=ScoringMethod.FC,
                     test_feature_cache_prefixes=[test_feature_prefix],
                     train_feature_cache_prefixes=self._train_feature_prefixes[snapshot.id],
-                    num_classes=100
+                    num_classes=100,
+                    scored_models=[snapshot.id]
                 )
             )
 

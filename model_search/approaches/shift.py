@@ -21,12 +21,13 @@ def get_sorted_model_scores(execution_steps):
     scores = []
     for step in execution_steps:
         if isinstance(step, ScoreModelStep):
-            scores.append([step.execution_result[SCORE], step._id.replace(f'-{SCORE}', '')])
+            for snapshot_id in step.scored_models:
+                scores.append([step.execution_result[SCORE], snapshot_id])
 
     return sorted(scores)
 
 
-def divide_snapshots(execution_steps, get_sorted_model_scores):
+def divide_snapshots(execution_steps):
     ranking = get_sorted_model_scores(execution_steps)
     print(ranking)
     snapshot_ids = [s[1] for s in ranking]
@@ -78,7 +79,7 @@ def find_best_model(model_snapshots: [ModelSnapshot], model_store: ModelStore, t
     for _range in data_ranges:
         execution_plan = planner.generate_execution_plan(model_snapshots, _range, first_iteration)
         exec_engine.execute_plan(execution_plan)
-        _, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps, get_sorted_model_scores)
+        _, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
         model_snapshots = prune_snapshots(model_snapshots, keep_snapshot_ids)
         first_iteration = False
         ranking = get_sorted_model_scores(execution_plan.execution_steps)
