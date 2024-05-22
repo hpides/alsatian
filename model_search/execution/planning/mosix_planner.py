@@ -126,6 +126,8 @@ class MosixExecutionPlanner:
 
             extract_labels = False
 
+        assert sum([len(s.scored_models) for s in execution_steps if isinstance(s, ScoreModelStep)]) == len(mm_snapshot.root.snapshot_ids)
+
         return ExecutionPlan(execution_steps)
 
     def _create_feature_ext_step(self, exec_unit: [MultiModelSnapshotEdge], dataset_type, data_range, extract_labels,
