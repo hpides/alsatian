@@ -57,9 +57,9 @@ def ranking_ids(ranking):
 class TestDeterministicOutput(unittest.TestCase):
 
     def setUp(self):
-        self.mosix_out = _execute_mosix()
-        self.shift_out = _execute_shift()
-        self.baseline_out = _execute_baseline()
+        _, self.mosix_out = _execute_mosix()
+        _, self.shift_out = _execute_shift()
+        _, self.baseline_out = _execute_baseline()
 
     def test_mosix_shift_same_output(self):
         print(self.shift_out)
