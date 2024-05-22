@@ -5,6 +5,7 @@ from enum import Enum
 import torch.nn
 
 from custom.models.init_models import initialize_model
+from custom.models.split_indices import SPLIT_INDEXES
 from experiments.snapshots.retrain_distribution import normal_retrain_layer_dist_last_few, normal_retrain_layer_dist_25, \
     normal_retrain_layer_dist_50
 from global_utils.hash import state_dict_hash
@@ -29,11 +30,13 @@ def _num_retrained_layers(max_number, distribution: RetrainDistribution) -> int:
 
 def _adjust_model_randomly(architecture_name: str, base_model: torch.nn.Sequential,
                            distribution: RetrainDistribution, retrain_idx=None) -> torch.nn.Module:
-    if retrain_idx is None:
-        retrain_idx = _num_retrained_layers(len(base_model), distribution)
 
-    keep_layers = len(base_model) - retrain_idx
-    _, (_, second_layer_names) = split_model_in_two(base_model, keep_layers, include_layer_names=True)
+    num_blocks = len(SPLIT_INDEXES[architecture_name])
+    if retrain_idx is None:
+        retrain_idx = _num_retrained_layers(num_blocks, distribution)
+
+    split_index = SPLIT_INDEXES[architecture_name][retrain_idx]
+    _, (_, second_layer_names) = split_model_in_two(base_model, split_index, include_layer_names=True)
     copied_weights = base_model.state_dict()
     for parm_key in second_layer_names:
         del copied_weights[parm_key]
@@ -45,7 +48,7 @@ def _adjust_model_randomly(architecture_name: str, base_model: torch.nn.Sequenti
 
 
 def generate_snapshots(architecture_name: str, num_models: int, distribution: RetrainDistribution, save_path: str,
-                       retrain_idxs=None, use_same_base=False, ) -> [torch.nn.Module]:
+                       retrain_idxs=None, use_same_base=False) -> [torch.nn.Module]:
     # always start with a model pretrained on Imagenet
     model = initialize_model(architecture_name, pretrained=True, features_only=True)
     snapshot = generate_snapshot(architecture_name, model, save_path)
