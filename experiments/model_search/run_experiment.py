@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', default='./config.ini', help='Configuration file path')
-    parser.add_argument('--config_section', default='debug-des-gpu',
+    parser.add_argument('--config_section', default='debug-des-gpu-mosix',
                         help='Exact Configuration identified by the section in the configuration file')
     args = parser.parse_args()
 

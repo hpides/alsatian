@@ -2,6 +2,7 @@ import math
 import os
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
+from experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.constants import SCORE
 from global_utils.deterministic import DETERMINISTIC_EXECUTION, check_deterministic_env_var_set, set_deterministic
 from global_utils.global_constants import TRAIN
@@ -63,7 +64,8 @@ def prune_snapshots(model_snapshots, keep_snapshot_ids):
     return [snap for snap in model_snapshots if snap.id in keep_snapshot_ids]
 
 
-def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner_config, caching_path):
+def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner_config, caching_path,
+                    benchmark_level: BenchmarkLevel):
     planner = ShiftExecutionPlanner(planner_config)
 
     cachingService = CachingService(caching_path)

@@ -112,7 +112,7 @@ def _save_path(architecture_name, base_path, distribution, num_models):
 if __name__ == '__main__':
     base_path = '/mount-fs/snapshot-sets'
     distributions = [
-        # RetrainDistribution.TOP_LAYERS,
+        RetrainDistribution.TOP_LAYERS,
         RetrainDistribution.TWENTY_FIVE_PERCENT,
         # RetrainDistribution.FIFTY_PERCENT
     ]

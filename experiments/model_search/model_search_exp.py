@@ -1,18 +1,29 @@
 import os
 
+import torch
+
 from custom.data_loaders.custom_image_folder import CustomImageFolder
+from experiments.model_search.benchmark_level import BenchmarkLevel
 from experiments.model_search.experiment_args import ExpArgs
-from experiments.snapshots.twenty_resnet_152 import twenty_resnet_152_snapshots
-from global_utils.constants import TRAIN, TEST
+from experiments.snapshots.generate_sets.generate_set import generate_snapshot_set
+from experiments.snapshots.generate_sets.twenty_resnet_152 import twenty_resnet_152_snapshots
+from global_utils.benchmark_util import Benchmarker
+from global_utils.constants import TRAIN, TEST, END_TO_END, DETAILED_TIMES
+from global_utils.model_names import VISION_MODEL_CHOICES
 from model_search.approaches import baseline, mosix, shift
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.planning.planner_config import PlannerConfig
 
 
-def get_snapshots(snapshot_set_string, base_save_path):
+def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path):
     if snapshot_set_string == 'twenty_resnet_152':
         snapshot_save_path = os.path.join(base_save_path, snapshot_set_string)
         return twenty_resnet_152_snapshots(snapshot_save_path)
+    elif snapshot_set_string in VISION_MODEL_CHOICES:
+        return generate_snapshot_set(snapshot_set_string, num_models, distribution, base_save_path)
+    else:
+        # TODO sets are already implemented, just need to add the right strings and a parameter for the number of models
+        raise NotImplementedError
 
 
 def run_model_search(exp_args: ExpArgs):
@@ -31,17 +42,29 @@ def run_model_search(exp_args: ExpArgs):
     train_data = CustomImageFolder(dataset_paths[TRAIN])
     len_train_data = len(train_data)
 
-    model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.base_snapshot_save_path)
+    model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
+                                                 exp_args.distribution, exp_args.base_snapshot_save_path)
 
     planner_config = PlannerConfig(num_workers, batch_size, num_target_classes, dataset_class, dataset_paths)
 
+    benchmark_level = exp_args.benchmark_level
+    if benchmark_level == BenchmarkLevel.END_TO_END:
+        benchmarker = Benchmarker(torch.device('cuda'), ignore_micro_bench=True)
+    else:
+        benchmarker = Benchmarker(torch.device('cuda'))
+
     if exp_args.approach == 'mosix':
-        mosix.find_best_model(model_snapshots, len_train_data, planner_config, persistent_caching_path, model_store)
+        args = [model_snapshots, len_train_data, planner_config, persistent_caching_path, model_store, benchmark_level]
+        measure, (sub_measurements, result) = benchmarker.benchmark_end_to_end(mosix.find_best_model, *args)
     elif exp_args.approach == 'shift':
-        shift.find_best_model(model_snapshots, len_train_data, planner_config, persistent_caching_path)
+        args = [model_snapshots, len_train_data, planner_config, persistent_caching_path, benchmark_level]
+        measure, (sub_measurements, result) = benchmarker.benchmark_end_to_end(shift.find_best_model, *args)
     elif exp_args.approach == 'baseline':
-        baseline.find_best_model(model_snapshots, planner_config, persistent_caching_path)
+        args = [model_snapshots, planner_config, persistent_caching_path, benchmark_level]
+        measure, (sub_measurements, result) = benchmarker.benchmark_end_to_end(baseline.find_best_model, *args)
+    else:
+        raise NotImplementedError
 
-    measurements = {}
+    measurements = {END_TO_END: measure, DETAILED_TIMES: sub_measurements}
 
-    return measurements
+    return measurements, result

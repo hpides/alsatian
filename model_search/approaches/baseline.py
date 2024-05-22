@@ -1,3 +1,4 @@
+from experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.global_constants import TRAIN
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.approaches.shift import get_sorted_model_scores
@@ -8,7 +9,7 @@ from model_search.execution.planning.baseline_planner import TEST, BaselineExecu
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 
-def find_best_model(model_snapshots: [ModelSnapshot], planner_config, caching_path):
+def find_best_model(model_snapshots: [ModelSnapshot], planner_config, caching_path, benchmark_level: BenchmarkLevel):
     planner = BaselineExecutionPlanner(planner_config)
 
     cachingService = CachingService(caching_path)

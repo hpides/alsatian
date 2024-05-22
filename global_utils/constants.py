@@ -1,3 +1,8 @@
+EXEC_STEP_MEASUREMENTS = 'exec_step_measurements'
+GEN_EXEC_PLAN = 'gen_exec_plan'
+RANK_ITERATION_DETAILS_ = 'sh_rank_iteration_details_'
+SH_RANK_ITERATION_ = 'sh_rank_iteration_'
+GENERATE_MM_SNAP = 'generate_mm_snap'
 END_TO_END = 'end_to_end'
 CALC_PROXY_SCORE = 'calc_proxy_score'
 INFERENCE = 'inference'
@@ -5,6 +10,7 @@ INFERENCE_CPU = 'inference_cpu'
 LOAD_DATA = 'load_data'
 END_DATA_LOAD = 'end_data_load'
 END_EXTRACT_FEATURES = 'end_extract_features'
+DETAILED_TIMES = "detailed_times"
 
 DATA_TO_DEVICE = 'data_to_device'
 MODEL_TO_DEVICE = 'model_to_device'
@@ -35,5 +41,3 @@ TRAIN = 'train'
 TEST = 'test'
 
 SCORE = 'score'
-
-

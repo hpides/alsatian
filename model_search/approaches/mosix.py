@@ -1,7 +1,12 @@
 import os
 
+import torch
+
 from custom.data_loaders.custom_image_folder import CustomImageFolder
-from global_utils.constants import SCORE
+from experiments.model_search.benchmark_level import BenchmarkLevel
+from global_utils.benchmark_util import Benchmarker
+from global_utils.constants import GENERATE_MM_SNAP, SH_RANK_ITERATION_, RANK_ITERATION_DETAILS_, GEN_EXEC_PLAN, \
+    EXEC_STEP_MEASUREMENTS
 from global_utils.deterministic import DETERMINISTIC_EXECUTION, check_deterministic_env_var_set, set_deterministic
 from global_utils.global_constants import TRAIN, TEST
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
@@ -17,12 +22,13 @@ from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
 
 def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner_config,
-                    caching_path, model_store: ModelStore):
+                    caching_path, model_store: ModelStore, benchmark_level: BenchmarkLevel):
+    measurements = {}
+    benchmarker = _init_benchmarker('find_best_model', benchmark_level)
+
     # add all the snapshots to a multi-model snapshot
-    mm_snapshot = MultiModelSnapshot()
-    for snapshot in model_snapshots:
-        # get snapshot from model store to have access to the rich model snapshot
-        mm_snapshot.add_snapshot(model_store.get_snapshot(snapshot.id))
+    measurement, mm_snapshot = benchmarker.micro_benchmark_cpu(_gen_mm_snapshot, model_snapshots, model_store)
+    measurements[GENERATE_MM_SNAP] = measurement
 
     # initialize execution planner
     planner = MosixExecutionPlanner(planner_config)
@@ -36,19 +42,48 @@ def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner
     # executing by iterating over the data ranges
     ###########################################################
     data_ranges = get_data_ranges(len(model_snapshots), train_data_length)
-
     ranking = None
-
     first_iteration = True
-    for data_range in data_ranges:
-        execution_plan = planner.generate_execution_plan(mm_snapshot, data_range, first_iteration)
-        exec_engine.execute_plan(execution_plan)
-        pruned_snapshot_ids, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
-        mm_snapshot.prune_snapshots(pruned_snapshot_ids)
+    for i, data_range in enumerate(data_ranges):
+        measurement, (measure, ranking) = benchmarker.micro_benchmark_gpu(
+            _sh_iteration, data_range, exec_engine, first_iteration, mm_snapshot, planner, ranking, benchmark_level)
+        measurements[f'{SH_RANK_ITERATION_}{i}'] = measurement
+        measurements[f'{RANK_ITERATION_DETAILS_}{i}'] = measure
         first_iteration = False
-        ranking = get_sorted_model_scores(execution_plan.execution_steps)
+    return measurements, ranking
 
-    return ranking
+
+def _init_benchmarker(method_name, benchmark_level: BenchmarkLevel):
+    if method_name == 'find_best_model':
+        return Benchmarker(torch.device('cuda'), ignore_micro_bench=(benchmark_level == BenchmarkLevel.END_TO_END))
+    elif method_name == '_sh_iteration':
+        ignore_micro_bench = \
+            (benchmark_level == BenchmarkLevel.END_TO_END) or (benchmark_level == BenchmarkLevel.SH_PHASES)
+        return Benchmarker(torch.device('cuda'), ignore_micro_bench=ignore_micro_bench)
+
+
+def _sh_iteration(data_range, exec_engine, first_iteration, mm_snapshot, planner, ranking, benchmark_level):
+    measurements = {}
+    benchmarker = _init_benchmarker('_sh_iteration', benchmark_level)
+
+    measure, execution_plan = benchmarker.micro_benchmark_cpu(
+        planner.generate_execution_plan, mm_snapshot, data_range, first_iteration)
+    measurements[GEN_EXEC_PLAN] = measure
+
+    measurements[EXEC_STEP_MEASUREMENTS] = exec_engine.execute_plan(execution_plan, benchmark_level=benchmark_level)
+    pruned_snapshot_ids, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
+    mm_snapshot.prune_snapshots(pruned_snapshot_ids)
+    ranking = get_sorted_model_scores(execution_plan.execution_steps)
+
+    return measurements, ranking
+
+
+def _gen_mm_snapshot(model_snapshots, model_store):
+    mm_snapshot = MultiModelSnapshot()
+    for snapshot in model_snapshots:
+        # get snapshot from model store to have access to the rich model snapshot
+        mm_snapshot.add_snapshot(model_store.get_snapshot(snapshot.id))
+    return mm_snapshot
 
 
 if __name__ == '__main__':
