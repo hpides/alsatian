@@ -112,6 +112,7 @@ class TestTensorCachingService(unittest.TestCase):
             current_node = current_node.edges[0].child
         # last node has no child
         self.assertEqual(len(current_node.edges), 0)
+        self.assertEqual(current_node.snapshot_ids, snapshot_ids)
 
     def test_add_same_snapshot_twice(self):
         # add the first model

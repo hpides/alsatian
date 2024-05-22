@@ -111,9 +111,14 @@ class MultiModelSnapshot:
                 current_root.snapshot_ids.append(snapshot_id)
                 # deduplicate: forget about current layer state and continue merging
                 self._merge_layers_in_model(match, layer_states[1:], snapshot_id)
+
+                if len(layer_states) == 1:
+                    match.snapshot_ids.append(snapshot_id)
+
             else:
                 # if we do not find matching child create new edge and connect
                 self._append_layers_to_node(current_root, layer_states, snapshot_id)
+
 
     def _find_layer_match(self, multi_model_children: [MultiModelSnapshotNode], current_layer_state: LayerState):
         for node in multi_model_children:
