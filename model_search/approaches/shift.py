@@ -1,9 +1,13 @@
 import math
 import os
 
+import torch
+
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from experiments.model_search.benchmark_level import BenchmarkLevel
-from global_utils.constants import SCORE
+from global_utils.benchmark_util import Benchmarker
+from global_utils.constants import SCORE, SH_RANK_ITERATION_, RANK_ITERATION_DETAILS_, GEN_EXEC_PLAN, \
+    EXEC_STEP_MEASUREMENTS
 from global_utils.deterministic import DETERMINISTIC_EXECUTION, check_deterministic_env_var_set, set_deterministic
 from global_utils.global_constants import TRAIN
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
@@ -65,7 +69,10 @@ def prune_snapshots(model_snapshots, keep_snapshot_ids):
 
 
 def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner_config, caching_path,
-                    benchmark_level: BenchmarkLevel):
+                    benchmark_level: BenchmarkLevel = None):
+    measurements = {}
+    benchmarker = _init_benchmarker('find_best_model', benchmark_level)
+
     planner = ShiftExecutionPlanner(planner_config)
 
     cachingService = CachingService(caching_path)
@@ -74,17 +81,39 @@ def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner
     data_ranges = get_data_ranges(len(model_snapshots), train_data_length)
 
     ranking = None
-
     first_iteration = True
-    for _range in data_ranges:
-        execution_plan = planner.generate_execution_plan(model_snapshots, _range, first_iteration)
-        exec_engine.execute_plan(execution_plan)
-        _, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
-        model_snapshots = prune_snapshots(model_snapshots, keep_snapshot_ids)
+    for i, data_range in enumerate(data_ranges):
+        measurement, (measure, (ranking, model_snapshots)) = benchmarker.micro_benchmark_gpu(
+            _sh_iteration, data_range, exec_engine, first_iteration, model_snapshots, planner, ranking, benchmark_level)
+        measurements[f'{SH_RANK_ITERATION_}{i}'] = measurement
+        measurements[f'{RANK_ITERATION_DETAILS_}{i}'] = measure
         first_iteration = False
-        ranking = get_sorted_model_scores(execution_plan.execution_steps)
+    return measurements, ranking
 
-    return ranking
+
+def _sh_iteration(data_range, exec_engine, first_iteration, model_snapshots, planner, ranking, benchmark_level):
+    measurements = {}
+    benchmarker = _init_benchmarker('_sh_iteration', benchmark_level)
+
+    measure, execution_plan = benchmarker.micro_benchmark_cpu(
+        planner.generate_execution_plan, model_snapshots, data_range, first_iteration)
+    measurements[GEN_EXEC_PLAN] = measure
+
+    measurements[EXEC_STEP_MEASUREMENTS] = exec_engine.execute_plan(execution_plan, benchmark_level=benchmark_level)
+    _, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
+    model_snapshots = prune_snapshots(model_snapshots, keep_snapshot_ids)
+    ranking = get_sorted_model_scores(execution_plan.execution_steps)
+
+    return measurements, (ranking, model_snapshots)
+
+
+def _init_benchmarker(method_name, benchmark_level: BenchmarkLevel = None):
+    if method_name == 'find_best_model':
+        return Benchmarker(torch.device('cuda'), ignore_micro_bench=(benchmark_level == BenchmarkLevel.END_TO_END))
+    elif method_name == '_sh_iteration':
+        ignore_micro_bench = \
+            (benchmark_level == BenchmarkLevel.END_TO_END) or (benchmark_level == BenchmarkLevel.SH_PHASES)
+        return Benchmarker(torch.device('cuda'), ignore_micro_bench=ignore_micro_bench)
 
 
 if __name__ == '__main__':

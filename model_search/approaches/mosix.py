@@ -10,7 +10,7 @@ from global_utils.constants import GENERATE_MM_SNAP, SH_RANK_ITERATION_, RANK_IT
 from global_utils.deterministic import DETERMINISTIC_EXECUTION, check_deterministic_env_var_set, set_deterministic
 from global_utils.global_constants import TRAIN, TEST
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
-from model_search.approaches.shift import get_data_ranges, divide_snapshots, get_sorted_model_scores
+from model_search.approaches.shift import get_data_ranges, divide_snapshots, get_sorted_model_scores, _init_benchmarker
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.mosix_execution_engine import MosixExecutionEngine
@@ -22,7 +22,7 @@ from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
 
 def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner_config,
-                    caching_path, model_store: ModelStore, benchmark_level: BenchmarkLevel):
+                    caching_path, model_store: ModelStore, benchmark_level: BenchmarkLevel = None):
     measurements = {}
     benchmarker = _init_benchmarker('find_best_model', benchmark_level)
 
@@ -51,15 +51,6 @@ def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner
         measurements[f'{RANK_ITERATION_DETAILS_}{i}'] = measure
         first_iteration = False
     return measurements, ranking
-
-
-def _init_benchmarker(method_name, benchmark_level: BenchmarkLevel):
-    if method_name == 'find_best_model':
-        return Benchmarker(torch.device('cuda'), ignore_micro_bench=(benchmark_level == BenchmarkLevel.END_TO_END))
-    elif method_name == '_sh_iteration':
-        ignore_micro_bench = \
-            (benchmark_level == BenchmarkLevel.END_TO_END) or (benchmark_level == BenchmarkLevel.SH_PHASES)
-        return Benchmarker(torch.device('cuda'), ignore_micro_bench=ignore_micro_bench)
 
 
 def _sh_iteration(data_range, exec_engine, first_iteration, mm_snapshot, planner, ranking, benchmark_level):
