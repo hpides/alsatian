@@ -1,4 +1,8 @@
+import torch
+
 from experiments.model_search.benchmark_level import BenchmarkLevel
+from global_utils.benchmark_util import Benchmarker
+from global_utils.constants import EXEC_STEP_MEASUREMENTS, GEN_EXEC_PLAN
 from global_utils.global_constants import TRAIN
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.approaches.shift import get_sorted_model_scores
@@ -9,18 +13,25 @@ from model_search.execution.planning.baseline_planner import TEST, BaselineExecu
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
 
-def find_best_model(model_snapshots: [ModelSnapshot], planner_config, caching_path, benchmark_level: BenchmarkLevel):
+def find_best_model(model_snapshots: [ModelSnapshot], planner_config, caching_path,
+                    benchmark_level: BenchmarkLevel = None):
+    measurements = {}
+    ignore_micro_bench = ((benchmark_level == BenchmarkLevel.END_TO_END) or
+                          (benchmark_level == BenchmarkLevel.SH_PHASES))
+    benchmarker = Benchmarker(torch.device('cuda'), ignore_micro_bench=ignore_micro_bench)
+
     planner = BaselineExecutionPlanner(planner_config)
 
     cachingService = CachingService(caching_path)
     exec_engine = BaselineExecutionEngine(cachingService)
 
-    execution_plan = planner.generate_execution_plan(model_snapshots)
-    exec_engine.execute_plan(execution_plan)
+    measure, execution_plan = benchmarker.micro_benchmark_cpu(planner.generate_execution_plan, model_snapshots)
+    measurements[GEN_EXEC_PLAN] = measure
+    measurements[EXEC_STEP_MEASUREMENTS] = exec_engine.execute_plan(execution_plan, benchmark_level=benchmark_level)
 
     ranking = get_sorted_model_scores(execution_plan.execution_steps)
 
-    return ranking
+    return measurements, ranking
 
 
 if __name__ == '__main__':
