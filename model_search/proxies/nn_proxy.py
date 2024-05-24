@@ -35,6 +35,8 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
             loss.backward()
             optimizer.step()
 
+    print('done training')
+
     # eval model on test data
     model.eval()
     total_loss = 0.0
@@ -51,4 +53,6 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
         total_samples += batch_size
 
     average_loss = total_loss / total_samples
+
+    print('done inference')
     return average_loss

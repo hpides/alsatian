@@ -87,7 +87,7 @@ class MosixExecutionPlanner:
 
         extract_labels = True
         for exec_unit in execution_units:
-            # TODO the location of the caching should be adjusted to e.g. GPU
+            # TODO the location of the caching should be dynamically adjusted, for now always use default_cache_location
 
             # if first, iteration we also have to extract the test features
             if first_iteration:
@@ -96,7 +96,7 @@ class MosixExecutionPlanner:
                     dataset_type=TEST,
                     data_range=None,  # use all data
                     extract_labels=extract_labels,
-                    write_cache_location=CacheLocation.SSD
+                    write_cache_location=self.config.default_cache_location
                 )
                 execution_steps.append(ext_test_step)
 
@@ -106,7 +106,7 @@ class MosixExecutionPlanner:
                 dataset_type=TRAIN,
                 data_range=train_dataset_range,
                 extract_labels=extract_labels,
-                write_cache_location=CacheLocation.SSD
+                write_cache_location=self.config.default_cache_location
             )
             execution_steps.append(ext_train_step)
 

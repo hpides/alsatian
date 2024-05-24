@@ -1,7 +1,7 @@
-- for top layer distribution, retrain layers are not dependent on the architecture
-  -  retrain_idxs [2, 5, 4, 3, 1, 1, 0, 4, 3, 3, 0, 6, 4, 1, 1, 1, 2, 3, 2, 2, 3, 1, 2, 2, 2, 4, 1, 2, 3, 0, 3, 1, 0, 5, 6, 4, 2, 1, 3, 2, 1, 2, 0, 5, 1, 3, 2, 2, 3]
-- for other distributions they are
-  generating RetrainDistribution.TWENTY_FIVE_PERCENT resnet152
+
+generating RetrainDistribution.TOP_LAYERS vit_l_32
+retrain_idxs [2, 5, 4, 3, 1, 1, 0, 4, 3, 3, 0, 6, 4, 1, 1, 1, 2, 3, 2, 2, 3, 1, 2, 2, 2, 4, 1, 2, 3, 0, 3, 1, 0, 5, 6, 4, 2, 1, 3, 2, 1, 2, 0, 5, 1, 3, 2, 2, 3]
+generating RetrainDistribution.TWENTY_FIVE_PERCENT resnet152
 retrain_idxs [12, 26, 18, 16, 7, 7, 4, 22, 16, 18, 2, 27, 21, 9, 8, 8, 11, 15, 13, 10, 16, 7, 10, 12, 13, 20, 9, 14, 16, 4, 16, 8, 4, 26, 27, 20, 11, 6, 17, 13, 7, 14, 3, 23, 10, 17, 11, 15, 15]
 generating RetrainDistribution.TWENTY_FIVE_PERCENT resnet101
 retrain_idxs [8, 18, 13, 11, 5, 5, 3, 15, 11, 13, 1, 19, 15, 6, 6, 6, 7, 10, 9, 7, 11, 5, 7, 8, 9, 14, 6, 10, 11, 2, 11, 5, 3, 18, 19, 14, 7, 4, 12, 9, 5, 10, 2, 16, 7, 12, 8, 10, 10]

@@ -14,7 +14,7 @@ def run_experiment_section(exp_args, section, file_id=None):
     print(f'run experiment:{exp_args}')
 
     # code to start experiment here
-    measurements = run_exp(exp_args)
+    measurements, result = run_exp(exp_args)
 
     if file_id is None:
         file_id = f'score_model_exp_section_{section}'

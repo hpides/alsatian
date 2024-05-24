@@ -59,6 +59,10 @@ def generate_snapshot_set(architecture_name, num_models, distribution: RetrainDi
 
     return model_snapshots, model_store
 
+def get_architecture_models(base_path, distribution, num_models, architecture_names):
+    model_set = architecture_names
+    return _compose_pregenerates_set(base_path, distribution, model_set, num_models)
+
 def get_all_models(base_path, distribution, num_models):
     model_set = VISION_MODEL_CHOICES
     return _compose_pregenerates_set(base_path, distribution, model_set, num_models)
@@ -95,7 +99,8 @@ def _compose_pregenerates_set(base_path, distribution, model_set, num_models):
     agg_snapshots = []
     model_store = ModelStore("")
     for architecture_name, num_models in zip(model_set, model_counts):
-        model_snapshots, _ = generate_snapshot_set(architecture_name, num_models, distribution, base_path, reuse_allowed=True)
+        model_snapshots, _ = generate_snapshot_set(architecture_name, num_models, distribution, base_path,
+                                                   reuse_allowed=True)
         model_snapshots = model_snapshots[:num_models]
         agg_snapshots += model_snapshots
         for snap in model_snapshots:
@@ -123,5 +128,3 @@ if __name__ == '__main__':
         for model in model_list:
             print('generating', dist, model)
             generate_snapshot_set(model, 50, dist, base_path)
-
-    snaps, store = get_resnet_models(base_path, RetrainDistribution.TOP_LAYERS, 32)

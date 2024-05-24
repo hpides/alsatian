@@ -1,5 +1,6 @@
 from experiments.model_search.benchmark_level import BenchmarkLevel
 from experiments.snapshots.generate import RetrainDistribution
+from model_search.execution.planning.execution_plan import CacheLocation
 
 
 def _str_to_distribution(dist_str) -> RetrainDistribution:
@@ -16,6 +17,7 @@ def _str_to_distribution(dist_str) -> RetrainDistribution:
     else:
         raise ValueError(f"Unknown distribution string: {dist_str}")
 
+
 def _str_to_benchmark_level(dist_str) -> BenchmarkLevel:
     if dist_str == "END_TO_END":
         return BenchmarkLevel.END_TO_END
@@ -27,6 +29,15 @@ def _str_to_benchmark_level(dist_str) -> BenchmarkLevel:
         return BenchmarkLevel.STEPS_DETAILS
     else:
         raise ValueError(f"Unknown distribution string: {dist_str}")
+
+
+def _str_to_cache_location(location_str) -> CacheLocation:
+    if location_str == "SSD":
+        return CacheLocation.SSD
+    elif location_str == "CPU":
+        return CacheLocation.CPU
+    elif location_str == "GPU":
+        return CacheLocation.GPU
 
 
 class ExpArgs:
@@ -44,6 +55,7 @@ class ExpArgs:
         self.approach = args[section]['approach']
         self.result_dir = args[section]['result_dir']
         self.benchmark_level = _str_to_benchmark_level(args[section]['benchmark_level'])
+        self.default_cache_location = _str_to_cache_location(args[section]['default_cache_location'])
 
     def __str__(self):
         return str(self.__dict__)
