@@ -23,15 +23,23 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
     model = model.to(device)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 
+    # the features should be very small and fit into GPU memory, if not we have to adjust this code and load the data
+    # multiple times in the training loop below
+    features = []
+    labels = []
+    for feature_batch, label_batch in train_data_loader:
+        feature_batch, label_batch = feature_batch.to(device), label_batch.to(device)
+        feature_batch, label_batch = torch.squeeze(feature_batch), torch.squeeze(label_batch)
+        features.append(feature_batch)
+        labels.append(label_batch)
+
     # train model on train data
     model.train()
     for i in range(100):
-        for data, labels in train_data_loader:
-            batch, labels = data.to(device), labels.to(device)
-            batch, labels = torch.squeeze(batch), torch.squeeze(labels)
+        for feature_batch, label_batch in zip(features, labels):
             optimizer.zero_grad()
-            outputs = model(batch)
-            loss = torch.nn.CrossEntropyLoss()(outputs, labels)
+            outputs = model(feature_batch)
+            loss = torch.nn.CrossEntropyLoss()(outputs, label_batch)
             loss.backward()
             optimizer.step()
 
