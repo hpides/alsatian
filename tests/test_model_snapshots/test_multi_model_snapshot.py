@@ -127,6 +127,23 @@ class TestTensorCachingService(unittest.TestCase):
         layer_states = self.model_1_layer_states
         self._check_tail(current_node, 0, 7, layer_states, snapshot_ids)
 
+    def test_prune_one_of_identical_snapshots(self):
+        # add the first model
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        # add the second model
+        snapshot = RichModelSnapshot("test_arch2", "sd_path2", "sd_hash2", "test_arch2-sd_path2",
+                                     self.model_1_layer_states)
+        mm_snapshot.add_snapshot(snapshot)
+
+        current_node = mm_snapshot.root
+        snapshot_ids = ["test_arch1-sd_path1", "test_arch2-sd_path2"]
+        layer_states = self.model_1_layer_states
+        self._check_tail(current_node, 0, 7, layer_states, snapshot_ids)
+        mm_snapshot.prune_snapshots(["test_arch1-sd_path1"])
+        self._check_tail(current_node, 0, 7, layer_states, ["test_arch2-sd_path2"])
+
+
     def test_add_snapshot_to_two_model_mm_different_split_point(self):
         # add the first model
         mm_snapshot = MultiModelSnapshot()
