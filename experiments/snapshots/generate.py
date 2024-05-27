@@ -31,7 +31,7 @@ def _num_retrained_layers(max_number, distribution: RetrainDistribution) -> int:
 def _adjust_model_randomly(architecture_name: str, base_model: torch.nn.Sequential,
                            distribution: RetrainDistribution, retrain_idx=None) -> torch.nn.Module:
 
-    num_blocks = len(SPLIT_INDEXES[architecture_name])
+    num_blocks = len(base_model)
     if retrain_idx is None:
         retrain_idx = _num_retrained_layers(num_blocks, distribution)
 
