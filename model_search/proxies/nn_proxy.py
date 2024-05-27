@@ -27,7 +27,9 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
     # multiple times in the training loop below
     features = []
     labels = []
-    for feature_batch, label_batch in train_data_loader:
+    # for feature_batch, label_batch in train_data_loader:
+    for i, (batch) in enumerate(train_data_loader):
+        feature_batch, label_batch = batch
         feature_batch, label_batch = feature_batch.to(device), label_batch.to(device)
         feature_batch, label_batch = torch.squeeze(feature_batch), torch.squeeze(label_batch)
         features.append(feature_batch)
