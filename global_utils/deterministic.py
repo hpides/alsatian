@@ -9,7 +9,10 @@ TRUE = "True"
 
 
 def check_deterministic_env_var_set():
-    return os.environ[DETERMINISTIC_EXECUTION] == TRUE
+    if DETERMINISTIC_EXECUTION in os.environ:
+        return os.environ[DETERMINISTIC_EXECUTION] == TRUE
+    else:
+        return False
 
 
 def set_deterministic():

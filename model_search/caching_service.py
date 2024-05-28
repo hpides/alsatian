@@ -1,10 +1,20 @@
 import os
+from functools import cmp_to_key
 
 import torch.nn.functional
 
 from global_utils.benchmark_util import CPU
 from global_utils.constants import CUDA
 from model_search.execution.planning.execution_plan import CacheLocation
+
+
+def _compare(item1: str, item2: str):
+    suffix_1 = item1.split("-")[-2:]
+    suffix_2 = item2.split("-")[-2:]
+    if suffix_1[0] == suffix_2[0]:
+        return int(suffix_1[1]) - int(suffix_2[1])
+    else:
+        return int(suffix_1[0]) - int(suffix_2[0])
 
 
 class CachingService:
@@ -156,7 +166,9 @@ class CachingService:
         result = []
         for cache in [self._gpu_cache, self._cpu_cache, self._persistent_cache]:
             result += self._all_ids_with_prefix(prefix, cache)
-        result.sort()
+        # NOTE: this might seem expensive, but in most cases we do not expect to have more than 100 items
+        result.sort(key=cmp_to_key(_compare))
+        print(result)
         return result
 
     def _all_ids_with_prefix(self, prefix, cache):

@@ -6,9 +6,9 @@ import torch
 from global_utils.constants import CUDA
 from model_search.caching_service import CachingService
 
-ID_1 = 'id1'
-ID_1_2 = 'id1.2'
-ID_3 = 'id3'
+ID_1_1 = 'id1-1-1'
+ID_1_2 = 'id1-1-2'
+ID_3 = 'id3-1-1'
 
 
 class TestTensorCachingService(unittest.TestCase):
@@ -27,55 +27,55 @@ class TestTensorCachingService(unittest.TestCase):
         os.rmdir(self.persistent_path)
 
     def test_cache_on_gpu(self):
-        self.service.cache_on_gpu(ID_1, self.tensor1)
-        self.assertTrue(ID_1 in self.service._gpu_cache)
-        result = self.service.get_item(ID_1)
+        self.service.cache_on_gpu(ID_1_1, self.tensor1)
+        self.assertTrue(ID_1_1 in self.service._gpu_cache)
+        result = self.service.get_item(ID_1_1)
         tensor_1_cuda = self.tensor1.to(CUDA)
         self.assertTrue(torch.equal(result, tensor_1_cuda))
 
     def test_cache_on_cpu(self):
-        self.service.cache_on_cpu(ID_1, self.tensor1)
-        self.assertTrue(ID_1 in self.service._cpu_cache)
-        result = self.service.get_item(ID_1)
+        self.service.cache_on_cpu(ID_1_1, self.tensor1)
+        self.assertTrue(ID_1_1 in self.service._cpu_cache)
+        result = self.service.get_item(ID_1_1)
         self.assertTrue(torch.equal(result, self.tensor1))
 
     def test_cache_persistent(self):
-        self.service.cache_persistent(ID_1, self.tensor1)
-        self.assertTrue(ID_1 in self.service._persistent_cache)
-        result = self.service.get_item(ID_1)
+        self.service.cache_persistent(ID_1_1, self.tensor1)
+        self.assertTrue(ID_1_1 in self.service._persistent_cache)
+        result = self.service.get_item(ID_1_1)
         self.assertTrue(torch.equal(result, self.tensor1))
 
     def test_move_gpu_to_cpu(self):
-        self.service.cache_on_gpu(ID_1, self.tensor1)
-        self.service.move_to_cpu(ID_1)
-        self.assertFalse(ID_1 in self.service._gpu_cache)
-        self.assertTrue(ID_1 in self.service._cpu_cache)
-        result = self.service.get_item(ID_1)
+        self.service.cache_on_gpu(ID_1_1, self.tensor1)
+        self.service.move_to_cpu(ID_1_1)
+        self.assertFalse(ID_1_1 in self.service._gpu_cache)
+        self.assertTrue(ID_1_1 in self.service._cpu_cache)
+        result = self.service.get_item(ID_1_1)
         self.assertTrue(torch.equal(result, self.tensor1))
 
     def test_move_gpu_to_persistent(self):
-        self.service.cache_on_gpu(ID_1, self.tensor1)
-        self.service.move_to_persistent(ID_1)
-        self.assertFalse(ID_1 in self.service._gpu_cache)
-        self.assertTrue(ID_1 in self.service._persistent_cache)
-        result = self.service.get_item(ID_1)
+        self.service.cache_on_gpu(ID_1_1, self.tensor1)
+        self.service.move_to_persistent(ID_1_1)
+        self.assertFalse(ID_1_1 in self.service._gpu_cache)
+        self.assertTrue(ID_1_1 in self.service._persistent_cache)
+        result = self.service.get_item(ID_1_1)
         self.assertTrue(torch.equal(result, self.tensor1))
 
     def test_move_cpu_to_gpu(self):
-        self.service.cache_on_cpu(ID_1, self.tensor1)
-        self.service.move_to_gpu(ID_1)
-        self.assertFalse(ID_1 in self.service._cpu_cache)
-        self.assertTrue(ID_1 in self.service._gpu_cache)
-        result = self.service.get_item(ID_1)
+        self.service.cache_on_cpu(ID_1_1, self.tensor1)
+        self.service.move_to_gpu(ID_1_1)
+        self.assertFalse(ID_1_1 in self.service._cpu_cache)
+        self.assertTrue(ID_1_1 in self.service._gpu_cache)
+        result = self.service.get_item(ID_1_1)
         tensor_1_cuda = self.tensor1.to(CUDA)
         self.assertTrue(torch.equal(result, tensor_1_cuda))
 
     def test_add_existing_id(self):
-        self.service.cache_on_cpu(ID_1, self.tensor1)
-        self.service.move_to_gpu(ID_1)
+        self.service.cache_on_cpu(ID_1_1, self.tensor1)
+        self.service.move_to_gpu(ID_1_1)
 
         with self.assertRaises(KeyError):
-            self.service.cache_on_cpu(ID_1, self.tensor2)
+            self.service.cache_on_cpu(ID_1_1, self.tensor2)
 
     def test_get_tensor_non_existing(self):
         with self.assertRaises(KeyError):
@@ -84,8 +84,8 @@ class TestTensorCachingService(unittest.TestCase):
     def test_all_ids_with_prefix(self):
         self.service.cache_on_gpu(ID_1_2, self.tensor2)
         self.service.cache_on_cpu(ID_3, self.tensor3)
-        self.service.cache_on_cpu(ID_1, self.tensor1)
+        self.service.cache_on_cpu(ID_1_1, self.tensor1)
 
         result = self.service.all_ids_with_prefix("id1")
-        expected = [ID_1, ID_1_2]
+        expected = [ID_1_1, ID_1_2]
         self.assertEqual(expected, result)

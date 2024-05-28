@@ -1,16 +1,10 @@
 from custom.data_loaders.imagenet_transfroms import inference_transform
 from global_utils.constants import TEST, TRAIN, SCORE
-from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass
-from model_search.execution.planning.execution_plan import ExecutionPlanner, ExecutionPlan, CacheLocation, \
+from model_search.execution.data_handling.data_information import DatasetInformation
+from model_search.execution.planning.execution_plan import ExecutionPlan, CacheLocation, \
     BaselineExtractFeaturesStep, ScoreModelStep, ScoringMethod
+from model_search.execution.planning.planner_config import PlannerConfig
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
-
-
-
-class ShiftPlannerConfig:
-    def __init__(self, num_workers: int, batch_size: int):
-        self.num_workers = num_workers
-        self.batch_size = batch_size
 
 
 class ShiftExtractFeaturesStep(BaselineExtractFeaturesStep):
@@ -21,14 +15,14 @@ class ShiftExtractFeaturesStep(BaselineExtractFeaturesStep):
         self.data_range: [int] = data_range
 
 
-class ShiftExecutionPlanner(ExecutionPlanner):
+class ShiftExecutionPlanner:
 
-    def __init__(self, config: ShiftPlannerConfig):
-        self.config: ShiftPlannerConfig = config
+    def __init__(self, config: PlannerConfig):
+        self.config: PlannerConfig = config
         self._train_feature_prefixes = {}
 
-    def generate_execution_plan(self, model_snapshots: [ModelSnapshot], dataset_paths: dict,
-                                train_dataset_range: [int] = None, first_iteration=False) -> ExecutionPlan:
+    def generate_execution_plan(self, model_snapshots: [ModelSnapshot], train_dataset_range: [int] = None,
+                                first_iteration=False) -> ExecutionPlan:
         # the shift execution plan is a sequential iteration over the models
         # the one core optimization that Shift applies compares to the baseline is successive halving (SH)
         # this after very iteration, we double the amount of data and prune half of the models
@@ -40,7 +34,7 @@ class ShiftExecutionPlanner(ExecutionPlanner):
 
         # with this method we always plan one iteration of SH
 
-        data_set_class = DatasetClass.CUSTOM_IMAGE_FOLDER
+        data_set_class = self.config.dataset_class
         num_workers = self.config.num_workers
         batch_size = self.config.batch_size
 
@@ -55,7 +49,7 @@ class ShiftExecutionPlanner(ExecutionPlanner):
                         _id=f'{snapshot.id}-extract-test-0',
                         model_snapshot=snapshot,
                         data_info=DatasetInformation(
-                            data_set_class, dataset_paths[TEST], num_workers, batch_size, TEST, inference_transform),
+                            data_set_class, self.config.dataset_paths[TEST], num_workers, batch_size, TEST, inference_transform),
                         cache_locations=CacheLocation.SSD,
                         feature_cache_prefix=test_feature_prefix
                     )
@@ -69,7 +63,7 @@ class ShiftExecutionPlanner(ExecutionPlanner):
                     _id=f'{snapshot.id}-extract-train-{train_dataset_range[0]}-{train_dataset_range[1]}',
                     model_snapshot=snapshot,
                     data_info=DatasetInformation(
-                        data_set_class, dataset_paths[TRAIN], num_workers, batch_size, TRAIN, inference_transform),
+                        data_set_class, self.config.dataset_paths[TRAIN], num_workers, batch_size, TRAIN, inference_transform),
                     cache_locations=CacheLocation.SSD,
                     feature_cache_prefix=train_feature_prefix,
                     data_range=train_dataset_range
@@ -83,7 +77,8 @@ class ShiftExecutionPlanner(ExecutionPlanner):
                     scoring_method=ScoringMethod.FC,
                     test_feature_cache_prefixes=[test_feature_prefix],
                     train_feature_cache_prefixes=self._train_feature_prefixes[snapshot.id],
-                    num_classes=100
+                    num_classes=self.config.target_classes,
+                    scored_models=[snapshot.id]
                 )
             )
 
@@ -97,10 +92,3 @@ class ShiftExecutionPlanner(ExecutionPlanner):
         return train_feature_prefix
 
 
-def get_sorted_model_scores(execution_steps):
-    scores = []
-    for step in execution_steps:
-        if isinstance(step, ScoreModelStep):
-            scores.append([step.execution_result[SCORE], step._id.replace(f'-{SCORE}', '')])
-
-    return sorted(scores)

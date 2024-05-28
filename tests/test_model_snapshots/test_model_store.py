@@ -22,7 +22,7 @@ class TestModelStore(unittest.TestCase):
         self.save_path = '/mount-fs/tmp-dir'
 
         pre_trained_model = initialize_model(RESNET_18, features_only=True, pretrained=True)
-        retrain_idxs = [5, 7, 9]
+        retrain_idxs = [3, 5, 7]
         self.snapshots = generate_snapshots(RESNET_18, 4, RetrainDistribution.HARD_CODED, save_path=self.save_path,
                                             retrain_idxs=retrain_idxs, use_same_base=True)
 

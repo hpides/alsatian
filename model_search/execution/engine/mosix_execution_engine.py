@@ -5,24 +5,19 @@ from torch.utils.data import DataLoader
 
 from custom.data_loaders.cache_service_dataset import CacheServiceDataset
 from custom.data_loaders.custom_image_folder import CustomImageFolder
-from global_utils.constants import LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, INPUT, LABEL, MODEL_TO_DEVICE, \
+from global_utils.constants import LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, LABEL, MODEL_TO_DEVICE, \
     CUDA, CALC_PROXY_SCORE, TRAIN, TEST
+from global_utils.deterministic import check_deterministic_env_var_set
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass, \
     CachedDatasetInformation
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine, load_data_to_device, \
     inference, load_model_to_device
 from model_search.execution.planning.execution_plan import ExecutionStep, ScoreModelStep
-from model_search.execution.planning.mosix_planner import MosixExtractFeaturesStep, CacheConfig
+from model_search.execution.planning.mosix_planner import MosixExtractFeaturesStep
 from model_search.executionsteplogger import ExecutionStepLogger
 from model_search.model_management.model_store import ModelStore
 from model_search.proxies.nn_proxy import linear_proxy
-
-
-def cat_tensors(tensors: [torch.Tensor]):
-    # TODO don't know yet if its smart to concat the tensors, because most likely we create a copy even is this really
-    #  faster than just using a smaller batch size?
-    return torch.cat(tensors, dim=0)
 
 
 class MosixExecutionEngine(BaselineExecutionEngine):
@@ -47,10 +42,10 @@ class MosixExecutionEngine(BaselineExecutionEngine):
 
     def execute_mosix_extract_features_step(self, exec_step: MosixExtractFeaturesStep):
         partial_model = self._init_model(exec_step)
-        data_loader = self._get_data_loader(exec_step)
-        self._extract_features_part_model(partial_model, data_loader, exec_step)
+        data, data_loader = self._get_data_loader(exec_step)
+        self._extract_features_part_model(partial_model, data, data_loader, exec_step)
 
-    def _extract_features_part_model(self, partial_model, data_loader, exec_step):
+    def _extract_features_part_model(self, partial_model, data_set, data_loader, exec_step):
 
         # extract features
         start = time.perf_counter()
@@ -63,6 +58,9 @@ class MosixExecutionEngine(BaselineExecutionEngine):
 
             batch_measures = {}
             batch_measures[LOAD_DATA] = time.perf_counter() - start
+
+            if isinstance(data_set, CacheServiceDataset):
+                inputs = data_set.translate_to_actual_data(inputs)
 
             measurement, inputs = self.bench.micro_benchmark_cpu(load_data_to_device, inputs)
             batch_measures[DATA_TO_DEVICE] = measurement
@@ -115,12 +113,11 @@ class MosixExecutionEngine(BaselineExecutionEngine):
                 None
             )
             data_loader = torch.utils.data.DataLoader(
-                data, batch_size=1, shuffle=False,
-                num_workers=exec_step.data_info.num_workers, collate_fn=cat_tensors
+                data, batch_size=1, shuffle=False, num_workers=exec_step.data_info.num_workers
             )
         else:
             raise NotImplementedError
-        return data_loader
+        return data, data_loader
 
     def _init_model(self, exec_step):
         layer_state_ids = [l.id for l in exec_step.layers]
@@ -150,5 +147,9 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             cache_prefixes,
             [f'{dataset_type}-{LABEL}']
         )
-        data_loader = DataLoader(data, batch_size=1, num_workers=2)
+        if check_deterministic_env_var_set():
+            num_workers = 0
+        else:
+            num_workers = 2
+        data_loader = DataLoader(data, batch_size=1, num_workers=num_workers)
         return data_loader

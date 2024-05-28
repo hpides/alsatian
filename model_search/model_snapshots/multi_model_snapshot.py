@@ -22,12 +22,16 @@ class MultiModelSnapshotNode:
 
     def get_referencing_edge(self, snapshot_id):
         matching_edges = [e for e in self.edges if e.references_snapshot_ids(snapshot_id)]
-        assert len(matching_edges) == 1
+        assert len(matching_edges) == 1, f"assert len(matching_edges) == 1 but was: {len(matching_edges)}"
         return matching_edges[0]
 
     @property
     def is_root_node(self) -> bool:
         return self.layer_state.id == ROOT
+
+    @property
+    def is_leaf(self) -> bool:
+        return len(self.edges) == 0
 
 
 class MultiModelSnapshotEdge:
@@ -73,13 +77,14 @@ class MultiModelSnapshot:
         # if id not found, nothing to prune
         if snapshot_id in root.snapshot_ids:
             root.snapshot_ids.remove(snapshot_id)
-            edge = root.get_referencing_edge(snapshot_id)
-            new_root = edge.child
-            if new_root.snapshot_ids == [snapshot_id]:
-                # if this branch only represents the snapshot we want to prune -> prune
-                root.edges.remove(edge)
-            else:
-                self.prune_snapshot(snapshot_id, new_root)
+            if not root.is_leaf:
+                edge = root.get_referencing_edge(snapshot_id)
+                new_root = edge.child
+                if new_root.snapshot_ids == [snapshot_id]:
+                    # if this branch only represents the snapshot we want to prune -> prune
+                    root.edges.remove(edge)
+                else:
+                    self.prune_snapshot(snapshot_id, new_root)
 
     def prune_snapshots(self, snapshot_ids):
         for _id in snapshot_ids:
@@ -111,9 +116,14 @@ class MultiModelSnapshot:
                 current_root.snapshot_ids.append(snapshot_id)
                 # deduplicate: forget about current layer state and continue merging
                 self._merge_layers_in_model(match, layer_states[1:], snapshot_id)
+
+                if len(layer_states) == 1:
+                    match.snapshot_ids.append(snapshot_id)
+
             else:
                 # if we do not find matching child create new edge and connect
                 self._append_layers_to_node(current_root, layer_states, snapshot_id)
+
 
     def _find_layer_match(self, multi_model_children: [MultiModelSnapshotNode], current_layer_state: LayerState):
         for node in multi_model_children:

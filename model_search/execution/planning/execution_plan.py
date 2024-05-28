@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from enum import Enum
 
 from model_search.execution.data_handling.data_information import DatasetInformation
@@ -42,7 +42,7 @@ class BaselineExtractFeaturesStep(ExecutionStep):
 class ScoreModelStep(ExecutionStep):
 
     def __init__(self, _id: str, scoring_method: ScoringMethod, test_feature_cache_prefixes: [str],
-                 train_feature_cache_prefixes: [str], num_classes: int, scored_models = None):
+                 train_feature_cache_prefixes: [str], num_classes: int, scored_models=None):
         super().__init__(_id)
         self.scoring_method: ScoringMethod = scoring_method
         self.test_feature_cache_prefixes: [str] = test_feature_cache_prefixes
@@ -63,10 +63,3 @@ class ExecutionPlan:
 
     def __init__(self, execution_steps: [ExecutionStep]):
         self.execution_steps: [ExecutionStep] = execution_steps
-
-
-class ExecutionPlanner(ABC):
-    @abstractmethod
-    def generate_execution_plan(self, model_snapshots: [ModelSnapshot], dataset_paths: dict) -> ExecutionPlan:
-        # here we need to insert all the logic to generate the execution plan
-        pass
