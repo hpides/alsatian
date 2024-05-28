@@ -28,7 +28,8 @@ def get_search_model_inputs():
         TEST: '/tmp/pycharm_project_924/data/imagenette-dummy/val'
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
-    planner_config = PlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths, CacheLocation.SSD)
+    planner_config = PlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths,
+                                   CacheLocation.SSD)
     persistent_caching_path = '/mount-ssd/cache-dir'
     return dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data
 
@@ -62,7 +63,6 @@ class TestDeterministicOutput(unittest.TestCase):
         cls.mosix_out = _execute_mosix()[1]
         cls.shift_out = _execute_shift()[1]
         cls.baseline_out = _execute_baseline()[1]
-
 
     def test_mosix_shift_same_output(self):
         print(self.shift_out)
