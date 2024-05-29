@@ -28,8 +28,8 @@ def get_read_speed(base_path):
     # check if file exists otherwise write it
     if not os.path.exists(file_path):
         # create file
-        command = ["dd", "if=/dev/zero", f"of={file_path}", "bs=1M", "count=1024"]
-        subprocess.run(command)
+        cmd = ["dd", "if=/dev/zero", f"of={file_path}", "bs=1M", "count=1024"]
+        result = subprocess.run(cmd, stderr=subprocess.PIPE, text=True)
         time.sleep(10)
 
     # read file
@@ -45,6 +45,7 @@ def get_read_speed(base_path):
 
     if match:
         match_str = match.group(1)
+        print('measured:', match_str)
         split = match_str.split(" ")
         read_speed = float(split[0])
         unit = split[1].replace("/s", "")
