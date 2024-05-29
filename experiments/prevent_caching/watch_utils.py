@@ -6,6 +6,8 @@ from datetime import datetime
 
 from global_utils.deterministic import TRUE
 
+FLAG_FLUSH_CACHES = "flag-flush-caches"
+
 LIMIT_IO = 'limit_io'
 
 
@@ -15,7 +17,8 @@ def clear_caches_and_check_io_limit():
         assert active_file_up_to_date('/mount-fs', 5), \
             "script to clear caches does not seem to be active (look into prevent_caching directory for info)"
         # clear caches by writing file
-        write_empty_file('/mount-fs/flash_caches_flag')
+        write_empty_file(os.path.join('/mount-fs', FLAG_FLUSH_CACHES))
+        print("write:", FLAG_FLUSH_CACHES)
         # also check if the I/O speed is limited
         assert check_read_speed_below_threshold('/mount-fs', mb_s_threshold=200), \
             "I/O limit for docker container does not seem to be active (look into prevent_caching directory for info)"
