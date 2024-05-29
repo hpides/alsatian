@@ -3,6 +3,8 @@ import subprocess
 import time
 from datetime import datetime
 
+FLAG_FLUSH_CACHES = "flag-flush-caches"
+
 
 def execute_command(command):
     subprocess.run(command, shell=True)
@@ -20,7 +22,7 @@ def renew_active_file(base_path):
 
     # Create a new file with the current timestamp
     with open(file_name, 'w') as f:
-        f.write("This is a new active file.")
+        pass
 
     print(f"Created file: {file_name}")
 
@@ -28,13 +30,13 @@ def empty_caches_if_triggered(flash_caches_flag_filename):
     command = "echo 3 | sudo tee /proc/sys/vm/drop_caches"
     if os.path.exists(flash_caches_flag_filename):
         print(f"File '{flash_caches_flag_filename}' found. Executing command...")
-        # execute_command(command)
+        execute_command(command)
         os.remove(flash_caches_flag_filename)
         print("delete caches cmd executed")
 
 def main():
     base_path = "/Users/nils/uni/programming/model-search-paper/experiments/prevent_caching"
-    flash_caches_flag_filename = os.path.join(base_path, "flush-caches-flag")
+    flash_caches_flag_filename = os.path.join(base_path, FLAG_FLUSH_CACHES)
 
     renew_active_file(base_path)
     renew_active_file_counter = 0
