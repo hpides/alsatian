@@ -4,6 +4,22 @@ import subprocess
 import time
 from datetime import datetime
 
+from global_utils.deterministic import TRUE
+
+LIMIT_IO = 'limit_io'
+
+
+def clear_caches_and_check_io_limit():
+    if LIMIT_IO in os.environ and os.environ[LIMIT_IO] == TRUE:
+        # check if script for clearing the caches is active
+        assert active_file_up_to_date('/mount-fs', 5), \
+            "script to clear caches does not seem to be active (look into prevent_caching directory for info)"
+        # clear caches by writing file
+        write_empty_file('/mount-fs/flash_caches_flag')
+        # also check if the I/O speed is limited
+        assert check_read_speed_below_threshold('/mount-fs', mb_s_threshold=200), \
+            "I/O limit for docker container does not seem to be active (look into prevent_caching directory for info)"
+
 
 def check_read_speed_below_threshold(base_path, mb_s_threshold=200):
     speed_value, speed_unit = get_read_speed(base_path)

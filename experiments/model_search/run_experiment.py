@@ -1,9 +1,10 @@
 import argparse
 import configparser
+import os
 
 from experiments.model_search.experiment_args import ExpArgs
 from experiments.model_search.model_search_exp import run_model_search
-from experiments.prevent_caching.watch_utils import active_file_up_to_date, check_read_speed_below_threshold
+from experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit, LIMIT_IO
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 
@@ -42,12 +43,8 @@ if __name__ == "__main__":
     exp_args = ExpArgs(config, args.config_section)
 
     if exp_args.limit_fs_io:
-        # check if script for clearing the caches is active
-        assert active_file_up_to_date('/mount-fs', 5), \
-            "script to clear caches does not seem to be active (look into prevent_caching directory for info)"
-        # also check if the I/O speed is limited
-        assert check_read_speed_below_threshold('/mount-fs', mb_s_threshold=200), \
-            "I/O limit for docker container does not seem to be active (look into prevent_caching directory for info)"
+        os.environ[LIMIT_IO] = "TRUE"
+        clear_caches_and_check_io_limit()
 
     # Call the main function with parsed arguments
     run_experiment_section(exp_args, args.config_section)

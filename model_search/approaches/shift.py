@@ -5,6 +5,7 @@ import torch
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from experiments.model_search.benchmark_level import BenchmarkLevel
+from experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import SCORE, SH_RANK_ITERATION_, RANK_ITERATION_DETAILS_, GEN_EXEC_PLAN, \
     EXEC_STEP_MEASUREMENTS
@@ -83,6 +84,9 @@ def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner
     ranking = None
     first_iteration = True
     for i, data_range in enumerate(data_ranges):
+        # make sure we have expected I/O speed
+        clear_caches_and_check_io_limit()
+
         measurement, (measure, (ranking, model_snapshots)) = benchmarker.micro_benchmark_gpu(
             _sh_iteration, data_range, exec_engine, first_iteration, model_snapshots, planner, ranking, benchmark_level)
         measurements[f'{SH_RANK_ITERATION_}{i}'] = measurement
