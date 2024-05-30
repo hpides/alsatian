@@ -13,7 +13,7 @@ from model_search.execution.data_handling.data_information import DatasetInforma
     CachedDatasetInformation
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine, load_data_to_device, \
     inference, load_model_to_device
-from model_search.execution.planning.execution_plan import ExecutionStep, ScoreModelStep
+from model_search.execution.planning.execution_plan import ExecutionStep, ScoreModelStep, ModifyCacheStep
 from model_search.execution.planning.mosix_planner import MosixExtractFeaturesStep
 from model_search.executionsteplogger import ExecutionStepLogger
 from model_search.model_management.model_store import ModelStore
@@ -37,6 +37,8 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             self.execute_mosix_extract_features_step(exec_step)
         elif isinstance(exec_step, ScoreModelStep):
             self.execute_score_model_step(exec_step)
+        elif isinstance(exec_step, ModifyCacheStep):
+            self.execute_modify_cache_step(exec_step)
         else:
             raise TypeError
 
@@ -44,6 +46,9 @@ class MosixExecutionEngine(BaselineExecutionEngine):
         partial_model = self._init_model(exec_step)
         data, data_loader = self._get_data_loader(exec_step)
         self._extract_features_part_model(partial_model, data, data_loader, exec_step)
+
+        # clear GPU memory after step to remove partial model
+        torch.cuda.empty_cache()
 
     def _extract_features_part_model(self, partial_model, data_set, data_loader, exec_step):
 
@@ -153,3 +158,10 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             num_workers = 2
         data_loader = DataLoader(data, batch_size=1, num_workers=num_workers)
         return data_loader
+
+    def execute_modify_cache_step(self, exec_step):
+        for _id in exec_step.cache_evict_ids:
+            self.caching_service.remove_all_ids_with_prefix(_id, remove_immediately=False)
+
+        torch.cuda.empty_cache()
+

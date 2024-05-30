@@ -2,10 +2,10 @@ from custom.data_loaders.imagenet_transfroms import inference_transform
 from global_utils.constants import TRAIN, TEST, INPUT, LABEL
 from model_search.execution.data_handling.data_information import DatasetInformation, DataInfo, CachedDatasetInformation
 from model_search.execution.planning.execution_plan import ExecutionPlan, ScoreModelStep, \
-    CacheLocation, ScoringMethod
+    CacheLocation, ScoringMethod, ModifyCacheStep
 from model_search.execution.planning.planner_config import PlannerConfig
 
-from model_search.model_snapshots.dfs_traversal import dfs_execution_plan
+from model_search.model_snapshots.dfs_traversal import dfs_execution_plan, is_release_entry
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot, MultiModelSnapshotEdge
 from model_search.model_snapshots.rich_snapshot import LayerState
 
@@ -74,6 +74,15 @@ def _get_label_cache_config(dataset_type, inp_lbl, data_range=None, write_cache_
     return CacheConfig(location=write_cache_location, id_prefix=prefix)
 
 
+def check_if_snapshot_edge_list(_list):
+    return isinstance(_list, list) and all(isinstance(itm, MultiModelSnapshotEdge) for itm in _list)
+
+
+def _contains_leaf(exec_unit):
+    last_node_in_unit_child = exec_unit[-1].child
+    return last_node_in_unit_child.layer_state.is_leaf
+
+
 class MosixExecutionPlanner:
 
     def __init__(self, config: PlannerConfig):
@@ -89,46 +98,73 @@ class MosixExecutionPlanner:
         for exec_unit in execution_units:
             # TODO the location of the caching should be dynamically adjusted, for now always use default_cache_location
 
-            # if first, iteration we also have to extract the test features
-            if first_iteration:
-                ext_test_step = self._create_feature_ext_step(
-                    exec_unit=exec_unit,
-                    dataset_type=TEST,
-                    data_range=None,  # use all data
-                    extract_labels=extract_labels,
-                    write_cache_location=self.config.default_cache_location
-                )
-                execution_steps.append(ext_test_step)
+            if is_release_entry(exec_unit):
+                # create a meta step to release or move cached items
+                self._create_modify_cache_step(exec_unit, execution_steps)
+            elif check_if_snapshot_edge_list(exec_unit):
+                # create actual execution steps
 
-            # add extract feature step on subset of train data
-            ext_train_step = self._create_feature_ext_step(
-                exec_unit=exec_unit,
-                dataset_type=TRAIN,
-                data_range=train_dataset_range,
-                extract_labels=extract_labels,
-                write_cache_location=self.config.default_cache_location
-            )
-            execution_steps.append(ext_train_step)
+                # if first, iteration we also have to extract the test features
+                if first_iteration:
+                    ext_test_step = self._test_feature_step(exec_unit, extract_labels)
+                    execution_steps.append(ext_test_step)
 
-            # if the execution unit contains a leaf we also have to add step to score the model based on the extracted features
-            last_node_in_unit_child = exec_unit[-1].child
-            if last_node_in_unit_child.layer_state.is_leaf:
-                score_step = ScoreModelStep(
-                    _id="",
-                    scoring_method=ScoringMethod.FC,
-                    test_feature_cache_prefixes=[
-                        _get_input_cache_config(ext_train_step.output_node_id, TEST, INPUT).id_prefix],
-                    train_feature_cache_prefixes=[
-                        _get_input_cache_config(ext_train_step.output_node_id, TRAIN, INPUT).id_prefix],
-                    num_classes=self.config.target_classes,
-                    scored_models=last_node_in_unit_child.snapshot_ids)
-                execution_steps.append(score_step)
+                # add extract feature step on subset of train data
+                ext_train_step = self._train_feature_step(exec_unit, extract_labels, train_dataset_range)
+                execution_steps.append(ext_train_step)
 
-            extract_labels = False
+                # if the execution unit contains a leaf we also have to add step to score the model based on the extracted features
+                if _contains_leaf(exec_unit):
+                    score_step = self._score_step(exec_unit, ext_train_step)
+                    execution_steps.append(score_step)
 
-        assert sum([len(s.scored_models) for s in execution_steps if isinstance(s, ScoreModelStep)]) == len(mm_snapshot.root.snapshot_ids)
+                extract_labels = False
+            else:
+                raise NotImplementedError
+
+        assert sum([len(s.scored_models) for s in execution_steps if isinstance(s, ScoreModelStep)]) == len(
+            mm_snapshot.root.snapshot_ids)
 
         return ExecutionPlan(execution_steps)
+
+    def _score_step(self, exec_unit, ext_train_step):
+        last_node_in_unit_child = exec_unit[-1].child
+        score_step = ScoreModelStep(
+            _id="",
+            scoring_method=ScoringMethod.FC,
+            test_feature_cache_prefixes=[
+                _get_input_cache_config(ext_train_step.output_node_id, TEST, INPUT).id_prefix],
+            train_feature_cache_prefixes=[
+                _get_input_cache_config(ext_train_step.output_node_id, TRAIN, INPUT).id_prefix],
+            num_classes=self.config.target_classes,
+            scored_models=last_node_in_unit_child.snapshot_ids)
+        return score_step
+
+    def _train_feature_step(self, exec_unit, extract_labels, train_dataset_range):
+        ext_train_step = self._create_feature_ext_step(
+            exec_unit=exec_unit,
+            dataset_type=TRAIN,
+            data_range=train_dataset_range,
+            extract_labels=extract_labels,
+            write_cache_location=self.config.default_cache_location
+        )
+        return ext_train_step
+
+    def _test_feature_step(self, exec_unit, extract_labels):
+        ext_test_step = self._create_feature_ext_step(
+            exec_unit=exec_unit,
+            dataset_type=TEST,
+            data_range=None,  # use all data
+            extract_labels=extract_labels,
+            write_cache_location=self.config.default_cache_location
+        )
+        return ext_test_step
+
+    def _create_modify_cache_step(self, exec_unit, execution_steps):
+        _, output_node = exec_unit
+        _id = output_node.layer_state.id
+        step = ModifyCacheStep("", cache_evict_ids=[_id])
+        execution_steps.append(step)
 
     def _create_feature_ext_step(self, exec_unit: [MultiModelSnapshotEdge], dataset_type, data_range, extract_labels,
                                  write_cache_location):

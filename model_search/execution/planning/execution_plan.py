@@ -53,10 +53,10 @@ class ScoreModelStep(ExecutionStep):
 
 class ModifyCacheStep(ExecutionStep):
 
-    def __init__(self, _id: str, cache_evict_ids: [str], move_operations: dict):
+    def __init__(self, _id: str, cache_evict_ids: [str]):
         super().__init__(_id)
         self.cache_evict_ids: [str] = cache_evict_ids
-        self.move_operations = move_operations
+        # TODO in the future also add move operations
 
 
 class ExecutionPlan:
