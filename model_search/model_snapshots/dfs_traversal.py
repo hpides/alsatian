@@ -1,5 +1,7 @@
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshotNode, MultiModelSnapshotEdge
 
+RELEASE = "release"
+
 
 def dfs_execution_plan(mm_root: MultiModelSnapshotNode) -> [MultiModelSnapshotEdge]:
     # returns an execution order represented as a list of edges which represent the execution of their parent node
@@ -11,6 +13,9 @@ def dfs_execution_plan(mm_root: MultiModelSnapshotNode) -> [MultiModelSnapshotEd
 
         if not current_edge.parent.snapshot_ids == current_edge.child.snapshot_ids:
             # we start new execution unit once the next added node is not on a linear path
+            # which means all nodes on that linear path belong to the same set of snapshots
+            # -> check if snapshot ids are identical, if identical no need to start a new execution unit
+
             execution_units.append(current_exec_unit)
             current_exec_unit = []
 
