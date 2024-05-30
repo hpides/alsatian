@@ -14,10 +14,12 @@ LIMIT_IO = 'limit_io'
 def clear_caches_and_check_io_limit():
     if LIMIT_IO in os.environ and os.environ[LIMIT_IO] == TRUE:
         # check if script for clearing the caches is active
-        assert active_file_up_to_date('/mount-fs', 5), \
+        assert active_file_up_to_date('/mount-fs', 10), \
             "script to clear caches does not seem to be active (look into prevent_caching directory for info)"
         # clear caches by writing file
         write_empty_file(os.path.join('/mount-fs', FLAG_FLUSH_CACHES))
+        # in the worst case it takes 1 sec for the watch script on the host machine to realize
+        time.sleep(10)
         print("write:", FLAG_FLUSH_CACHES)
         # also check if the I/O speed is limited
         assert check_read_speed_below_threshold('/mount-fs', mb_s_threshold=200), \
@@ -99,6 +101,6 @@ if __name__ == '__main__':
     # active_file_up_to_date('/Users/nils/uni/programming/model-search-paper/experiments/prevent_caching', 5)
 
     base_path = '/mount-fs/io-test'
-    speed = get_read_speed(base_path)
-    print(f"Read Speed: {speed}")
+    # speed = get_read_speed(base_path)
+    # print(f"Read Speed: {speed}")
     print("below:", check_read_speed_below_threshold(base_path, 200))
