@@ -56,6 +56,7 @@ class ExpArgs:
         self.result_dir = args[section]['result_dir']
         self.benchmark_level = _str_to_benchmark_level(args[section]['benchmark_level'])
         self.default_cache_location = _str_to_cache_location(args[section]['default_cache_location'])
+        self.limit_fs_io = args.getboolean(section, 'limit_fs_io')
 
     def __str__(self):
         return str(self.__dict__)

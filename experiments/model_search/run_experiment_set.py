@@ -1,5 +1,6 @@
 import argparse
 import configparser
+import os
 import time
 
 import torch
@@ -7,6 +8,8 @@ import torch
 from experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
     _str_to_benchmark_level
 from experiments.model_search.model_search_exp import run_model_search
+from experiments.prevent_caching.watch_utils import LIMIT_IO, clear_caches_and_check_io_limit
+from global_utils.deterministic import TRUE
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 BENCHMARK_LEVELS = "benchmark_levels"
@@ -52,6 +55,10 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
 def run_experiment(exp_args, file_id):
     print(f'run experiment:{exp_args}')
 
+    if exp_args.limit_fs_io:
+        os.environ[LIMIT_IO] = TRUE
+        clear_caches_and_check_io_limit()
+
     # code to start experiment here
     measurements, result = run_exp(exp_args)
 
@@ -83,6 +90,6 @@ if __name__ == "__main__":
         DEFAULT_CACHE_LOCATIONS: ["GPU"],
         SNAPSHOT_SET_STRINGS: ["resnet18"],
         NUMS_MODELS: [4],
-        BENCHMARK_LEVELS: ["END_TO_END", "EXECUTION_STEPS"]
+        BENCHMARK_LEVELS: ["EXECUTION_STEPS"]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)

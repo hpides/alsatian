@@ -16,3 +16,4 @@ __pycache__
 /global_utils/dummy_data/
 /experiments/bert_sentiment/aclImdb/
 /data/imagenette-dummy/
+/experiments/prevent_caching/active-*

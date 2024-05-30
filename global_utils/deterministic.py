@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 DETERMINISTIC_EXECUTION = "DETERMINISTIC_EXECUTION"
-TRUE = "True"
+TRUE = "TRUE"
 
 
 def check_deterministic_env_var_set():
