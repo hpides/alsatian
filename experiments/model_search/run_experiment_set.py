@@ -10,6 +10,7 @@ from experiments.model_search.experiment_args import ExpArgs, _str_to_distributi
 from experiments.model_search.model_search_exp import run_model_search
 from experiments.prevent_caching.watch_utils import LIMIT_IO, clear_caches_and_check_io_limit
 from global_utils.deterministic import TRUE
+from global_utils.model_names import RESNET_152, RESNET_18, VIT_L_32
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 BENCHMARK_LEVELS = "benchmark_levels"
@@ -85,11 +86,11 @@ if __name__ == "__main__":
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
-        DISTRIBUTIONS: ["TOP_LAYERS"],
-        APPROACHES: ["baseline", "shift", "mosix"],
-        DEFAULT_CACHE_LOCATIONS: ["GPU"],
-        SNAPSHOT_SET_STRINGS: ["resnet18"],
-        NUMS_MODELS: [4],
+        DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
+        APPROACHES: ["shift", "mosix", "baseline"],
+        DEFAULT_CACHE_LOCATIONS: ["CPU"],
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32],
+        NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
