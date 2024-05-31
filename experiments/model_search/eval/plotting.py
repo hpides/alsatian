@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import END_TO_END, DETAILED_TIMES
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import RESNET_18, RESNET_152
+from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32
 
 BASELINE = 'baseline'
 
@@ -45,35 +45,41 @@ def sum_up_level(data, levels=1, ignore_prefixes=[]):
     return total_sum
 
 
-def extract_metrics_of_interest(measurements):
-    detailed_times = measurements[DETAILED_TIMES]
-    sum_detailed_times = sum_up_level(detailed_times)
-    sum_detailed_times_no_cleanup = sum_up_level(detailed_times, levels=1, ignore_prefixes=[CLEAR_CACHES])
-    sum_clean_times = sum_up_level(detailed_times, levels=1, ignore_prefixes=["sh_rank"])
-
-    result = {
-        END_TO_END: measurements[END_TO_END],
-        SUM_DETAILED_TIMES: sum_detailed_times,
-        SUM_DETAILED_TIMES_NO_CLEANUP: sum_detailed_times_no_cleanup,
-        SUM_CLEAN_TIMES: sum_clean_times,
-        SH_ITERATIONS: {}
-    }
-
-    sh_i = 0
-
-    while f'{SH_RANK_ITERATION}_{sh_i}' in detailed_times:
-        sh_iteration = detailed_times[f'{SH_RANK_ITERATION}_{sh_i}']
-        sum_iteration_times = sum_up_level(detailed_times[f'{SH_RANK_ITERATION_DETAILS}_{sh_i}'], levels=2)
-        result[SH_ITERATIONS][sh_i] = {
-            SH_RANK_ITERATION: sh_iteration,
-            SUM_SH_RANK_ITERATION: sum_iteration_times
+def extract_metrics_of_interest(measurements, approach):
+    if approach == BASELINE:
+        result = {
+            END_TO_END: measurements[END_TO_END]
         }
-        sh_i += 1
+
+    else:
+        detailed_times = measurements[DETAILED_TIMES]
+        sum_detailed_times = sum_up_level(detailed_times)
+        sum_detailed_times_no_cleanup = sum_up_level(detailed_times, levels=1, ignore_prefixes=[CLEAR_CACHES])
+        sum_clean_times = sum_up_level(detailed_times, levels=1, ignore_prefixes=["sh_rank"])
+
+        result = {
+            END_TO_END: measurements[END_TO_END],
+            SUM_DETAILED_TIMES: sum_detailed_times,
+            SUM_DETAILED_TIMES_NO_CLEANUP: sum_detailed_times_no_cleanup,
+            SUM_CLEAN_TIMES: sum_clean_times,
+            SH_ITERATIONS: {}
+        }
+
+        sh_i = 0
+
+        while f'{SH_RANK_ITERATION}_{sh_i}' in detailed_times:
+            sh_iteration = detailed_times[f'{SH_RANK_ITERATION}_{sh_i}']
+            sum_iteration_times = sum_up_level(detailed_times[f'{SH_RANK_ITERATION_DETAILS}_{sh_i}'], levels=2)
+            result[SH_ITERATIONS][sh_i] = {
+                SH_RANK_ITERATION: sh_iteration,
+                SUM_SH_RANK_ITERATION: sum_iteration_times
+            }
+            sh_i += 1
 
     return result
 
 
-def extract_times_of_interest(root_dir, file_id):
+def extract_times_of_interest(root_dir, file_id, approach):
     # find file
     files = extract_files_by_name(root_dir, [file_id])
     # TODO so far we expect only 1 file
@@ -84,18 +90,19 @@ def extract_times_of_interest(root_dir, file_id):
     measurements = data[MEASUREMENTS]
 
     # actual extraction
-    metrics_of_interest = extract_metrics_of_interest(measurements)
+    metrics_of_interest = extract_metrics_of_interest(measurements, approach)
     print(metrics_of_interest)
 
-    # check validity of data
-    # check diff between measured end to end time and the sum of the more detailed times
-    diff_end_to_end_vs_details = metrics_of_interest[END_TO_END] - metrics_of_interest[SUM_DETAILED_TIMES]
-    assert diff_end_to_end_vs_details > 0 and diff_end_to_end_vs_details < 1
-    # check if the time summed up times without
-    no_cleanup_plus_cleanup = \
-        metrics_of_interest[SUM_DETAILED_TIMES_NO_CLEANUP] + metrics_of_interest[SUM_CLEAN_TIMES]
-    assert (metrics_of_interest[END_TO_END] - no_cleanup_plus_cleanup) > 0
-    assert (metrics_of_interest[END_TO_END] - no_cleanup_plus_cleanup) < 1
+    if not approach == BASELINE:
+        # check validity of data
+        # check diff between measured end to end time and the sum of the more detailed times
+        diff_end_to_end_vs_details = metrics_of_interest[END_TO_END] - metrics_of_interest[SUM_DETAILED_TIMES]
+        assert diff_end_to_end_vs_details > 0 and diff_end_to_end_vs_details < 2
+        # check if the time summed up times without
+        no_cleanup_plus_cleanup = \
+            metrics_of_interest[SUM_DETAILED_TIMES_NO_CLEANUP] + metrics_of_interest[SUM_CLEAN_TIMES]
+        assert (metrics_of_interest[END_TO_END] - no_cleanup_plus_cleanup) > 0
+        assert (metrics_of_interest[END_TO_END] - no_cleanup_plus_cleanup) < 2
 
     return metrics_of_interest
 
@@ -107,8 +114,11 @@ def end_to_end_plot_times(root_dir, models, approaches, distribution, caching_lo
         for approach in approaches:
             config = [distribution, approach, caching_location, model, num_models, measure_type]
             file_id = file_template.format(*config)
-            times = extract_times_of_interest(root_dir, file_id)
-            model_measurements[model][approach] = times[SUM_DETAILED_TIMES_NO_CLEANUP]
+            times = extract_times_of_interest(root_dir, file_id, approach)
+            if approach == BASELINE:
+                model_measurements[model][approach] = times[END_TO_END]
+            else:
+                model_measurements[model][approach] = times[SUM_DETAILED_TIMES_NO_CLEANUP]
 
     return model_measurements
 
@@ -119,9 +129,9 @@ def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_l
     for approach in approaches:
         config = [distribution, approach, caching_location, model, num_models, measure_type]
         file_id = file_template.format(*config)
-        times = extract_times_of_interest(root_dir, file_id)
+        times = extract_times_of_interest(root_dir, file_id, approach)
         if approach == BASELINE:
-            model_measurements[model][BASELINE] = times[SUM_DETAILED_TIMES_NO_CLEANUP]
+            model_measurements[model][BASELINE] = times[END_TO_END]
         else:
             model_measurements[model][approach] = {}
             for k, v in times[SH_ITERATIONS].items():
@@ -194,6 +204,8 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
     bars_mosix = ax.bar(index + bar_width, mosix_values, bar_width, label='Mosix')
     # Add a horizontal gray line at the baseline divided value
     ax.axhline(y=baseline_divided, color='gray', linestyle='--', linewidth=1)
+    # Adding label to the right of the plot within the frame
+    ax.text(n_bars - 2.5, baseline_divided + 10, 'baseline / num iterations', color='gray', ha='left', va='center')
     # Adding labels and title
     ax.set_xlabel('Key')
     ax.set_ylabel('Values')
@@ -209,27 +221,24 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    root_dir = '/Users/nils/uni/programming/model-search-paper/experiments/model_search/results/dummy'
+    root_dir = '/Users/nils/Downloads/des-gpu-imagenette'
     file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
 
     config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
     file_id = file_template.format(*config)
-    times = extract_times_of_interest(root_dir, file_id)
-    print(times)
 
-    models = [RESNET_18, RESNET_152]
+    models = [RESNET_18, RESNET_152, VIT_L_32]
     approaches = ['baseline', 'shift', 'mosix']
-    distribution = 'TOP_LAYERS'
+    distributions = ['TOP_LAYERS', 'TWENTY_FIVE_PERCENT']
     caching_location = 'CPU'
     num_models = 35
     measure_type = 'EXECUTION_STEPS'
-    t = end_to_end_plot_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type)
     plot_save_path = './plots'
 
-    plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
-                          plot_save_path)
+    for distribution in distributions:
 
-    t = sh_iteration_plot_times(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type)
-    print(t)
-    plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
-                       plot_save_path)
+        plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
+                              plot_save_path)
+
+        plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
+                           plot_save_path)
