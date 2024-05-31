@@ -8,6 +8,8 @@ from global_utils.constants import END_TO_END, DETAILED_TIMES
 from global_utils.global_constants import MEASUREMENTS
 from global_utils.model_names import RESNET_18, RESNET_152
 
+BASELINE = 'baseline'
+
 SH_RANK_ITERATION_DETAILS = 'sh_rank_iteration_details'
 
 SH_RANK_ITERATION = 'sh_rank_iteration'
@@ -111,6 +113,23 @@ def end_to_end_plot_times(root_dir, models, approaches, distribution, caching_lo
     return model_measurements
 
 
+def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_location, num_models, measure_type):
+    model_measurements = {}
+    model_measurements[model] = {}
+    for approach in approaches:
+        config = [distribution, approach, caching_location, model, num_models, measure_type]
+        file_id = file_template.format(*config)
+        times = extract_times_of_interest(root_dir, file_id)
+        if approach == BASELINE:
+            model_measurements[model][BASELINE] = times[SUM_DETAILED_TIMES_NO_CLEANUP]
+        else:
+            model_measurements[model][approach] = {}
+            for k, v in times[SH_ITERATIONS].items():
+                model_measurements[model][approach][k] = v[SH_RANK_ITERATION]
+
+    return model_measurements
+
+
 def plot_end_to_end_times(data_root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
                           plot_save_path):
     # Extracting the data
@@ -152,6 +171,43 @@ def plot_end_to_end_times(data_root_dir, models, approaches, distribution, cachi
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
 
 
+def plot_sh_iterations(root_dir, model, approach, distribution, caching_location, num_models, measure_type,
+                       plot_save_path):
+    data = sh_iteration_plot_times(root_dir, model, approach, distribution, caching_location, num_models, measure_type)
+    shift_data = data[model]['shift']
+    mosix_data = data[model]['mosix']
+    x = list(shift_data.keys())
+    shift_values = list(shift_data.values())
+    mosix_values = list(mosix_data.values())
+    # Number of bars per group
+    n_bars = len(x)
+    # Baseline value divided by the number of keys
+    baseline_value = data[model]['baseline']
+    baseline_divided = baseline_value / n_bars
+    # Creating a bar plot
+    bar_width = 0.35
+    index = np.arange(n_bars)
+    # Create a figure and an axis
+    fig, ax = plt.subplots()
+    # Plot each group
+    bars_shift = ax.bar(index, shift_values, bar_width, label='Shift')
+    bars_mosix = ax.bar(index + bar_width, mosix_values, bar_width, label='Mosix')
+    # Add a horizontal gray line at the baseline divided value
+    ax.axhline(y=baseline_divided, color='gray', linestyle='--', linewidth=1)
+    # Adding labels and title
+    ax.set_xlabel('Key')
+    ax.set_ylabel('Values')
+    ax.set_title(f'{model}-{distribution}')
+    ax.set_xticks(index + bar_width / 2)
+    ax.set_xticklabels(x)
+    ax.legend()
+    # Save the plot as SVG and PNG
+    plt.tight_layout()
+    plot_file_name = f'sh_iterations-{distribution}-{caching_location}-{num_models}-{measure_type}-{model}'
+    plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.svg'))
+    plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
+
+
 if __name__ == '__main__':
     root_dir = '/Users/nils/uni/programming/model-search-paper/experiments/model_search/results/dummy'
     file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
@@ -172,3 +228,8 @@ if __name__ == '__main__':
 
     plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
                           plot_save_path)
+
+    t = sh_iteration_plot_times(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type)
+    print(t)
+    plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
+                       plot_save_path)
