@@ -129,7 +129,16 @@ def plot_end_to_end_times(data_root_dir, models, approaches, distribution, cachi
     # Plot each method
     for i, method in enumerate(methods):
         method_values = [data[model][method] for model in models]
-        ax.bar(index + i * bar_width, method_values, bar_width, label=method)
+        bars = ax.bar(index + i * bar_width, method_values, bar_width, label=method)
+
+        # Add annotations for shift and mosix
+        if method in ['shift', 'mosix']:
+            for bar, model in zip(bars, models):
+                baseline_value = data[model]['baseline']
+                speedup = baseline_value / data[model][method]
+                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.2f}x', ha='center',
+                        va='bottom')
+
     # Adding labels and title
     ax.set_xlabel('Model Architectures')
     ax.set_ylabel('Time in seconds')
