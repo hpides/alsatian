@@ -75,7 +75,6 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             batch_measures[INFERENCE] = measurement
 
             features_cache_id = f'{exec_step.inp_write_cache_config.id_prefix}-{i}'
-            print('cache:', features_cache_id)
             self.caching_service.cache_on_location(features_cache_id, features,
                                                    exec_step.inp_write_cache_config.location)
 

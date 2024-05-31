@@ -168,7 +168,6 @@ class CachingService:
             result += self._all_ids_with_prefix(prefix, cache)
         # NOTE: this might seem expensive, but in most cases we do not expect to have more than 100 items
         result.sort(key=cmp_to_key(_compare))
-        print(result)
         return result
 
     def _all_ids_with_prefix(self, prefix, cache):
