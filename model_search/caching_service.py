@@ -168,7 +168,6 @@ class CachingService:
             result += self._all_ids_with_prefix(prefix, cache)
         # NOTE: this might seem expensive, but in most cases we do not expect to have more than 100 items
         result.sort(key=cmp_to_key(_compare))
-        print(result)
         return result
 
     def _all_ids_with_prefix(self, prefix, cache):
@@ -177,6 +176,12 @@ class CachingService:
             if prefix in k:
                 result.append(k)
         return result
+
+    def remove_all_ids_with_prefix(self, prefix, remove_immediately=False):
+        for cache in [self._gpu_cache, self._cpu_cache, self._persistent_cache]:
+            for k in list(cache.keys()):
+                if prefix in k:
+                    self.remove_item(k, remove_immediately)
 
 
 if __name__ == '__main__':

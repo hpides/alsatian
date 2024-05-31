@@ -1,6 +1,6 @@
 import unittest
 
-from model_search.model_snapshots.dfs_traversal import dfs_execution_plan
+from model_search.model_snapshots.dfs_traversal import dfs_execution_plan, RELEASE_OUTPUT
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshotNode, MultiModelSnapshotEdge
 
 
@@ -19,6 +19,8 @@ class TestDFSTraversal(unittest.TestCase):
         self.node9 = MultiModelSnapshotNode(layer_state="Node 9")
 
     def test_simple_example(self):
+        # check dfs_traversal_example.jpeg for better understanding
+
         self.node0.snapshot_ids = [1, 2, 3]
         self.node1.snapshot_ids = [1, 2, 3]
         self.node2.snapshot_ids = [1, 2]
@@ -44,7 +46,7 @@ class TestDFSTraversal(unittest.TestCase):
         # model 3
         edge2 = MultiModelSnapshotEdge("Edge 1-3", self.node1, self.node3)
         edge5 = MultiModelSnapshotEdge("Edge 3-6", self.node3, self.node6)
-        edge6 = MultiModelSnapshotEdge("Edge 3-7", self.node3, self.node7)
+        edge6 = MultiModelSnapshotEdge("Edge 6-7", self.node3, self.node7)
 
         # Connect edges to nodes
         self.node0.edges.extend([edge0])
@@ -60,7 +62,10 @@ class TestDFSTraversal(unittest.TestCase):
             [edge1],
             [edge4, edge8],
             [edge3, edge7],
+            (RELEASE_OUTPUT, self.node2),
             [edge2, edge5, edge6],
+            (RELEASE_OUTPUT, self.node3),
+            (RELEASE_OUTPUT, self.node1)
         ]
 
         self.assertEqual(expected_ex_units, ex_units)
