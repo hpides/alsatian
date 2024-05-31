@@ -86,8 +86,8 @@ if __name__ == "__main__":
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
-        DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
-        APPROACHES: ["shift", "mosix", "baseline"],
+        DISTRIBUTIONS: ["TOP_LAYERS"],
+        APPROACHES: ["mosix", "shift", "baseline"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32],
         NUMS_MODELS: [35],
