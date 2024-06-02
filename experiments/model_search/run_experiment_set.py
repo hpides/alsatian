@@ -100,9 +100,9 @@ if __name__ == "__main__":
         # DISTRIBUTIONS: ["TOP_LAYERS", 'TWENTY_FIVE_PERCENT'],
         DISTRIBUTIONS: ["LAST_ONE_LAYER"],
         # APPROACHES: ["mosix", "shift", "baseline"],
-        APPROACHES: ["mosix"],
+        APPROACHES: ["shift", "baseline"],
         DEFAULT_CACHE_LOCATIONS: ["GPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2],
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, MOBILE_V2],
         NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"]
     }
