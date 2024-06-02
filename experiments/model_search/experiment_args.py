@@ -44,6 +44,8 @@ class ExpArgs:
     def __init__(self, args, section):
         self.train_data = args[section]['train_data']
         self.test_data = args[section]['test_data']
+        self.num_train_items = args.getint(section, 'num_train_items')
+        self.num_test_items = args.getint(section, 'num_test_items')
         self.num_workers = args.getint(section, 'num_workers')
         self.batch_size = args.getint(section, 'batch_size')
         self.num_target_classes = args.getint(section, 'num_target_classes')
