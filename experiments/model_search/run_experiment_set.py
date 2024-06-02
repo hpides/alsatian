@@ -1,7 +1,9 @@
 import argparse
 import configparser
 import os
+import sys
 import time
+import traceback
 
 import torch
 
@@ -45,7 +47,16 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
 
                             print("RUN:", file_id)
 
-                            run_experiment(base_exp_args, file_id)
+                            try:
+                                run_experiment(base_exp_args, file_id)
+                            except AssertionError as e:
+                                print("RUN FAILED:", file_id)
+                                _, _, tb = sys.exc_info()
+                                traceback.print_tb(tb)  # Fixed format
+                                tb_info = traceback.extract_tb(tb)
+                                filename, line, func, text = tb_info[-1]
+
+                                print('An error occurred on line {} in statement {}'.format(line, text))
 
                             # sleep and clean up
                             time.sleep(2)
