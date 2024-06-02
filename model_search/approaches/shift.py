@@ -54,13 +54,15 @@ def get_data_ranges(search_space_len, train_data_len) -> [int]:
         items_seen += items_to_process
         items_to_process = items_to_process * 2
 
-    if ranges[-1][1] < train_data_len:
-        # make sure the last range covers all data
-        ranges[-1][1] = train_data_len
-    else:
-        message = (f"train data to small for search space: for a search space with length {search_space_len},"
-                   f" we need a dataset with at least {ranges[-1][1]} items")
-        raise Exception(message)
+    # make sure the last range covers all data, and also does not exceed range of available data
+    ranges[-1][1] = train_data_len
+
+    # check for consistency
+    counts = [x[1] - x[0] for x in ranges]
+    assert sum(counts) == train_data_len
+    assert counts[-1] > counts[-2]
+    for i in range(len(counts) - 2):
+        assert counts[i] * 2 == counts[i + 1]
 
     return ranges
 
