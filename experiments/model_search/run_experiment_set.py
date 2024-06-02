@@ -91,6 +91,6 @@ if __name__ == "__main__":
         DEFAULT_CACHE_LOCATIONS: ["GPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2],
         NUMS_MODELS: [35],
-        BENCHMARK_LEVELS: ["EXECUTION_STEPS"]
+        BENCHMARK_LEVELS: ["SH_PHASES"]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
