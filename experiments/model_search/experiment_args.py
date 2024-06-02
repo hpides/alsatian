@@ -14,6 +14,8 @@ def _str_to_distribution(dist_str) -> RetrainDistribution:
         return RetrainDistribution.TWENTY_FIVE_PERCENT
     elif dist_str == "FIFTY_PERCENT":
         return RetrainDistribution.FIFTY_PERCENT
+    elif dist_str == "LAST_ONE_LAYER":
+        return RetrainDistribution.LAST_ONE_LAYER
     else:
         raise ValueError(f"Unknown distribution string: {dist_str}")
 

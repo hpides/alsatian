@@ -97,11 +97,13 @@ if __name__ == "__main__":
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
-        DISTRIBUTIONS: ["TOP_LAYERS", 'TWENTY_FIVE_PERCENT'],
-        APPROACHES: ["mosix", "shift", "baseline"],
+        # DISTRIBUTIONS: ["TOP_LAYERS", 'TWENTY_FIVE_PERCENT'],
+        DISTRIBUTIONS: ["LAST_ONE_LAYER"],
+        # APPROACHES: ["mosix", "shift", "baseline"],
+        APPROACHES: ["mosix"],
         DEFAULT_CACHE_LOCATIONS: ["GPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2],
         NUMS_MODELS: [35],
-        BENCHMARK_LEVELS: ["SH_PHASES"]
+        BENCHMARK_LEVELS: ["EXECUTION_STEPS"]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
