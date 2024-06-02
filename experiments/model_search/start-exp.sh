@@ -8,7 +8,7 @@ python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=single_model_exps
 repo_name=model-search-paper
 config_file=experiments/model_search/config.ini
-config_section=des-gpu-imagenette-base
+config_section=des-gpu-imagenette-base-1000
 
 
 # Function to read the access token from file
