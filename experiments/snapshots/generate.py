@@ -19,6 +19,7 @@ class RetrainDistribution(Enum):
     TOP_LAYERS = 3
     TWENTY_FIVE_PERCENT = 4
     FIFTY_PERCENT = 5
+    LAST_ONE_LAYER = 6
 
 
 def _num_retrained_layers(max_number, distribution: RetrainDistribution) -> int:
@@ -63,6 +64,8 @@ def generate_snapshots(architecture_name: str, num_models: int, distribution: Re
         retrain_idxs = normal_retrain_layer_dist_25(len(base_model), num_models - 1)
     elif distribution == RetrainDistribution.FIFTY_PERCENT:
         retrain_idxs = normal_retrain_layer_dist_50(len(base_model), num_models - 1)
+    elif distribution == RetrainDistribution.LAST_ONE_LAYER:
+        retrain_idxs = [1] * (num_models - 1)
     else:
         raise NotImplementedError
 
