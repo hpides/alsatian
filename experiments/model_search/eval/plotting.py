@@ -4,8 +4,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
-from global_utils.constants import *
+from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
+    CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
+    EXEC_STEP_MEASUREMENTS
 from global_utils.global_constants import MEASUREMENTS
+from global_utils.model_names import MOBILE_V2, RESNET_152, RESNET_18
 
 CALC_PROXY_SCORE_NUMBERS = "calc_proxy_score_numbers"
 
@@ -105,7 +108,6 @@ def extract_metrics_of_interest(measurements, approach, include_exec_step_detail
                     aggregated_numbers = sum_identical_keys(score_step, DETAILED_METRICS_OF_INTEREST)
 
                     result[CALC_PROXY_SCORE_NUMBERS][ef_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
-
 
             ef_i += 1
 
@@ -292,25 +294,25 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 if __name__ == '__main__':
     root_dir = f'/Users/nils/Downloads/des-gpu-imagenette-1000'
-    # file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
-    #
-    # config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
-    # file_id = file_template.format(*config)
-    #
-    # models = [RESNET_18, RESNET_152, MOBILE_V2]
-    # approaches = ['baseline', 'shift', 'mosix']
-    # distributions = ['LAST_ONE_LAYER']
-    # caching_location = 'GPU'
-    # num_models = 35
-    # measure_type = 'EXECUTION_STEPS'
-    # plot_save_path = './debug-plots'
-    #
-    # for distribution in distributions:
-    #     plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
-    #                           plot_save_path)
-    #
-    #     plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
-    #                        plot_save_path)
+    file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
+
+    config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
+    file_id = file_template.format(*config)
+
+    models = [RESNET_18, RESNET_152, MOBILE_V2]
+    approaches = ['baseline', 'shift', 'mosix']
+    distributions = ['LAST_ONE_LAYER']
+    caching_location = 'GPU'
+    num_models = 35
+    measure_type = 'EXECUTION_STEPS'
+    plot_save_path = './debug-plots'
+
+    for distribution in distributions:
+        plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
+                              plot_save_path)
+
+        plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
+                           plot_save_path)
 
     toi = extract_times_of_interest(root_dir,
                                     '-1000-distribution-LAST_ONE_LAYER-approach-shift-cache-GPU-snapshot-resnet18-models-35-level-STEPS_DETAILS',
