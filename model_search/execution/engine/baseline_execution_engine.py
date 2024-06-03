@@ -53,9 +53,6 @@ class BaselineExecutionEngine(ExecutionEngine):
         measurement, state_dict = self.bench.micro_benchmark_cpu(load_model_state, state_dict_path)
         self.logger.log_value(LOAD_STATE_DICT, measurement)
 
-        # if self.config.simulate_loading_snapshot:
-        #     self.log_simulated_loading_time(state_dict)
-
         return state_dict
 
     def initialize_model(self, snapshot: ModelSnapshot):
@@ -83,12 +80,15 @@ class BaselineExecutionEngine(ExecutionEngine):
     def execute_step(self, exec_step: ExecutionStep):
         # reset logger for every step
         self.logger = ExecutionStepLogger()
+
         if isinstance(exec_step, BaselineExtractFeaturesStep):
             self.execute_baseline_extract_features_step(exec_step)
         elif isinstance(exec_step, ScoreModelStep):
             self.execute_score_model_step(exec_step)
         else:
             raise TypeError
+
+        return self.logger.log_dict
 
     def execute_baseline_extract_features_step(self, exec_step: BaselineExtractFeaturesStep):
 
