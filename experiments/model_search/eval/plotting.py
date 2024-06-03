@@ -7,6 +7,10 @@ from experiments.plot_shared.file_parsing import extract_files_by_name, parse_js
 from global_utils.constants import *
 from global_utils.global_constants import MEASUREMENTS
 
+CALC_PROXY_SCORE_NUMBERS = "calc_proxy_score_numbers"
+
+INFERENCE_DETAILED_NUMBERS = "inference_detailed_numbers"
+
 STEP_DETAILED_NUMS_AGG = "step_detailed_numbers_agg"
 SUM_OVER_STEPS_DETAILED_NUMS_AGG = "sum_over_steps_detailed_numbers_agg"
 
@@ -28,7 +32,7 @@ SUM_DETAILED_TIMES = "sum_detailed_times"
 CLEAR_CACHES = "clear_caches"
 
 DETAILED_METRICS_OF_INTEREST = [GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE,
-                                INFERENCE, STATE_TO_MODEL, INIT_MODEL, LOAD_STATE_DICT]
+                                INFERENCE, STATE_TO_MODEL, INIT_MODEL, LOAD_STATE_DICT, CALC_PROXY_SCORE]
 
 
 def _non_relevant_key(key, ignore_prefixes):
@@ -82,13 +86,26 @@ def extract_metrics_of_interest(measurements, approach, include_exec_step_detail
 
         ef_i = 1
 
-        while f'{ef_i}-{"BaselineExtractFeaturesStep-details"}' in exec_step_measurements:
-            result[ef_i] = {}
-            b_step = exec_step_measurements[f'{ef_i}-{"BaselineExtractFeaturesStep-details"}']
-            if include_exec_step_details:
-                aggregated_numbers = sum_identical_keys(b_step, DETAILED_METRICS_OF_INTEREST)
+        result[INFERENCE_DETAILED_NUMBERS] = {}
+        result[CALC_PROXY_SCORE_NUMBERS] = {}
+        while (f'{ef_i}-{"BaselineExtractFeaturesStep-details"}' in exec_step_measurements or
+               f'{ef_i}-{"ScoreModelStep-details"}' in exec_step_measurements):
+            if f'{ef_i}-{"BaselineExtractFeaturesStep-details"}' in exec_step_measurements:
+                result[INFERENCE_DETAILED_NUMBERS][ef_i] = {}
+                b_step = exec_step_measurements[f'{ef_i}-{"BaselineExtractFeaturesStep-details"}']
+                if include_exec_step_details:
+                    aggregated_numbers = sum_identical_keys(b_step, DETAILED_METRICS_OF_INTEREST)
 
-                result[ef_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
+                    result[INFERENCE_DETAILED_NUMBERS][ef_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
+            elif f'{ef_i}-{"ScoreModelStep-details"}' in exec_step_measurements:
+                result[CALC_PROXY_SCORE_NUMBERS][ef_i] = {}
+                score_step = exec_step_measurements[f'{ef_i}-{"ScoreModelStep-details"}']
+
+                if include_exec_step_details:
+                    aggregated_numbers = sum_identical_keys(score_step, DETAILED_METRICS_OF_INTEREST)
+
+                    result[CALC_PROXY_SCORE_NUMBERS][ef_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
+
 
             ef_i += 1
 
@@ -296,6 +313,6 @@ if __name__ == '__main__':
     #                        plot_save_path)
 
     toi = extract_times_of_interest(root_dir,
-                                    '-1000-distribution-LAST_ONE_LAYER-approach-baseline-cache-GPU-snapshot-resnet18-models-35-level-STEPS_DETAILS',
-                                    'baseline', "STEPS_DETAILS")
+                                    '-1000-distribution-LAST_ONE_LAYER-approach-shift-cache-GPU-snapshot-resnet18-models-35-level-STEPS_DETAILS',
+                                    'shift', "STEPS_DETAILS")
     print(toi)
