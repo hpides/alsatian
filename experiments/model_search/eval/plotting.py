@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import END_TO_END, DETAILED_TIMES
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32
+from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2
 
 BASELINE = 'baseline'
 
@@ -221,19 +221,19 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    root_dir = '/Users/nils/Downloads/des-gpu-imagenette'
+    root_dir = f'/Users/nils/Downloads/des-gpu-imagenette/'
     file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
 
     config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
     file_id = file_template.format(*config)
 
-    models = [RESNET_18, RESNET_152, VIT_L_32]
+    models = [RESNET_18, RESNET_152, MOBILE_V2]
     approaches = ['baseline', 'shift', 'mosix']
-    distributions = ['TOP_LAYERS', 'TWENTY_FIVE_PERCENT']
-    caching_location = 'CPU'
+    distributions = ['LAST_ONE_LAYER']
+    caching_location = 'GPU'
     num_models = 35
     measure_type = 'EXECUTION_STEPS'
-    plot_save_path = './plots'
+    plot_save_path = './debug-plots'
 
     for distribution in distributions:
 
