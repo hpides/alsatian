@@ -4,9 +4,18 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
-from global_utils.constants import END_TO_END, DETAILED_TIMES
+from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
+    CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
+    EXEC_STEP_MEASUREMENTS
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2
+from global_utils.model_names import MOBILE_V2, RESNET_152, RESNET_18
+
+CALC_PROXY_SCORE_NUMBERS = "calc_proxy_score_numbers"
+
+INFERENCE_DETAILED_NUMBERS = "inference_detailed_numbers"
+
+STEP_DETAILED_NUMS_AGG = "step_detailed_numbers_agg"
+SUM_OVER_STEPS_DETAILED_NUMS_AGG = "sum_over_steps_detailed_numbers_agg"
 
 BASELINE = 'baseline'
 
@@ -25,12 +34,36 @@ SUM_DETAILED_TIMES = "sum_detailed_times"
 
 CLEAR_CACHES = "clear_caches"
 
+DETAILED_METRICS_OF_INTEREST = [GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE,
+                                INFERENCE, STATE_TO_MODEL, INIT_MODEL, LOAD_STATE_DICT, CALC_PROXY_SCORE]
+
 
 def _non_relevant_key(key, ignore_prefixes):
     for pre in ignore_prefixes:
         if pre in key:
             return True
     return False
+
+
+def sum_identical_keys(data, metrics_of_interest, accumulator=None):
+    if accumulator is None:
+        accumulator = {}
+
+    for key, value in data.items():
+        if isinstance(value, dict):
+            sum_identical_keys(value, metrics_of_interest, accumulator=accumulator)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    sum_identical_keys(item, metrics_of_interest, accumulator=accumulator)
+        elif isinstance(value, (int, float)):
+            if key in metrics_of_interest:
+                if key in accumulator:
+                    accumulator[key] += value
+                else:
+                    accumulator[key] = value
+
+    return accumulator
 
 
 def sum_up_level(data, levels=1, ignore_prefixes=[]):
@@ -45,11 +78,42 @@ def sum_up_level(data, levels=1, ignore_prefixes=[]):
     return total_sum
 
 
-def extract_metrics_of_interest(measurements, approach):
+def extract_metrics_of_interest(measurements, approach, include_exec_step_details=True):
     if approach == BASELINE:
         result = {
             END_TO_END: measurements[END_TO_END]
         }
+
+        detailed_times = measurements[DETAILED_TIMES]
+        exec_step_measurements = detailed_times[EXEC_STEP_MEASUREMENTS]
+
+        ef_i = 1
+
+        result[INFERENCE_DETAILED_NUMBERS] = {}
+        result[CALC_PROXY_SCORE_NUMBERS] = {}
+        while (f'{ef_i}-{"BaselineExtractFeaturesStep-details"}' in exec_step_measurements or
+               f'{ef_i}-{"ScoreModelStep-details"}' in exec_step_measurements):
+            if f'{ef_i}-{"BaselineExtractFeaturesStep-details"}' in exec_step_measurements:
+                result[INFERENCE_DETAILED_NUMBERS][ef_i] = {}
+                b_step = exec_step_measurements[f'{ef_i}-{"BaselineExtractFeaturesStep-details"}']
+                if include_exec_step_details:
+                    aggregated_numbers = sum_identical_keys(b_step, DETAILED_METRICS_OF_INTEREST)
+
+                    result[INFERENCE_DETAILED_NUMBERS][ef_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
+            elif f'{ef_i}-{"ScoreModelStep-details"}' in exec_step_measurements:
+                result[CALC_PROXY_SCORE_NUMBERS][ef_i] = {}
+                score_step = exec_step_measurements[f'{ef_i}-{"ScoreModelStep-details"}']
+
+                if include_exec_step_details:
+                    aggregated_numbers = sum_identical_keys(score_step, DETAILED_METRICS_OF_INTEREST)
+
+                    result[CALC_PROXY_SCORE_NUMBERS][ef_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
+
+            ef_i += 1
+
+        result[SUM_OVER_STEPS_DETAILED_NUMS_AGG] = sum_identical_keys(result, DETAILED_METRICS_OF_INTEREST)
+
+
 
     else:
         detailed_times = measurements[DETAILED_TIMES]
@@ -69,17 +133,25 @@ def extract_metrics_of_interest(measurements, approach):
 
         while f'{SH_RANK_ITERATION}_{sh_i}' in detailed_times:
             sh_iteration = detailed_times[f'{SH_RANK_ITERATION}_{sh_i}']
-            sum_iteration_times = sum_up_level(detailed_times[f'{SH_RANK_ITERATION_DETAILS}_{sh_i}'], levels=2)
+            detailed_sh_iteration_times = detailed_times[f'{SH_RANK_ITERATION_DETAILS}_{sh_i}']
+            sum_iteration_times = sum_up_level(detailed_sh_iteration_times, levels=2)
             result[SH_ITERATIONS][sh_i] = {
                 SH_RANK_ITERATION: sh_iteration,
                 SUM_SH_RANK_ITERATION: sum_iteration_times
             }
+            if include_exec_step_details:
+                aggregated_numbers = sum_identical_keys(detailed_sh_iteration_times, DETAILED_METRICS_OF_INTEREST)
+
+                result[SH_ITERATIONS][sh_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
+
             sh_i += 1
+
+        result[SUM_OVER_STEPS_DETAILED_NUMS_AGG] = sum_identical_keys(result, DETAILED_METRICS_OF_INTEREST)
 
     return result
 
 
-def extract_times_of_interest(root_dir, file_id, approach):
+def extract_times_of_interest(root_dir, file_id, approach, measure_type):
     # find file
     files = extract_files_by_name(root_dir, [file_id])
     # TODO so far we expect only 1 file
@@ -93,7 +165,7 @@ def extract_times_of_interest(root_dir, file_id, approach):
     metrics_of_interest = extract_metrics_of_interest(measurements, approach)
     print(metrics_of_interest)
 
-    if not approach == BASELINE:
+    if not approach == BASELINE and not measure_type == "STEPS_DETAILS":
         # check validity of data
         # check diff between measured end to end time and the sum of the more detailed times
         diff_end_to_end_vs_details = metrics_of_interest[END_TO_END] - metrics_of_interest[SUM_DETAILED_TIMES]
@@ -114,7 +186,7 @@ def end_to_end_plot_times(root_dir, models, approaches, distribution, caching_lo
         for approach in approaches:
             config = [distribution, approach, caching_location, model, num_models, measure_type]
             file_id = file_template.format(*config)
-            times = extract_times_of_interest(root_dir, file_id, approach)
+            times = extract_times_of_interest(root_dir, file_id, approach, measure_type)
             if approach == BASELINE:
                 model_measurements[model][approach] = times[END_TO_END]
             else:
@@ -221,7 +293,7 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    root_dir = f'/Users/nils/Downloads/des-gpu-imagenette/'
+    root_dir = f'/Users/nils/Downloads/des-gpu-imagenette-1000'
     file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
 
     config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
@@ -236,9 +308,13 @@ if __name__ == '__main__':
     plot_save_path = './debug-plots'
 
     for distribution in distributions:
-
         plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
                               plot_save_path)
 
         plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
                            plot_save_path)
+
+    toi = extract_times_of_interest(root_dir,
+                                    '-1000-distribution-LAST_ONE_LAYER-approach-shift-cache-GPU-snapshot-resnet18-models-35-level-STEPS_DETAILS',
+                                    'shift', "STEPS_DETAILS")
+    print(toi)

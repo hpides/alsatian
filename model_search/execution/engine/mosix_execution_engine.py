@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from custom.data_loaders.cache_service_dataset import CacheServiceDataset
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from global_utils.constants import LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, LABEL, MODEL_TO_DEVICE, \
-    CUDA, CALC_PROXY_SCORE, TRAIN, TEST
+    CUDA, CALC_PROXY_SCORE, TRAIN, TEST, GET_COMPOSED_MODEL
 from global_utils.deterministic import check_deterministic_env_var_set
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetInformation, DatasetClass, \
@@ -33,6 +33,7 @@ class MosixExecutionEngine(BaselineExecutionEngine):
     def execute_step(self, exec_step: ExecutionStep):
         # reset logger for every step
         self.logger = ExecutionStepLogger()
+
         if isinstance(exec_step, MosixExtractFeaturesStep):
             self.execute_mosix_extract_features_step(exec_step)
         elif isinstance(exec_step, ScoreModelStep):
@@ -41,6 +42,8 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             self.execute_modify_cache_step(exec_step)
         else:
             raise TypeError
+
+        return self.logger.log_dict
 
     def execute_mosix_extract_features_step(self, exec_step: MosixExtractFeaturesStep):
         partial_model = self._init_model(exec_step)
@@ -86,8 +89,6 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             self.logger.append_value(BATCH_MEASURES, batch_measures)
 
             start = time.perf_counter()
-        # TODO fix the logging
-        # exec_step.execution_logs = self.logger
 
     def _get_label_cache_prefix(self, exec_step):
         prefix = f'{exec_step.data_info.dataset_type}-{LABEL}'
@@ -125,7 +126,9 @@ class MosixExecutionEngine(BaselineExecutionEngine):
 
     def _init_model(self, exec_step):
         layer_state_ids = [l.id for l in exec_step.layers]
-        sub_model = self.model_store.get_composed_model(layer_state_ids)
+        measurement, sub_model = self.bench.micro_benchmark_cpu(self.model_store.get_composed_model, layer_state_ids)
+        self.logger.log_value(GET_COMPOSED_MODEL, measurement)
+
 
         measurement, _ = self.bench.micro_benchmark_cpu(load_model_to_device, sub_model, CUDA)
         self.logger.log_value(MODEL_TO_DEVICE, measurement)
@@ -163,4 +166,3 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             self.caching_service.remove_all_ids_with_prefix(_id, remove_immediately=False)
 
         torch.cuda.empty_cache()
-

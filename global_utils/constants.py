@@ -16,6 +16,7 @@ CLEAR_CACHES_ = "clear_caches_"
 DATA_TO_DEVICE = 'data_to_device'
 MODEL_TO_DEVICE = 'model_to_device'
 
+GET_COMPOSED_MODEL = "get_composed_model"
 STATE_TO_MODEL = 'load_state_to_model'
 
 INIT_MODEL = 'init_model'

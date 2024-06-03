@@ -11,6 +11,7 @@ class ShiftExecutionEngine(BaselineExecutionEngine):
     def execute_step(self, exec_step: ExecutionStep):
         # reset logger for every step
         self.logger = ExecutionStepLogger()
+
         if isinstance(exec_step, ShiftExtractFeaturesStep):
             self.execute_shift_extract_features_step(exec_step)
         elif isinstance(exec_step, BaselineExtractFeaturesStep):
@@ -19,6 +20,8 @@ class ShiftExecutionEngine(BaselineExecutionEngine):
             self.execute_score_model_step(exec_step)
         else:
             raise TypeError
+
+        return self.logger.log_dict
 
     def execute_shift_extract_features_step(self, exec_step: ShiftExtractFeaturesStep):
 
