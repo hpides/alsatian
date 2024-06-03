@@ -1,4 +1,6 @@
+import os.path
 import random
+import shutil
 from typing import Any, Callable, Optional, Tuple
 
 from torchvision.datasets import ImageFolder
@@ -69,3 +71,21 @@ class CustomImageFolder(ImageFolder):
             return sample, target
         else:
             return (path, sample), target
+
+
+def create_sub_dataset(dataset_path: str, size: int):
+    random.seed(42) # to guarantee same split for same input dataset
+    image_folder = CustomImageFolder(dataset_path)
+    new_dataset_base_path = dataset_path + f'-{size}'
+    if not os.path.exists(new_dataset_base_path):
+        images_paths = [x[0] for x in image_folder.imgs]
+        subset_image_paths = random.sample(images_paths, size)
+        for img_path in subset_image_paths:
+            new_path = img_path.replace(dataset_path, new_dataset_base_path)
+            os.makedirs(os.path.dirname(new_path), exist_ok=True)
+            shutil.copy2(img_path, new_path)
+
+    new_image_folder = CustomImageFolder(new_dataset_base_path)
+    assert len(new_image_folder) == size
+
+    return new_dataset_base_path

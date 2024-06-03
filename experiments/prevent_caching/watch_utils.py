@@ -26,7 +26,7 @@ def clear_caches_and_check_io_limit():
             "I/O limit for docker container does not seem to be active (look into prevent_caching directory for info)"
 
 
-def check_read_speed_below_threshold(base_path, mb_s_threshold=200):
+def check_read_speed_below_threshold(base_path, mb_s_threshold=200, min_threshold=110):
     speed_value, speed_unit = get_read_speed(base_path)
 
     # Convert speed to MB/s for comparison
@@ -39,8 +39,8 @@ def check_read_speed_below_threshold(base_path, mb_s_threshold=200):
     else:
         raise ValueError("Unexpected unit in read speed.")
 
-    is_below_threshold = speed_in_mb < mb_s_threshold
-    return is_below_threshold
+    within_thresholds = (speed_in_mb < mb_s_threshold) and (speed_in_mb > min_threshold)
+    return within_thresholds
 
 
 def get_read_speed(base_path):

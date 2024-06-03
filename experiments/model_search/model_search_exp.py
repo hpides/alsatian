@@ -2,10 +2,9 @@ import os
 
 import torch
 
-from custom.data_loaders.custom_image_folder import CustomImageFolder
-from experiments.model_search.benchmark_level import BenchmarkLevel
+from custom.data_loaders.custom_image_folder import CustomImageFolder, create_sub_dataset
 from experiments.model_search.experiment_args import ExpArgs
-from experiments.snapshots.generate_sets.generate_set import generate_snapshot_set, get_architecture_models
+from experiments.snapshots.generate_sets.generate_set import get_architecture_models
 from experiments.snapshots.generate_sets.twenty_resnet_152 import twenty_resnet_152_snapshots
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import TRAIN, TEST, END_TO_END, DETAILED_TIMES
@@ -20,10 +19,26 @@ def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path)
         snapshot_save_path = os.path.join(base_save_path, snapshot_set_string)
         return twenty_resnet_152_snapshots(snapshot_save_path)
     elif snapshot_set_string in VISION_MODEL_CHOICES:
-        return get_architecture_models(base_save_path,distribution,num_models,[snapshot_set_string])
+        return get_architecture_models(base_save_path, distribution, num_models, [snapshot_set_string])
     else:
         # TODO sets are already implemented, just need to add the right strings and a parameter for the number of models
         raise NotImplementedError
+
+
+def _prepare_datasets(exp_args):
+    train_data_path = exp_args.train_data
+    if exp_args.num_train_items > 0:
+        train_data_path = create_sub_dataset(exp_args.train_data, exp_args.num_train_items)
+
+    test_data_path = exp_args.test_data
+    if exp_args.num_test_items > 0:
+        test_data_path = create_sub_dataset(exp_args.test_data, exp_args.num_test_items)
+
+    dataset_paths = {
+        TRAIN: train_data_path,
+        TEST: test_data_path
+    }
+    return dataset_paths
 
 
 def run_model_search(exp_args: ExpArgs):
@@ -34,10 +49,8 @@ def run_model_search(exp_args: ExpArgs):
     batch_size = exp_args.batch_size
     num_target_classes = exp_args.num_target_classes
 
-    dataset_paths = {
-        TRAIN: exp_args.train_data,
-        TEST: exp_args.test_data
-    }
+    # prepare datasets
+    dataset_paths = _prepare_datasets(exp_args)
     dataset_class = DatasetClass.CUSTOM_IMAGE_FOLDER
     train_data = CustomImageFolder(dataset_paths[TRAIN])
     len_train_data = len(train_data)
@@ -45,7 +58,8 @@ def run_model_search(exp_args: ExpArgs):
     model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
                                                  exp_args.distribution, exp_args.base_snapshot_save_path)
 
-    planner_config = PlannerConfig(num_workers, batch_size, num_target_classes, dataset_class, dataset_paths, caching_loc)
+    planner_config = PlannerConfig(num_workers, batch_size, num_target_classes, dataset_class, dataset_paths,
+                                   caching_loc)
 
     benchmark_level = exp_args.benchmark_level
     benchmarker = Benchmarker(torch.device('cuda'))
