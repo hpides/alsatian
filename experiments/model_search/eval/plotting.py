@@ -6,7 +6,6 @@ from matplotlib import pyplot as plt
 from experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import *
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import RESNET_18, RESNET_152, MOBILE_V2
 
 STEP_DETAILED_NUMS_AGG = "step_detailed_numbers_agg"
 SUM_OVER_STEPS_DETAILED_NUMS_AGG = "sum_over_steps_detailed_numbers_agg"
@@ -78,6 +77,25 @@ def extract_metrics_of_interest(measurements, approach, include_exec_step_detail
             END_TO_END: measurements[END_TO_END]
         }
 
+        detailed_times = measurements[DETAILED_TIMES]
+        exec_step_measurements = detailed_times[EXEC_STEP_MEASUREMENTS]
+
+        ef_i = 1
+
+        while f'{ef_i}-{"BaselineExtractFeaturesStep-details"}' in exec_step_measurements:
+            result[ef_i] = {}
+            b_step = exec_step_measurements[f'{ef_i}-{"BaselineExtractFeaturesStep-details"}']
+            if include_exec_step_details:
+                aggregated_numbers = sum_identical_keys(b_step, DETAILED_METRICS_OF_INTEREST)
+
+                result[ef_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
+
+            ef_i += 1
+
+        result[SUM_OVER_STEPS_DETAILED_NUMS_AGG] = sum_identical_keys(result, DETAILED_METRICS_OF_INTEREST)
+
+
+
     else:
         detailed_times = measurements[DETAILED_TIMES]
         sum_detailed_times = sum_up_level(detailed_times)
@@ -114,7 +132,7 @@ def extract_metrics_of_interest(measurements, approach, include_exec_step_detail
     return result
 
 
-def extract_times_of_interest(root_dir, file_id, approach):
+def extract_times_of_interest(root_dir, file_id, approach, measure_type):
     # find file
     files = extract_files_by_name(root_dir, [file_id])
     # TODO so far we expect only 1 file
@@ -128,7 +146,7 @@ def extract_times_of_interest(root_dir, file_id, approach):
     metrics_of_interest = extract_metrics_of_interest(measurements, approach)
     print(metrics_of_interest)
 
-    if not approach == BASELINE:
+    if not approach == BASELINE and not measure_type == "STEPS_DETAILS":
         # check validity of data
         # check diff between measured end to end time and the sum of the more detailed times
         diff_end_to_end_vs_details = metrics_of_interest[END_TO_END] - metrics_of_interest[SUM_DETAILED_TIMES]
@@ -149,7 +167,7 @@ def end_to_end_plot_times(root_dir, models, approaches, distribution, caching_lo
         for approach in approaches:
             config = [distribution, approach, caching_location, model, num_models, measure_type]
             file_id = file_template.format(*config)
-            times = extract_times_of_interest(root_dir, file_id, approach)
+            times = extract_times_of_interest(root_dir, file_id, approach, measure_type)
             if approach == BASELINE:
                 model_measurements[model][approach] = times[END_TO_END]
             else:
@@ -256,26 +274,28 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    root_dir = f'/Users/nils/Downloads/debug'
-    file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
+    root_dir = f'/Users/nils/Downloads/des-gpu-imagenette-1000'
+    # file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
+    #
+    # config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
+    # file_id = file_template.format(*config)
+    #
+    # models = [RESNET_18, RESNET_152, MOBILE_V2]
+    # approaches = ['baseline', 'shift', 'mosix']
+    # distributions = ['LAST_ONE_LAYER']
+    # caching_location = 'GPU'
+    # num_models = 35
+    # measure_type = 'EXECUTION_STEPS'
+    # plot_save_path = './debug-plots'
+    #
+    # for distribution in distributions:
+    #     plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
+    #                           plot_save_path)
+    #
+    #     plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
+    #                        plot_save_path)
 
-    config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
-    file_id = file_template.format(*config)
-
-    models = [RESNET_18, RESNET_152, MOBILE_V2]
-    approaches = ['baseline', 'shift', 'mosix']
-    distributions = ['LAST_ONE_LAYER']
-    caching_location = 'GPU'
-    num_models = 35
-    measure_type = 'EXECUTION_STEPS'
-    plot_save_path = './debug-plots'
-
-    for distribution in distributions:
-        plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
-                              plot_save_path)
-
-        plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
-                           plot_save_path)
-
-    toi = extract_times_of_interest(root_dir, 'plotting-test-file-mosix.json', 'mosix')
+    toi = extract_times_of_interest(root_dir,
+                                    '-1000-distribution-LAST_ONE_LAYER-approach-baseline-cache-GPU-snapshot-resnet18-models-35-level-STEPS_DETAILS',
+                                    'baseline', "STEPS_DETAILS")
     print(toi)
