@@ -4,9 +4,12 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
-from global_utils.constants import END_TO_END, DETAILED_TIMES
+from global_utils.constants import *
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2
+from global_utils.model_names import RESNET_18, RESNET_152, MOBILE_V2
+
+STEP_DETAILED_NUMS_AGG = "step_detailed_numbers_agg"
+SUM_OVER_STEPS_DETAILED_NUMS_AGG = "sum_over_steps_detailed_numbers_agg"
 
 BASELINE = 'baseline'
 
@@ -25,12 +28,36 @@ SUM_DETAILED_TIMES = "sum_detailed_times"
 
 CLEAR_CACHES = "clear_caches"
 
+DETAILED_METRICS_OF_INTEREST = [GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE,
+                                INFERENCE, STATE_TO_MODEL, INIT_MODEL, LOAD_STATE_DICT]
+
 
 def _non_relevant_key(key, ignore_prefixes):
     for pre in ignore_prefixes:
         if pre in key:
             return True
     return False
+
+
+def sum_identical_keys(data, metrics_of_interest, accumulator=None):
+    if accumulator is None:
+        accumulator = {}
+
+    for key, value in data.items():
+        if isinstance(value, dict):
+            sum_identical_keys(value, metrics_of_interest, accumulator=accumulator)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    sum_identical_keys(item, metrics_of_interest, accumulator=accumulator)
+        elif isinstance(value, (int, float)):
+            if key in metrics_of_interest:
+                if key in accumulator:
+                    accumulator[key] += value
+                else:
+                    accumulator[key] = value
+
+    return accumulator
 
 
 def sum_up_level(data, levels=1, ignore_prefixes=[]):
@@ -45,7 +72,7 @@ def sum_up_level(data, levels=1, ignore_prefixes=[]):
     return total_sum
 
 
-def extract_metrics_of_interest(measurements, approach):
+def extract_metrics_of_interest(measurements, approach, include_exec_step_details=True):
     if approach == BASELINE:
         result = {
             END_TO_END: measurements[END_TO_END]
@@ -69,12 +96,20 @@ def extract_metrics_of_interest(measurements, approach):
 
         while f'{SH_RANK_ITERATION}_{sh_i}' in detailed_times:
             sh_iteration = detailed_times[f'{SH_RANK_ITERATION}_{sh_i}']
-            sum_iteration_times = sum_up_level(detailed_times[f'{SH_RANK_ITERATION_DETAILS}_{sh_i}'], levels=2)
+            detailed_sh_iteration_times = detailed_times[f'{SH_RANK_ITERATION_DETAILS}_{sh_i}']
+            sum_iteration_times = sum_up_level(detailed_sh_iteration_times, levels=2)
             result[SH_ITERATIONS][sh_i] = {
                 SH_RANK_ITERATION: sh_iteration,
                 SUM_SH_RANK_ITERATION: sum_iteration_times
             }
+            if include_exec_step_details:
+                aggregated_numbers = sum_identical_keys(detailed_sh_iteration_times, DETAILED_METRICS_OF_INTEREST)
+
+                result[SH_ITERATIONS][sh_i][STEP_DETAILED_NUMS_AGG] = aggregated_numbers
+
             sh_i += 1
+
+        result[SUM_OVER_STEPS_DETAILED_NUMS_AGG] = sum_identical_keys(result, DETAILED_METRICS_OF_INTEREST)
 
     return result
 
@@ -221,7 +256,7 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    root_dir = f'/Users/nils/Downloads/des-gpu-imagenette/'
+    root_dir = f'/Users/nils/Downloads/debug'
     file_template = 'des-gpu-imagenette-base-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
 
     config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
@@ -236,9 +271,11 @@ if __name__ == '__main__':
     plot_save_path = './debug-plots'
 
     for distribution in distributions:
-
         plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
                               plot_save_path)
 
         plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
                            plot_save_path)
+
+    toi = extract_times_of_interest(root_dir, 'plotting-test-file-mosix.json', 'mosix')
+    print(toi)
