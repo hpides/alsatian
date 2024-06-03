@@ -128,3 +128,9 @@ if __name__ == '__main__':
         for model in model_list:
             print('generating', dist, model)
             generate_snapshot_set(model, 50, dist, base_path)
+
+    model_list = [RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2]
+    for model in model_list:
+        print('generating', "last ONE", model)
+        path = os.path.join(base_path, model, )
+        generate_snapshot_set(model, 50, RetrainDistribution.LAST_ONE_LAYER, base_path)
