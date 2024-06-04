@@ -98,7 +98,7 @@ if __name__ == "__main__":
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
         DISTRIBUTIONS: ["LAST_ONE_LAYER"],
-        APPROACHES: ["mosix"],
+        APPROACHES: ["baseline", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["GPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2, RESNET_50, RESNET_101,
                                RESNET_34, EFF_NET_V2_S, EFF_NET_V2_L, VIT_B_16],
