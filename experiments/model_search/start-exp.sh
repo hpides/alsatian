@@ -35,6 +35,7 @@ fi
 repo_name=$(basename "$repository_url" .git)
 cd $repo_name
 
+git pull
 git checkout $branch
 git pull 
 
