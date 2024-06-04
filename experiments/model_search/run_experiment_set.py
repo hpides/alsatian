@@ -10,7 +10,7 @@ import torch
 from experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
     _str_to_benchmark_level
 from experiments.model_search.model_search_exp import run_model_search
-from experiments.prevent_caching.watch_utils import LIMIT_IO, clear_caches_and_check_io_limit
+from experiments.prevent_caching.watch_utils import LIMIT_IO
 from global_utils.deterministic import TRUE
 from global_utils.model_names import RESNET_152, RESNET_18, MOBILE_V2
 from global_utils.write_results import write_measurements_and_args_to_json_file
@@ -69,7 +69,6 @@ def run_experiment(exp_args, file_id):
 
     if exp_args.limit_fs_io:
         os.environ[LIMIT_IO] = TRUE
-        clear_caches_and_check_io_limit()
 
     # code to start experiment here
     measurements, result = run_exp(exp_args)

@@ -4,6 +4,7 @@ import torch
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder, create_sub_dataset
 from experiments.model_search.experiment_args import ExpArgs
+from experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
 from experiments.snapshots.generate_sets.generate_set import get_architecture_models
 from experiments.snapshots.generate_sets.twenty_resnet_152 import twenty_resnet_152_snapshots
 from global_utils.benchmark_util import Benchmarker
@@ -57,6 +58,9 @@ def run_model_search(exp_args: ExpArgs):
 
     model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
                                                  exp_args.distribution, exp_args.base_snapshot_save_path)
+
+    # after generating the snapshots make sure they are not in the caches
+    clear_caches_and_check_io_limit()
 
     planner_config = PlannerConfig(num_workers, batch_size, num_target_classes, dataset_class, dataset_paths,
                                    caching_loc)
