@@ -16,6 +16,8 @@ from global_utils.model_names import RESNET_152, RESNET_18, MOBILE_V2, VIT_L_32,
     VIT_B_16, EFF_NET_V2_S, RESNET_34
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
+DATA_ITEMS = "data_itmes"
+
 BENCHMARK_LEVELS = "benchmark_levels"
 NUMS_MODELS = "nums_models"
 SNAPSHOT_SET_STRINGS = "snapshot_set_strings"
@@ -29,40 +31,45 @@ def run_exp(exp_args):
 
 
 def run_exp_set(base_exp_args, eval_space, base_file_id):
-    for distribution in eval_space[DISTRIBUTIONS]:
-        base_exp_args.distribution = _str_to_distribution(distribution)
-        for approach in eval_space[APPROACHES]:
-            base_exp_args.approach = approach
-            for cache_location in eval_space[DEFAULT_CACHE_LOCATIONS]:
-                base_exp_args.default_cache_location = _str_to_cache_location(cache_location)
-                for snapshot_set in eval_space[SNAPSHOT_SET_STRINGS]:
-                    base_exp_args.snapshot_set_string = snapshot_set
-                    for num_models in eval_space[NUMS_MODELS]:
-                        base_exp_args.num_models = num_models
-                        for bench_level in eval_space[BENCHMARK_LEVELS]:
-                            base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
+    for train_items, test_items in eval_space[DATA_ITEMS]:
+        base_exp_args.num_train_items = train_items
+        base_exp_args.num_test_items = test_items
+        for distribution in eval_space[DISTRIBUTIONS]:
+            base_exp_args.distribution = _str_to_distribution(distribution)
+            for approach in eval_space[APPROACHES]:
+                base_exp_args.approach = approach
+                for cache_location in eval_space[DEFAULT_CACHE_LOCATIONS]:
+                    base_exp_args.default_cache_location = _str_to_cache_location(cache_location)
+                    for snapshot_set in eval_space[SNAPSHOT_SET_STRINGS]:
+                        base_exp_args.snapshot_set_string = snapshot_set
+                        for num_models in eval_space[NUMS_MODELS]:
+                            base_exp_args.num_models = num_models
+                            for bench_level in eval_space[BENCHMARK_LEVELS]:
+                                base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
 
-                            file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
-                                       f"-cache-{cache_location}-snapshot-{snapshot_set}"
-                                       f"-models-{num_models}-level-{bench_level}")
+                                base_file_id = base_file_id.replace("1000", str(train_items + test_items))
 
-                            print("RUN:", file_id)
+                                file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
+                                           f"-cache-{cache_location}-snapshot-{snapshot_set}"
+                                           f"-models-{num_models}-level-{bench_level}")
 
-                            try:
-                                run_experiment(base_exp_args, file_id)
-                            except AssertionError as e:
-                                print("RUN FAILED:", file_id)
-                                _, _, tb = sys.exc_info()
-                                traceback.print_tb(tb)  # Fixed format
-                                tb_info = traceback.extract_tb(tb)
-                                filename, line, func, text = tb_info[-1]
+                                print("RUN:", file_id)
 
-                                print('An error occurred on line {} in statement {}'.format(line, text))
+                                try:
+                                    run_experiment(base_exp_args, file_id)
+                                except AssertionError as e:
+                                    print("RUN FAILED:", file_id)
+                                    _, _, tb = sys.exc_info()
+                                    traceback.print_tb(tb)  # Fixed format
+                                    tb_info = traceback.extract_tb(tb)
+                                    filename, line, func, text = tb_info[-1]
 
-                            # sleep and clean up
-                            time.sleep(2)
-                            torch.cuda.empty_cache()
-                            time.sleep(2)
+                                    print('An error occurred on line {} in statement {}'.format(line, text))
+
+                                # sleep and clean up
+                                time.sleep(2)
+                                torch.cuda.empty_cache()
+                                time.sleep(2)
 
 
 def run_experiment(exp_args, file_id):
@@ -98,11 +105,13 @@ if __name__ == "__main__":
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
         DISTRIBUTIONS: ["LAST_ONE_LAYER"],
-        APPROACHES: ["baseline", "shift"],
+        APPROACHES: ["mosix", "baseline", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["GPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2, RESNET_50, RESNET_101,
-                               RESNET_34, EFF_NET_V2_S, EFF_NET_V2_L, VIT_B_16],
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_34, RESNET_50, RESNET_101, RESNET_152, MOBILE_V2, VIT_L_32,
+                               EFF_NET_V2_S, EFF_NET_V2_L,
+                               VIT_B_16],
         NUMS_MODELS: [35],
-        BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"]
+        BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"],
+        DATA_ITEMS: [(1600, 400), (3200, 800), (6400, 1600)]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
