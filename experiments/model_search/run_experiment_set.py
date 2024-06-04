@@ -12,7 +12,8 @@ from experiments.model_search.experiment_args import ExpArgs, _str_to_distributi
 from experiments.model_search.model_search_exp import run_model_search
 from experiments.prevent_caching.watch_utils import LIMIT_IO
 from global_utils.deterministic import TRUE
-from global_utils.model_names import RESNET_152, RESNET_18, MOBILE_V2
+from global_utils.model_names import RESNET_152, RESNET_18, MOBILE_V2, VIT_L_32, EFF_NET_V2_L, RESNET_50, RESNET_101, \
+    VIT_B_16, EFF_NET_V2_S, RESNET_34
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 BENCHMARK_LEVELS = "benchmark_levels"
@@ -85,7 +86,7 @@ if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', default='./config.ini', help='Configuration file path')
-    parser.add_argument('--base_config_section', default='des-gpu-imagenette-base')
+    parser.add_argument('--base_config_section', default='des-gpu-imagenette-base-1000')
     args = parser.parse_args()
 
     # Read configuration file
@@ -96,11 +97,12 @@ if __name__ == "__main__":
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
-        DISTRIBUTIONS: ["LAST_ONE_LAYER", "TOP_LAYERS", 'TWENTY_FIVE_PERCENT'],
-        APPROACHES: ["mosix", "shift", "baseline"],
+        DISTRIBUTIONS: ["LAST_ONE_LAYER"],
+        APPROACHES: ["mosix"],
         DEFAULT_CACHE_LOCATIONS: ["GPU"],
-        SNAPSHOT_SET_STRINGS: [MOBILE_V2, RESNET_18, RESNET_152],
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2, RESNET_50, RESNET_101,
+                               RESNET_34, EFF_NET_V2_S, EFF_NET_V2_L, VIT_B_16],
         NUMS_MODELS: [35],
-        BENCHMARK_LEVELS: ["EXECUTION_STEPS"]
+        BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
