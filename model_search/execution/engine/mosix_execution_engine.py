@@ -55,8 +55,17 @@ class MosixExecutionEngine(BaselineExecutionEngine):
 
     def _extract_features_part_model(self, partial_model, data_set, data_loader, exec_step):
 
-        # extract features
+        if isinstance(data_set, CacheServiceDataset):
+            self._extract_features_part_model_no_data_loader(data_set, exec_step, partial_model)
+        else:
+            self._extract_features_part_model_data_loader(data_loader, data_set, exec_step, partial_model)
+
+    def _extract_features_part_model_data_loader(self, data_loader, data_set, exec_step, partial_model):
+
+        partial_model.eval()
+
         start = time.perf_counter()
+
         for i, (batch) in enumerate(data_loader):
 
             if exec_step.extract_labels:
@@ -64,27 +73,49 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             else:
                 inputs = batch
 
-            batch_measures = {}
-            batch_measures[LOAD_DATA] = time.perf_counter() - start
-
             if isinstance(data_set, CacheServiceDataset):
                 inputs = data_set.translate_to_actual_data(inputs)
 
-            measurement, inputs = self.bench.micro_benchmark_cpu(load_data_to_device, inputs)
-            batch_measures[DATA_TO_DEVICE] = measurement
+            batch_measures = {}
+            batch_measures[LOAD_DATA] = time.perf_counter() - start
 
-            partial_model.eval()
-            measurement, features = self.bench.micro_benchmark_gpu(inference, inputs, partial_model)
-            batch_measures[INFERENCE] = measurement
-
-            features_cache_id = f'{exec_step.inp_write_cache_config.id_prefix}-{i}'
-            self.caching_service.cache_on_location(features_cache_id, features,
-                                                   exec_step.inp_write_cache_config.location)
+            self._load_inf_cache(partial_model, inputs, exec_step, i, batch_measures)
 
             if exec_step.extract_labels:
                 labels_cache_id = f'{exec_step.label_write_cache_config.id_prefix}-{i}'
                 self.caching_service.cache_on_location(labels_cache_id, labels,
                                                        exec_step.label_write_cache_config.location)
+
+            self.logger.append_value(BATCH_MEASURES, batch_measures)
+
+            start = time.perf_counter()
+
+    def _load_inf_cache(self, partial_model, inputs, exec_step, i, batch_measures):
+        measurement, inputs = self.bench.micro_benchmark_cpu(load_data_to_device, inputs)
+        batch_measures[DATA_TO_DEVICE] = measurement
+        measurement, features = self.bench.micro_benchmark_gpu(inference, inputs, partial_model)
+        batch_measures[INFERENCE] = measurement
+        features_cache_id = f'{exec_step.inp_write_cache_config.id_prefix}-{i}'
+        self.caching_service.cache_on_location(features_cache_id, features,
+                                               exec_step.inp_write_cache_config.location)
+
+    def _extract_features_part_model_no_data_loader(self, data_set, exec_step, partial_model):
+
+        partial_model.eval()
+
+        start = time.perf_counter()
+
+        data_ids = data_set._data_ids
+        for i, (data_id) in enumerate(data_ids):
+            # TODO this significantly speeds up data loading when loading from GPU memory, when loading from slow
+            # (persistent) storage we might want to use some background processes again like in a classical
+            # PyTorch data loader
+            inputs = self.caching_service.get_item(data_id)
+
+            batch_measures = {}
+            batch_measures[LOAD_DATA] = time.perf_counter() - start
+
+            self._load_inf_cache(partial_model, inputs, exec_step, i, batch_measures)
 
             self.logger.append_value(BATCH_MEASURES, batch_measures)
 
@@ -128,7 +159,6 @@ class MosixExecutionEngine(BaselineExecutionEngine):
         layer_state_ids = [l.id for l in exec_step.layers]
         measurement, sub_model = self.bench.micro_benchmark_cpu(self.model_store.get_composed_model, layer_state_ids)
         self.logger.log_value(GET_COMPOSED_MODEL, measurement)
-
 
         measurement, _ = self.bench.micro_benchmark_cpu(load_model_to_device, sub_model, CUDA)
         self.logger.log_value(MODEL_TO_DEVICE, measurement)
