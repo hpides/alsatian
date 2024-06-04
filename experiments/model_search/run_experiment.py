@@ -45,7 +45,6 @@ if __name__ == "__main__":
 
     if exp_args.limit_fs_io:
         os.environ[LIMIT_IO] = TRUE
-        clear_caches_and_check_io_limit()
 
     # Call the main function with parsed arguments
     run_experiment_section(exp_args, args.config_section)
