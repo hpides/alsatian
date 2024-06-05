@@ -47,9 +47,9 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
                             for bench_level in eval_space[BENCHMARK_LEVELS]:
                                 base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
 
-                                base_file_id = base_file_id.replace("1000", str(train_items + test_items))
+                                new_base_file_id = base_file_id.replace("1000", str(train_items + test_items))
 
-                                file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
+                                file_id = (f"{new_base_file_id}-distribution-{distribution}-approach-{approach}"
                                            f"-cache-{cache_location}-snapshot-{snapshot_set}"
                                            f"-models-{num_models}-level-{bench_level}")
 
