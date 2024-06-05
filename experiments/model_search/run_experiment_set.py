@@ -107,9 +107,11 @@ if __name__ == "__main__":
         DISTRIBUTIONS: ["LAST_ONE_LAYER"],
         APPROACHES: ["mosix", "baseline", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_34, RESNET_50, RESNET_101, RESNET_152, MOBILE_V2, VIT_L_32,
-                               EFF_NET_V2_S, EFF_NET_V2_L,
-                               VIT_B_16],
+        # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_34, RESNET_50, RESNET_101, RESNET_152, MOBILE_V2, VIT_L_32,
+        #                        EFF_NET_V2_S, EFF_NET_V2_L,
+        #                        VIT_B_16],
+
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L],
         NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"],
         # DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
