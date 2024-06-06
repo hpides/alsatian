@@ -1,6 +1,7 @@
 import os.path
 import random
 from enum import Enum
+from statistics import mean
 
 import torch.nn
 
@@ -31,8 +32,7 @@ def _num_retrained_layers(max_number, distribution: RetrainDistribution) -> int:
 
 def _adjust_model_randomly(architecture_name: str, base_model: torch.nn.Sequential,
                            distribution: RetrainDistribution, retrain_idx=None) -> torch.nn.Module:
-
-    num_blocks = len(base_model)
+    num_blocks = len(SPLIT_INDEXES[architecture_name])
     if retrain_idx is None:
         retrain_idx = _num_retrained_layers(num_blocks, distribution)
 
@@ -56,14 +56,18 @@ def generate_snapshots(architecture_name: str, num_models: int, distribution: Re
     base_snapshot = snapshot
     base_model = base_snapshot.init_model_from_snapshot()
 
+    num_blocks = len(SPLIT_INDEXES[architecture_name])
     if distribution == RetrainDistribution.HARD_CODED:
         assert retrain_idxs is not None
     elif distribution == RetrainDistribution.TOP_LAYERS:
-        retrain_idxs = normal_retrain_layer_dist_last_few(len(base_model), num_models - 1)
+        retrain_idxs = normal_retrain_layer_dist_last_few(num_blocks, num_models - 1)
+        assert (num_blocks * 0.1 - 1) < mean(retrain_idxs) < (num_blocks * 0.1 + 1)
     elif distribution == RetrainDistribution.TWENTY_FIVE_PERCENT:
-        retrain_idxs = normal_retrain_layer_dist_25(len(base_model), num_models - 1)
+        retrain_idxs = normal_retrain_layer_dist_25(num_blocks, num_models - 1)
+        assert (num_blocks * 0.25 - 1) < mean(retrain_idxs) < (num_blocks * 0.25 + 1)
     elif distribution == RetrainDistribution.FIFTY_PERCENT:
-        retrain_idxs = normal_retrain_layer_dist_50(len(base_model), num_models - 1)
+        retrain_idxs = normal_retrain_layer_dist_50(num_blocks, num_models - 1)
+        assert (num_blocks * 0.5 - 2) < mean(retrain_idxs) < (num_blocks * 0.5 + 2)
     elif distribution == RetrainDistribution.LAST_ONE_LAYER:
         retrain_idxs = [1] * (num_models - 1)
     else:

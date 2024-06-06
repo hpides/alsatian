@@ -2,24 +2,25 @@ from scipy.stats import truncnorm
 
 
 def normal_retrain_layer_dist_50(num_layers, num_models):
-    mean = float(num_layers) / 2
+    mean = float(num_layers) * 0.5
     std_dev = float(mean / 4)
 
     return _normal_retrain_layer_dist(num_layers, num_models, mean, std_dev)
 
 
 def normal_retrain_layer_dist_25(num_layers, num_models):
-    mean = float(num_layers) / 4
+    mean = float(num_layers) * 0.25
     std_dev = float(mean / 2)
 
     return _normal_retrain_layer_dist(num_layers, num_models, mean, std_dev)
 
 
 def normal_retrain_layer_dist_last_few(num_layers, num_models):
-    mean = 2
-    std_dev = 2
+    mean = float(num_layers) * 0.1
+    std_dev = float(mean / 2)
 
     return _normal_retrain_layer_dist(num_layers, num_models, mean, std_dev)
+
 
 def _normal_retrain_layer_dist(num_layers, num_models, mean, std_dev):
     lower_bound = 0
