@@ -104,16 +104,13 @@ if __name__ == "__main__":
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
-        DISTRIBUTIONS: ["LAST_ONE_LAYER"],
-        APPROACHES: ["mosix", "baseline", "shift"],
+        DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
+        APPROACHES: ["mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_34, RESNET_50, RESNET_101, RESNET_152, MOBILE_V2, VIT_L_32,
-                               EFF_NET_V2_S, EFF_NET_V2_L,
-                               VIT_B_16],
-
+                               EFF_NET_V2_S, EFF_NET_V2_L],
         NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"],
-        # DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
-        DATA_ITEMS: [(3200, 800), (6400, 1600)]
+        DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
