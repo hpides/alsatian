@@ -8,8 +8,8 @@ from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_D
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
     EXEC_STEP_MEASUREMENTS
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2, RESNET_50, RESNET_101, VIT_B_16, \
-    EFF_NET_V2_L, EFF_NET_V2_S, RESNET_34
+from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2, RESNET_50, RESNET_101, EFF_NET_V2_L, \
+    EFF_NET_V2_S, RESNET_34
 
 CALC_PROXY_SCORE_NUMBERS = "calc_proxy_score_numbers"
 
@@ -148,9 +148,11 @@ def extract_metrics_of_interest(measurements, approach, include_exec_step_detail
     return result
 
 
-def extract_times_of_interest(root_dir, file_id, approach, measure_type):
-    # find file
-    files = extract_files_by_name(root_dir, [file_id])
+def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
+    files = []
+    for file_id in file_ids:
+        # find file
+        files += extract_files_by_name(root_dir, [file_id])
     # TODO so far we expect only 1 file
     assert len(files) == 1
 
@@ -176,9 +178,23 @@ def end_to_end_plot_times(root_dir, models, approaches, distribution, caching_lo
     for model in models:
         model_measurements[model] = {}
         for approach in approaches:
-            config = [distribution, approach, caching_location, model, num_models, measure_type]
-            file_id = file_template.format(*config)
-            times = extract_times_of_interest(root_dir, file_id, approach, measure_type)
+            split = distribution.split('-')
+            if len(split) > 1 and approach == 'mosix':
+                dist = split[0]
+            elif len(split) > 1:
+                dist = split[1]
+            else:
+                dist = distribution
+            config = [dist, approach, caching_location, model, num_models, measure_type]
+            if caching_location in ['GPU', 'CPU']:
+                file_ids = [file_template.format(*config)]
+            else:
+                file_ids = []
+                for device in ['GPU', 'CPU']:
+                    config = [dist, approach, device, model, num_models, measure_type]
+                    file_ids.append(file_template.format(*config))
+
+            times = extract_times_of_interest(root_dir, file_ids, approach, measure_type)
             model_measurements[model][approach] = times[END_TO_END]
 
     return model_measurements
@@ -288,21 +304,18 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    data_items = 8000
-    root_dir = f'/Users/nils/Downloads/imagenette-{data_items}-gpu-des-gpu-server'
+    data_items = 4000
+    root_dir = f'/Users/nils/Downloads/imagenette-1000-8000-des-gpu-server/{data_items}'
     file_template = f'des-gpu-imagenette-base-{data_items}' + '-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
 
-    # config = ['TOP_LAYERS', 'mosix', 'CPU', 'resnet152', '35', 'EXECUTION_STEPS']
-    # file_id = file_template.format(*config)
-
-    models = [RESNET_18, RESNET_34, RESNET_50,
+    models = [RESNET_18,
+              RESNET_34, RESNET_50,
               RESNET_101,
               RESNET_152, MOBILE_V2, EFF_NET_V2_S,
-              EFF_NET_V2_L, VIT_B_16, VIT_L_32
-              ]
+              EFF_NET_V2_L, VIT_L_32]
     approaches = ['baseline', 'shift', 'mosix']
-    distributions = ['LAST_ONE_LAYER']
-    caching_location = 'CPU'
+    distributions = ['LAST_ONE_LAYER', 'TWENTY_FIVE_PERCENT-LAST_ONE_LAYER']
+    caching_location = 'GPU-else-CPU'
     num_models = 35
     measure_type = 'EXECUTION_STEPS'
     plot_save_path = f'./plots-imagenette-{data_items}-gpu-des-gpu-server'
@@ -310,13 +323,3 @@ if __name__ == '__main__':
     for distribution in distributions:
         plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
                               plot_save_path)
-
-        # plot_sh_iterations(root_dir, RESNET_18, approaches, distribution, caching_location, num_models, measure_type,
-        #                    plot_save_path)
-
-    # for approach in approaches:
-    #     toi = extract_times_of_interest(root_dir,
-    #                                     f'-1000-distribution-LAST_ONE_LAYER-approach-{approach}-cache-GPU-snapshot-resnet18-models-35-level-STEPS_DETAILS',
-    #                                     approach, "STEPS_DETAILS")
-    #     print(approach, toi)
-    #     print(toi)
