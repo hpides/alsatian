@@ -48,12 +48,12 @@ if __name__ == '__main__':
     output_path = './time_breakdown'
     model_distribution = "LAST_ONE_LAYER"
     for model in [RESNET_152, VIT_L_32]:
-        for data_items, device in [(1000, "GPU"), (2000, "GPU"), (4000, "CPU")]:
-            root_dir = f'/Users/nils/Downloads/imagenette-{data_items}-gpu-des-gpu-server'
+        for data_items, device in [(1000, "GPU"), (2000, "GPU"), (4000, "CPU"), (8000, "CPU")]:
+            root_dir = f'/Users/nils/Downloads/imagenette-1000-8000-des-gpu-server/{data_items}'
             collected_data = []
             for approach in ['baseline', 'shift', 'mosix']:
                 file_id = f"des-gpu-imagenette-base-{data_items}-distribution-{model_distribution}-approach-{approach}-cache-{device}-snapshot-{model}-models-35-level-STEPS_DETAILS"
-                detailed_numbers = extract_times_of_interest(root_dir, file_id, approach, "STEPS_DETAILS")[
+                detailed_numbers = extract_times_of_interest(root_dir, [file_id], approach, "STEPS_DETAILS")[
                     SUM_OVER_STEPS_DETAILED_NUMS_AGG]
                 collected_data.append(detailed_numbers)
             plot_file_name = f'time-distribution-items-{data_items}-distribution-{model_distribution}-snapshot-{model}'
