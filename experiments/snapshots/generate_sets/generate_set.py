@@ -3,7 +3,8 @@ import os
 from experiments.snapshots.generate import generate_snapshots, RetrainDistribution
 from global_utils.json_operations import read_json_to_dict, write_json_to_file
 from global_utils.model_names import VISION_MODEL_CHOICES, RESNETS, TRANSFORMER_MODELS, MOBILE_V2, RESNET_34, RESNET_18, \
-    EFF_NET_V2_S, RESNET_50, RESNET_101, VIT_B_16, VIT_B_32, RESNET_152, VIT_L_32, VIT_L_16, EFF_NET_V2_L
+    EFF_NET_V2_S, RESNET_50, RESNET_101, VIT_B_16, VIT_B_32, RESNET_152, VIT_L_32, VIT_L_16, EFF_NET_V2_L, \
+    CONVOLUTION_MODELS
 from model_search.model_management.model_store import model_store_from_dict, ModelStore
 
 
@@ -59,9 +60,11 @@ def generate_snapshot_set(architecture_name, num_models, distribution: RetrainDi
 
     return model_snapshots, model_store
 
+
 def get_architecture_models(base_path, distribution, num_models, architecture_names):
     model_set = architecture_names
     return _compose_pregenerates_set(base_path, distribution, model_set, num_models)
+
 
 def get_all_models(base_path, distribution, num_models):
     model_set = VISION_MODEL_CHOICES
@@ -115,22 +118,16 @@ def _save_path(architecture_name, base_path, distribution, num_models):
 
 
 if __name__ == '__main__':
-    base_path = '/mount-fs/snapshot-sets'
     distributions = [
+        RetrainDistribution.FIFTY_PERCENT,
         RetrainDistribution.TOP_LAYERS,
         RetrainDistribution.TWENTY_FIVE_PERCENT,
-        # RetrainDistribution.FIFTY_PERCENT
     ]
+    base_path = '/mount-fs/snapshot-sets'
 
-    model_list = VISION_MODEL_CHOICES
+    model_list = CONVOLUTION_MODELS + [VIT_B_16, VIT_L_32]
 
     for dist in distributions:
         for model in model_list:
             print('generating', dist, model)
             generate_snapshot_set(model, 50, dist, base_path)
-
-    model_list = [RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2]
-    for model in model_list:
-        print('generating', "last ONE", model)
-        path = os.path.join(base_path, model, )
-        generate_snapshot_set(model, 50, RetrainDistribution.LAST_ONE_LAYER, base_path)
