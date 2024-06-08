@@ -22,10 +22,8 @@ from model_search.proxies.nn_proxy import linear_proxy
 
 class MosixExecutionEngine(BaselineExecutionEngine):
 
-    def __init__(self, tensor_caching_service: CachingService,
-                 model_caching_service: CachingService, model_store: ModelStore):
+    def __init__(self, tensor_caching_service: CachingService, model_store: ModelStore):
         super().__init__(tensor_caching_service)
-        self.model_caching_service = model_caching_service
         self.model_store = model_store
         self._prev_layer_hashes = []
         self._prev_sub_model = None

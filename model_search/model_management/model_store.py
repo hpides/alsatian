@@ -6,6 +6,7 @@ import torch.nn
 from custom.models.init_models import initialize_model
 from global_utils.hash import state_dict_hash, architecture_hash
 from global_utils.json_operations import dict_to_dict
+from model_search.caching_service import CachingService
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 from model_search.model_snapshots.rich_snapshot import RichModelSnapshot, LayerState, rich_model_snapshot_from_dict, \
@@ -37,10 +38,18 @@ def model_store_from_dict(_dict):
 
 class ModelStore:
 
-    def __init__(self, save_path: str):
+    def __init__(self, save_path: str, caching_service=None):
         self.save_path = save_path
         self.models = {}
         self.layers = {}
+        self.caching_service: CachingService = caching_service
+
+    @property
+    def model_caching_active(self):
+        return self.caching_service is not None
+
+    def activate_caching(self, caching_service: CachingService):
+        self.caching_service = caching_service
 
     def to_dict(self):
         result = {}
@@ -137,6 +146,17 @@ class ModelStore:
         return layers
 
     def _init_layer(self, _id) -> torch.nn.Module:
-        # TODO this is not a very nice way of doing it, but ok for now
+        # NOTE: loading pickled layer and not state dicts is not a very nice way of doing it, but ok for now
         layer_state: LayerState = self.layers[_id]
-        return torch.load(layer_state.pickled_layer_path)
+        layer_path = layer_state.pickled_layer_path
+        layer_name = os.path.basename(layer_path)
+        if self.model_caching_active and self.caching_service.id_exists(layer_name):
+            # if cached on SSD, load from there
+            loaded_layer = self.caching_service.get_item(layer_name)
+        else:
+            # if not cached, load form external and cache on SSD
+            loaded_layer = torch.load(layer_path)
+            if self.model_caching_active:
+                self.caching_service.cache_persistent(layer_name, loaded_layer, is_guaranteed_cpu_data=True)
+
+        return loaded_layer

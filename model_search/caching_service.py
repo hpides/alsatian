@@ -100,9 +100,9 @@ class CachingService:
         else:
             raise NotImplementedError
 
-    def cache_persistent(self, _id, data):
+    def cache_persistent(self, _id, data, is_guaranteed_cpu_data=False):
         self._check_id_not_exists(_id)
-        if data.is_cuda:
+        if (not is_guaranteed_cpu_data) and data.is_cuda:
             data = data.to(CPU)
         path = self._get_path(_id)
         torch.save(data, path)

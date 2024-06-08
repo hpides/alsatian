@@ -4,10 +4,10 @@ import os
 
 from experiments.model_search.experiment_args import ExpArgs
 from experiments.model_search.model_search_exp import run_model_search
-from experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit, LIMIT_IO
+from experiments.prevent_caching.watch_utils import LIMIT_IO
+from global_utils.constants import SSD_CACHING_ACTIVE
 from global_utils.deterministic import TRUE
 from global_utils.write_results import write_measurements_and_args_to_json_file
-
 
 def run_exp(exp_args):
     return run_model_search(exp_args)
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', default='./config.ini', help='Configuration file path')
-    parser.add_argument('--config_section', default='debug-des-gpu-mosix',
+    parser.add_argument('--config_section', default='debug-des-gpu-out-of-memory',
                         help='Exact Configuration identified by the section in the configuration file')
     args = parser.parse_args()
 
@@ -45,6 +45,9 @@ if __name__ == "__main__":
 
     if exp_args.limit_fs_io:
         os.environ[LIMIT_IO] = TRUE
+
+    if exp_args.ssd_caching_active:
+        os.environ[SSD_CACHING_ACTIVE] = TRUE
 
     # Call the main function with parsed arguments
     run_experiment_section(exp_args, args.config_section)

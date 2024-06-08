@@ -12,6 +12,7 @@ END_DATA_LOAD = 'end_data_load'
 END_EXTRACT_FEATURES = 'end_extract_features'
 DETAILED_TIMES = "detailed_times"
 CLEAR_CACHES_ = "clear_caches_"
+SSD_CACHING_ACTIVE = "ssd_caching_active"
 
 DATA_TO_DEVICE = 'data_to_device'
 MODEL_TO_DEVICE = 'model_to_device'

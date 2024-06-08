@@ -3,8 +3,8 @@ import os
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.constants import GENERATE_MM_SNAP, SH_RANK_ITERATION_, RANK_ITERATION_DETAILS_, GEN_EXEC_PLAN, \
-    EXEC_STEP_MEASUREMENTS
-from global_utils.deterministic import DETERMINISTIC_EXECUTION, check_deterministic_env_var_set, set_deterministic
+    EXEC_STEP_MEASUREMENTS, SSD_CACHING_ACTIVE
+from global_utils.deterministic import DETERMINISTIC_EXECUTION, check_deterministic_env_var_set, set_deterministic, TRUE
 from global_utils.global_constants import TRAIN, TEST
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.approaches.shift import get_data_ranges, divide_snapshots, get_sorted_model_scores, _init_benchmarker
@@ -32,8 +32,11 @@ def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner
 
     # initialize execution engine
     tensor_caching_service = CachingService(caching_path)
-    model_caching_service = CachingService(caching_path)
-    exec_engine = MosixExecutionEngine(tensor_caching_service, model_caching_service, model_store)
+    exec_engine = MosixExecutionEngine(tensor_caching_service, model_store)
+
+    if SSD_CACHING_ACTIVE in os.environ and os.environ[SSD_CACHING_ACTIVE] == TRUE:
+        model_caching_service = CachingService(caching_path)
+        model_store.activate_caching(model_caching_service)
 
     ###########################################################
     # executing by iterating over the data ranges
