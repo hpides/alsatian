@@ -1,5 +1,4 @@
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot, MultiModelSnapshotEdge
-from model_search.model_snapshots.rich_snapshot import LayerState, RichModelSnapshot
 
 
 class Intermediate:
@@ -96,61 +95,3 @@ def _start_new_execution_unit(exec_unit, execution_units):
 
 def _get_output_id(exec_unit: [MultiModelSnapshotEdge]):
     return exec_unit[-1].child.layer_state.id
-
-
-if __name__ == '__main__':
-    mm_snapshot = MultiModelSnapshot()
-    layer_state_1_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
-    layer_state_1_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
-    layer_state_1_3 = LayerState("", "", "sd_hash_1.3", "arch_hash_1")
-    layer_state_1_4 = LayerState("", "", "sd_hash_1.4", "arch_hash_1")
-    layer_state_1_5 = LayerState("", "", "sd_hash_1.5", "arch_hash_1")
-    layer_state_1_6 = LayerState("", "", "sd_hash_1.6", "arch_hash_1")
-    model_1_layer_states = [layer_state_1_1, layer_state_1_2, layer_state_1_3,
-                            layer_state_1_4, layer_state_1_5, layer_state_1_6]
-
-    snapshot1 = RichModelSnapshot("test_arch1", "sd_path1", "sd_hash1", 'test_arch1-sd_path1',
-                                  model_1_layer_states)
-
-    layer_state_2_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
-    layer_state_2_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
-    layer_state_2_3 = LayerState("", "", "sd_hash_1.3", "arch_hash_1")
-    layer_state_2_4 = LayerState("", "", "sd_hash_2.4", "arch_hash_1")
-    layer_state_2_5 = LayerState("", "", "sd_hash_2.5", "arch_hash_1")
-    layer_state_2_6 = LayerState("", "", "sd_hash_2.6", "arch_hash_1")
-    model_2_layer_states = [layer_state_2_1, layer_state_2_2, layer_state_2_3,
-                            layer_state_2_4, layer_state_2_5, layer_state_2_6]
-
-    snapshot2 = RichModelSnapshot("test_arch2", "sd_path2", "sd_hash2", 'test_arch2-sd_path2',
-                                  model_2_layer_states)
-
-    layer_state_3_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
-    layer_state_3_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
-    layer_state_3_3 = LayerState("", "", "sd_hash_1.3", "arch_hash_1")
-    layer_state_3_4 = LayerState("", "", "sd_hash_2.4", "arch_hash_1")
-    layer_state_3_5 = LayerState("", "", "sd_hash_3.5", "arch_hash_1")
-    layer_state_3_6 = LayerState("", "", "sd_hash_3.6", "arch_hash_1")
-    model_3_layer_states = [layer_state_3_1, layer_state_3_2, layer_state_3_3,
-                            layer_state_3_4, layer_state_3_5, layer_state_3_6]
-    snapshot3 = RichModelSnapshot("test_arch3", "sd_path3", "sd_hash3", 'test_arch3-sd_path3',
-                                  model_3_layer_states)
-
-    layer_state_4_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
-    layer_state_4_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
-    layer_state_4_3 = LayerState("", "", "sd_hash_1.3", "arch_hash_1")
-    layer_state_4_4 = LayerState("", "", "sd_hash_1.4", "arch_hash_1")
-    layer_state_4_5 = LayerState("", "", "sd_hash_4.5", "arch_hash_1")
-    layer_state_4_6 = LayerState("", "", "sd_hash_4.6", "arch_hash_1")
-    model_4_layer_states = [layer_state_4_1, layer_state_4_2, layer_state_4_3,
-                            layer_state_4_4, layer_state_4_5, layer_state_4_6]
-    snapshot4 = RichModelSnapshot("test_arch4", "sd_path4", "sd_hash4", 'test_arch4-sd_path4',
-                                  model_4_layer_states)
-
-    mm_snapshot.add_snapshot(snapshot1)
-    mm_snapshot.add_snapshot(snapshot2)
-    mm_snapshot.add_snapshot(snapshot3)
-    mm_snapshot.add_snapshot(snapshot4)
-
-    res = execution_tree_from_mm_snapshot(mm_snapshot)
-
-    print("test")
