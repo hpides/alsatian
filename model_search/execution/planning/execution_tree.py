@@ -8,7 +8,7 @@ class Intermediate:
         self.size = size
 
     def __str__(self):
-        return f"Intermediate: {self._id}"
+        return f"Intermediate: {self._id}, size: {self.size}"
 
     def __repr__(self):
         return self.__str__()
@@ -61,9 +61,9 @@ def execution_tree_from_mm_snapshot(mm_snapshot: MultiModelSnapshot) -> Executio
     execution_units: [[MultiModelSnapshotEdge]] = []
     current_exec_unit: [MultiModelSnapshotEdge] = []
 
-    stack = [(Intermediate("input", 42), x) for x in reversed(mm_snapshot.root.edges)]
-    exec_tree_root = Intermediate("input", 42)
-    current_intermediate = None
+    exec_tree_root = Intermediate("input", 42)  # TODO fix the sizes
+    stack = [(exec_tree_root, x) for x in reversed(mm_snapshot.root.edges)]
+
     while stack:
         current_intermediate, current_edge = stack.pop()
 
@@ -74,19 +74,16 @@ def execution_tree_from_mm_snapshot(mm_snapshot: MultiModelSnapshot) -> Executio
         if len(current_node.edges) > 1 or len(current_node.edges) == 0:
             # if branch -> execution unit ends
             # add a new edge to the execution tree
-            computation = Computation(current_intermediate, _get_output_id(current_exec_unit), current_exec_unit)
+            input_intermediate = current_intermediate
+            output_intermediate = Intermediate(_get_output_id(current_exec_unit), 42)  # TODO fix size
+            computation = Computation(current_intermediate, output_intermediate, current_exec_unit)
             exec_tree_edges.append(computation)
             # and start a new execution unit
             current_exec_unit = _start_new_execution_unit(current_exec_unit, execution_units)
-            stack += [(current_node.layer_state.id, x) for x in reversed(current_node.edges)]
+            new_intermediate = Intermediate(current_node.layer_state.id, 42)  # TODO fix the sizes
+            stack += [(new_intermediate, x) for x in reversed(current_node.edges)]
         else:
             stack += [(current_intermediate, x) for x in reversed(current_node.edges)]
-
-    # add last execution unit
-    # computation = Computation(current_intermediate, _get_output_id(current_exec_unit), current_exec_unit)
-    # exec_tree_edges.append(computation)
-
-
 
     return ExecutionTree(exec_tree_root, exec_tree_edges)
 
@@ -127,8 +124,32 @@ if __name__ == '__main__':
     snapshot2 = RichModelSnapshot("test_arch2", "sd_path2", "sd_hash2", 'test_arch2-sd_path2',
                                   model_2_layer_states)
 
+    layer_state_3_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
+    layer_state_3_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
+    layer_state_3_3 = LayerState("", "", "sd_hash_1.3", "arch_hash_1")
+    layer_state_3_4 = LayerState("", "", "sd_hash_2.4", "arch_hash_1")
+    layer_state_3_5 = LayerState("", "", "sd_hash_3.5", "arch_hash_1")
+    layer_state_3_6 = LayerState("", "", "sd_hash_3.6", "arch_hash_1")
+    model_3_layer_states = [layer_state_3_1, layer_state_3_2, layer_state_3_3,
+                            layer_state_3_4, layer_state_3_5, layer_state_3_6]
+    snapshot3 = RichModelSnapshot("test_arch3", "sd_path3", "sd_hash3", 'test_arch3-sd_path3',
+                                  model_3_layer_states)
+
+    layer_state_4_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
+    layer_state_4_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
+    layer_state_4_3 = LayerState("", "", "sd_hash_1.3", "arch_hash_1")
+    layer_state_4_4 = LayerState("", "", "sd_hash_1.4", "arch_hash_1")
+    layer_state_4_5 = LayerState("", "", "sd_hash_4.5", "arch_hash_1")
+    layer_state_4_6 = LayerState("", "", "sd_hash_4.6", "arch_hash_1")
+    model_4_layer_states = [layer_state_4_1, layer_state_4_2, layer_state_4_3,
+                            layer_state_4_4, layer_state_4_5, layer_state_4_6]
+    snapshot4 = RichModelSnapshot("test_arch4", "sd_path4", "sd_hash4", 'test_arch4-sd_path4',
+                                  model_4_layer_states)
+
     mm_snapshot.add_snapshot(snapshot1)
     mm_snapshot.add_snapshot(snapshot2)
+    mm_snapshot.add_snapshot(snapshot3)
+    mm_snapshot.add_snapshot(snapshot4)
 
     res = execution_tree_from_mm_snapshot(mm_snapshot)
 
