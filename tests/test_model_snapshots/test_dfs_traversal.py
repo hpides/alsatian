@@ -1,10 +1,11 @@
 import unittest
 
 from model_search.execution.planning.execution_tree import execution_tree_from_mm_snapshot, Release
-from model_search.model_snapshots.dfs_traversal import RELEASE_OUTPUT
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshotNode, MultiModelSnapshotEdge, \
     MultiModelSnapshot
 from model_search.model_snapshots.rich_snapshot import LayerState
+
+RELEASE_OUTPUT = 'release'
 
 
 class TestDFSTraversal(unittest.TestCase):
@@ -59,7 +60,6 @@ class TestDFSTraversal(unittest.TestCase):
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot)
         node_sequence, edge_sequence = execution_tree.dfs_traversal()
 
-        # ex_units = dfs_execution_plan(self.node0)
         ex_units = []
         for e in edge_sequence:
             if e is not None:
