@@ -1,3 +1,5 @@
+from itertools import permutations
+
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot, MultiModelSnapshotEdge
 
 
@@ -65,6 +67,26 @@ class ExecutionTree:
                     stack.extend([Release(current_node)] + children)
 
         return node_sequence, edge_sequence
+
+    def generate_all_traversals_nodes(self):
+        return self._generate_traversals_nodes(self.root)
+
+    def _generate_traversals_nodes(self, node):
+
+        children = [edge.output for edge in self.edges if edge.input == node]
+        if len(children) == 0:
+            return node
+        elif len(children) == 1:
+            return [[node] + x for x in self._generate_traversals_nodes(children[0])]
+        else:
+            result = []
+            sub_traversals = [self._generate_traversals_nodes(child) for child in children]
+            possible_sub_traversal_orders = list(permutations(sub_traversals))
+            for possible_sub_traversal_order in possible_sub_traversal_orders:
+                current_possibility = [node] + list(possible_sub_traversal_order)
+                result.append(current_possibility)
+
+            return result
 
 
 def _output_size(exec_unit: [MultiModelSnapshotEdge]):
