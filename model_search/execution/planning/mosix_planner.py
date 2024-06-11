@@ -3,9 +3,9 @@ from global_utils.constants import TRAIN, TEST, INPUT, LABEL
 from model_search.execution.data_handling.data_information import DatasetInformation, DataInfo, CachedDatasetInformation
 from model_search.execution.planning.execution_plan import ExecutionPlan, ScoreModelStep, \
     CacheLocation, ScoringMethod, ModifyCacheStep
+from model_search.execution.planning.execution_tree import execution_tree_from_mm_snapshot, Computation, Release
 from model_search.execution.planning.planner_config import PlannerConfig
 
-from model_search.model_snapshots.dfs_traversal import dfs_execution_plan, is_release_entry
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot, MultiModelSnapshotEdge
 from model_search.model_snapshots.rich_snapshot import LayerState
 
@@ -74,10 +74,6 @@ def _get_label_cache_config(dataset_type, inp_lbl, data_range=None, write_cache_
     return CacheConfig(location=write_cache_location, id_prefix=prefix)
 
 
-def check_if_snapshot_edge_list(_list):
-    return isinstance(_list, list) and all(isinstance(itm, MultiModelSnapshotEdge) for itm in _list)
-
-
 def _contains_leaf(exec_unit):
     last_node_in_unit_child = exec_unit[-1].child
     return last_node_in_unit_child.layer_state.is_leaf
@@ -90,19 +86,23 @@ class MosixExecutionPlanner:
 
     def generate_execution_plan(self, mm_snapshot: MultiModelSnapshot, train_dataset_range: [int] = None,
                                 first_iteration=False, strategy="DFS") -> ExecutionPlan:
-        execution_units = dfs_execution_plan(mm_snapshot.root)
 
+        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot)
+        node_sequence, edge_sequence = execution_tree.dfs_traversal()
+
+        # TODO (2): integrate max accumulated intermediate size calculation (factor * batch size)
         execution_steps = []
 
         extract_labels = True
-        for exec_unit in execution_units:
+        for execution_step in edge_sequence:
             # TODO the location of the caching should be dynamically adjusted, for now always use default_cache_location
 
-            if is_release_entry(exec_unit):
-                # create a meta step to release or move cached items
-                self._create_modify_cache_step(exec_unit, execution_steps)
-            elif check_if_snapshot_edge_list(exec_unit):
+            if isinstance(execution_step, Release):
+                self._create_modify_cache_step(execution_step, execution_steps)
+            elif isinstance(execution_step, Computation):
                 # create actual execution steps
+
+                exec_unit = execution_step.execution_unit
 
                 # if first, iteration we also have to extract the test features
                 if first_iteration:
@@ -119,6 +119,8 @@ class MosixExecutionPlanner:
                     execution_steps.append(score_step)
 
                 extract_labels = False
+            elif execution_step is None:
+                pass
             else:
                 raise NotImplementedError
 
@@ -160,10 +162,8 @@ class MosixExecutionPlanner:
         )
         return ext_test_step
 
-    def _create_modify_cache_step(self, exec_unit, execution_steps):
-        _, output_node = exec_unit
-        _id = output_node.layer_state.id
-        step = ModifyCacheStep("", cache_evict_ids=[_id])
+    def _create_modify_cache_step(self, exec_unit: Release, execution_steps):
+        step = ModifyCacheStep("", cache_evict_ids=[exec_unit.intermediate._id])
         execution_steps.append(step)
 
     def _create_feature_ext_step(self, exec_unit: [MultiModelSnapshotEdge], dataset_type, data_range, extract_labels,

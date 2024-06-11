@@ -12,6 +12,9 @@ class Intermediate:
     def __repr__(self):
         return self.__str__()
 
+    def __eq__(self, other):
+        return self._id == other._id
+
 
 class Computation:
 
@@ -39,20 +42,29 @@ class ExecutionTree:
         self.edges: [Computation] = edges
 
     def dfs_traversal(self):
-        order = []
-        stack = [self.root]
+        node_sequence = []
+        edge_sequence = []
+        stack = [[None, self.root]]
         while len(stack) > 0:
-            current_node = stack.pop()
-            order.append(current_node)
-            if not isinstance(current_node, Release):
-                # add release operation
-                neighbors = [Release(current_node)]
+            current_item = stack.pop()
+
+            if isinstance(current_item, Release):
+                edge_sequence.append(current_item)
+                node_sequence.append(current_item)
+            else:
+                current_edge, current_node = current_item
+                node_sequence.append(current_node)
+                edge_sequence.append(current_edge)
+                # Add release operation
+                children = []
                 for edge in self.edges:
                     if edge.input == current_node:
-                        neighbors.append(edge.output)
-                stack += neighbors
+                        children.append([edge, edge.output])
+                children.reverse()
+                if len(children) > 0:
+                    stack.extend([Release(current_node)] + children)
 
-        return order
+        return node_sequence, edge_sequence
 
 
 def execution_tree_from_mm_snapshot(mm_snapshot: MultiModelSnapshot) -> ExecutionTree:
