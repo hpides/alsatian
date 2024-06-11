@@ -57,7 +57,7 @@ class TestDFSTraversal(unittest.TestCase):
 
         mm_snapshot = MultiModelSnapshot()
         mm_snapshot.root = self.node0
-        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot)
+        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 3 * 224 * 224)
         node_sequence, edge_sequence = execution_tree.dfs_traversal()
 
         ex_units = []

@@ -67,12 +67,17 @@ class ExecutionTree:
         return node_sequence, edge_sequence
 
 
-def execution_tree_from_mm_snapshot(mm_snapshot: MultiModelSnapshot) -> ExecutionTree:
+def _output_size(exec_unit: [MultiModelSnapshotEdge]):
+    last_child = exec_unit[-1].child
+    return last_child.layer_state.output_size
+
+
+def execution_tree_from_mm_snapshot(mm_snapshot: MultiModelSnapshot, input_size) -> ExecutionTree:
     exec_tree_edges = []
     execution_units: [[MultiModelSnapshotEdge]] = []
     current_exec_unit: [MultiModelSnapshotEdge] = []
 
-    exec_tree_root = Intermediate("root-input", 42)  # TODO fix the sizes
+    exec_tree_root = Intermediate("root-input", input_size)
     stack = [(exec_tree_root, x) for x in reversed(mm_snapshot.root.edges)]
 
     while stack:
@@ -85,13 +90,13 @@ def execution_tree_from_mm_snapshot(mm_snapshot: MultiModelSnapshot) -> Executio
         if len(current_node.edges) > 1 or len(current_node.edges) == 0:
             # if branch -> execution unit ends
             # add a new edge to the execution tree
-            input_intermediate = current_intermediate
-            output_intermediate = Intermediate(_get_output_id(current_exec_unit), 42)  # TODO fix size
+            output_intermediate = Intermediate(_get_output_id(current_exec_unit), _output_size(current_exec_unit))
             computation = Computation(current_intermediate, output_intermediate, current_exec_unit)
             exec_tree_edges.append(computation)
+
             # and start a new execution unit
             current_exec_unit = _start_new_execution_unit(current_exec_unit, execution_units)
-            new_intermediate = Intermediate(current_node.layer_state.id, 42)  # TODO fix the sizes
+            new_intermediate = Intermediate(current_node.layer_state.id, current_node.layer_state.output_size)
             stack += [(new_intermediate, x) for x in reversed(current_node.edges)]
         else:
             stack += [(current_intermediate, x) for x in reversed(current_node.edges)]

@@ -85,9 +85,9 @@ class MosixExecutionPlanner:
         self.config: PlannerConfig = config
 
     def generate_execution_plan(self, mm_snapshot: MultiModelSnapshot, train_dataset_range: [int] = None,
-                                first_iteration=False, strategy="DFS") -> ExecutionPlan:
+                                first_iteration=False, strategy="DFS", model_input_size=3 * 224 * 224) -> ExecutionPlan:
 
-        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot)
+        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, model_input_size)
         node_sequence, edge_sequence = execution_tree.dfs_traversal()
 
         execution_steps = []

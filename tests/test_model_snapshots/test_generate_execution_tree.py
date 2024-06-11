@@ -64,7 +64,7 @@ class TestTensorCachingService(unittest.TestCase):
         mm_snapshot.add_snapshot(self.snapshot3)
         mm_snapshot.add_snapshot(self.snapshot4)
 
-        exec_tree = execution_tree_from_mm_snapshot(mm_snapshot)
+        exec_tree = execution_tree_from_mm_snapshot(mm_snapshot, 3 * 224 * 224)
 
         # expected execution tree in picture: expected_execution_tree.jpeg
         self.assertEqual(len(exec_tree.edges), 7)
