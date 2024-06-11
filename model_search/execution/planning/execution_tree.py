@@ -72,7 +72,7 @@ def execution_tree_from_mm_snapshot(mm_snapshot: MultiModelSnapshot) -> Executio
     execution_units: [[MultiModelSnapshotEdge]] = []
     current_exec_unit: [MultiModelSnapshotEdge] = []
 
-    exec_tree_root = Intermediate("input", 42)  # TODO fix the sizes
+    exec_tree_root = Intermediate("root-input", 42)  # TODO fix the sizes
     stack = [(exec_tree_root, x) for x in reversed(mm_snapshot.root.edges)]
 
     while stack:
