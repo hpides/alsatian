@@ -7,6 +7,7 @@ from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import NUM_PARAMS, CUDA, OUTPUT_SHAPE, GPU_INF_TIMES, OUTPUT_SIZE, NUM_PARAMS_MB, \
     OUTPUT_SIZE_MB, CPU
 from global_utils.dummy_dataset import DummyDataset
+from global_utils.hash import architecture_hash
 from global_utils.model_names import RESNET_50
 from global_utils.model_operations import split_model
 from global_utils.size import number_parameters
@@ -21,6 +22,19 @@ def _inference(model, batch, device):
         output = model(batch)
 
     return output
+
+
+def layer_output_sizes(model, input_shape: [int]):
+    result = {}
+
+    prev_out = torch.randn(size=[1] + input_shape, dtype=torch.float)
+    for layer in model:
+        out = layer(prev_out)
+        output_size = _multiply_list(out.shape)
+        result[architecture_hash(layer)] = output_size
+        prev_out = out
+
+    return result
 
 
 def model_resource_info(model: torch.nn.Module, split_indices: [int], input_shape: [int], batch_size=32,
