@@ -10,7 +10,7 @@ from model_search.model_snapshots.rich_snapshot import RichModelSnapshot, LayerS
 
 # On the other hand it represents an execution tree that is the base for our planning algorithm. In this case
 # - a node/vertex represents a (persisted intermediate) OUTPUT of the corresponding layer in the multi-model snapshot
-# - an edge that represent takling the (persisted) output of layer i (parent) to produce compute layer i+1 (child) and save its output
+# - an edge represent taking the (persisted) output of layer i (parent) to compute the output of layer i+1 (child) and save its output
 
 
 class MultiModelSnapshotNode:

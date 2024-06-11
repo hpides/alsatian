@@ -1,3 +1,4 @@
+import json
 import os
 
 import torch
@@ -66,6 +67,15 @@ class ModelStore:
 
         self.models[rich_model_snapshot.id] = rich_model_snapshot
         self._index_layers(rich_model_snapshot)
+
+    def add_output_sizes_to_rich_snapshots(self, info_json):
+        with open(info_json, 'r') as file:
+            output_info = json.load(file)
+
+            for model_snap in self.models.values():
+                for layer_state in model_snap.layer_states:
+                    output_size = output_info[model_snap.architecture_id][layer_state.architecture_hash]
+                    layer_state.add_output_size(output_size)
 
     def _index_layers(self, rich_snapshot: RichModelSnapshot):
         for layer_state in rich_snapshot.layer_states:

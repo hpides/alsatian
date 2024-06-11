@@ -1,7 +1,6 @@
 from global_utils.ids import random_short_id
-from global_utils.json_operations import dict_to_dict, list_to_dict
+from global_utils.json_operations import list_to_dict
 from model_search.model_snapshots.base_snapshot import ModelSnapshot, SAVE_PATH, ARCHITECTURE_ID
-
 
 LEAF = "is_leaf"
 ID = "id"
@@ -30,6 +29,7 @@ class LayerState:
         self.architecture_hash: str = architecture_hash
         self.id = f'{architecture_hash}-{state_dict_hash}-{random_short_id()}'
         self.is_leaf = is_leaf
+        self.output_size = None
 
     def __repr__(self):
         return self.__str__()
@@ -55,6 +55,9 @@ class LayerState:
     @property
     def is_root_layer(self) -> bool:
         return self.id == ROOT
+
+    def add_output_size(self, output_size):
+        self.output_size = output_size
 
 
 def generate_root_layer():
