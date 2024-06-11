@@ -90,7 +90,6 @@ class MosixExecutionPlanner:
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot)
         node_sequence, edge_sequence = execution_tree.dfs_traversal()
 
-        # TODO (2): integrate max accumulated intermediate size calculation (factor * batch size)
         execution_steps = []
 
         extract_labels = True
