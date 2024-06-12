@@ -69,6 +69,19 @@ class ExecutionTree:
 
         return node_sequence, edge_sequence
 
+    def cost_of_node_sequence(self):
+        #TODO
+        pass
+
+    def min_intermediate_cost_for_traversal(self):
+        possible_traversals = self.generate_all_traversals_nodes()
+        traversal_costs = []
+        for traversal in possible_traversals:
+            max_cost_on_path = max([cost for _,cost in traversal])
+            traversal_costs.append(max_cost_on_path)
+        return min(traversal_costs)
+
+
     def generate_all_traversals_nodes(self):
         result = self._all_traversals({self.root}, set(), set(), [], 0)
         return result

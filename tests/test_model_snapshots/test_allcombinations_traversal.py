@@ -89,6 +89,8 @@ class TestAllCombinationsExample(unittest.TestCase):
         }
 
         self.assertSetEqual(computed_str_set, expected_str_set)
+        self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 5)
+
 
     def test_three_branch_example(self):
         # check test_three_branch_example.jpeg for better understanding
@@ -133,6 +135,7 @@ class TestAllCombinationsExample(unittest.TestCase):
         }
 
         self.assertSetEqual(computed_str_set, expected_str_set)
+        self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 5)
 
     def test_two_then_two_branch_example(self):
         # check test_two_then_two_branch_example.jpeg for better understanding
@@ -184,6 +187,7 @@ class TestAllCombinationsExample(unittest.TestCase):
         }
 
         self.assertSetEqual(computed_str_set, expected_str_set)
+        self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 5)
 
     def test_two_then_three_branch_example(self):
         # check test_two_then_three_branch_example.jpeg for better understanding
@@ -268,6 +272,7 @@ class TestAllCombinationsExample(unittest.TestCase):
         }
 
         self.assertSetEqual(computed_str_set, expected_str_set)
+        self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 0)
 
     def _simplify(self, node_sequence):
         result = []
