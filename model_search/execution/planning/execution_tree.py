@@ -70,10 +70,10 @@ class ExecutionTree:
         return node_sequence, edge_sequence
 
     def generate_all_traversals_nodes(self):
-        result = self._all_traversals({self.root}, set(), set(), [])
+        result = self._all_traversals({self.root}, set(), set(), [], 0)
         return result
 
-    def _all_traversals(self, choices, saved, released, current_traversal_order):
+    def _all_traversals(self, choices, saved, released, current_traversal_order, current_cost):
         if len(choices) == 0:
             return [current_traversal_order]
         else:
@@ -86,7 +86,7 @@ class ExecutionTree:
                 new_released = released.copy()
 
                 # making the choice is equivalent to computing this intermediate, once the choice is made
-                new_traversal_order = current_traversal_order + [choice]
+
                 new_saved.add(choice)
                 new_choices.remove(choice)
 
@@ -95,17 +95,26 @@ class ExecutionTree:
                 new_choices.update(children)
 
                 # 2) see if making the choice allows us to release some intermediates from saved and move them to released
-                # we can release nodes where all their children are in the saved set
+                # we can release nodes where all their children are in the new saved set
                 release = set()
                 for node in new_saved:
                     children = set([edge.output for edge in self.edges if edge.input == node])
-                    if children.issubset(new_saved):
+                    saved_or_released = new_saved.union(new_released)
+                    if children.issubset(saved_or_released):
                         release.add(node)
                 # release them form saved and add them to released
                 new_saved.difference_update(release)
                 new_released.update(release)
 
-                traversal_orders += self._all_traversals(new_choices, new_saved, new_released, new_traversal_order)
+                # update cost
+                # 1) add the cost to save the new intermediate
+                new_cost = current_cost + choice.size
+                # 2) deduct the cost of the newly released intermediates
+                new_cost -= sum([r.size for r in release])
+                new_traversal_order = current_traversal_order + [(choice ,new_cost)]
+
+                traversal_orders += self._all_traversals(new_choices, new_saved, new_released, new_traversal_order,
+                                                         new_cost)
 
             return traversal_orders
 
