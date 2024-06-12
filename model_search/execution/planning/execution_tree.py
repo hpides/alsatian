@@ -1,5 +1,3 @@
-from itertools import permutations
-
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot, MultiModelSnapshotEdge
 
 
@@ -16,6 +14,9 @@ class Intermediate:
 
     def __eq__(self, other):
         return self._id == other._id
+
+    def __hash__(self):
+        return hash(self._id)
 
 
 class Computation:
@@ -69,24 +70,55 @@ class ExecutionTree:
         return node_sequence, edge_sequence
 
     def generate_all_traversals_nodes(self):
-        return self._generate_traversals_nodes(self.root)
+        result = self._all_traversals({self.root}, set(), set(), [])
+        return result
 
-    def _generate_traversals_nodes(self, node):
-
-        children = [edge.output for edge in self.edges if edge.input == node]
-        if len(children) == 0:
-            return node
-        elif len(children) == 1:
-            return [[node] + x for x in self._generate_traversals_nodes(children[0])]
+    def _all_traversals(self, choices, saved, released, current_traversal_order):
+        if len(choices) == 0:
+            return [current_traversal_order]
         else:
-            result = []
-            sub_traversals = [self._generate_traversals_nodes(child) for child in children]
-            possible_sub_traversal_orders = list(permutations(sub_traversals))
-            for possible_sub_traversal_order in possible_sub_traversal_orders:
-                current_possibility = [node] + list(possible_sub_traversal_order)
-                result.append(current_possibility)
+            # cover all possible choices
+            traversal_orders = []
+            for choice in choices:
+                # create a copy of the elements
+                new_choices = choices.copy()
+                new_saved = saved.copy()
+                new_released = released.copy()
 
-            return result
+                # making the choice is equivalent to computing this intermediate, once the choice is made
+                new_traversal_order = current_traversal_order + [choice]
+                new_saved.add(choice)
+                new_choices.remove(choice)
+
+                # 1) add all children of the choice to the choices
+                children = [edge.output for edge in self.edges if edge.input == choice]
+                new_choices.update(children)
+
+                # 2) see if making the choice allows us to release some intermediates from saved and move them to released
+                # we can release nodes where all their children are in the saved set
+                release = set()
+                for node in new_saved:
+                    children = set([edge.output for edge in self.edges if edge.input == node])
+                    if children.issubset(new_saved):
+                        release.add(node)
+                # release them form saved and add them to released
+                new_saved.difference_update(release)
+                new_released.update(release)
+
+                traversal_orders += self._all_traversals(new_choices, new_saved, new_released, new_traversal_order)
+
+            return traversal_orders
+
+
+def flatten_perms(permutations):
+    result = []
+    for perm in permutations:
+        joined_lists = []
+        for list_of_tuples in perm:
+            joined_lists.append(sum(list_of_tuples, ()))
+        result.append(sum(joined_lists, ()))
+
+    return result
 
 
 def _output_size(exec_unit: [MultiModelSnapshotEdge]):
