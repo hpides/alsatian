@@ -1,6 +1,6 @@
 import unittest
 
-from model_search.execution.planning.execution_tree import execution_tree_from_mm_snapshot
+from model_search.execution.planning.execution_tree import execution_tree_from_mm_snapshot, max_cost_of_node_sequence
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshotNode, MultiModelSnapshotEdge, \
     MultiModelSnapshot
 from model_search.model_snapshots.rich_snapshot import LayerState
@@ -40,19 +40,19 @@ class TestAllCombinationsExample(unittest.TestCase):
         self.node6 = MultiModelSnapshotNode(self.layer_state6)
 
         self.layer_state7 = LayerState("", "", "Node 7", "Node 7")
-        self.layer_state7.output_size = 1
+        self.layer_state7.output_size = 0
         self.node7 = MultiModelSnapshotNode(self.layer_state7)
 
         self.layer_state8 = LayerState("", "", "Node 8", "Node 8")
-        self.layer_state8.output_size = 1
+        self.layer_state8.output_size = 0
         self.node8 = MultiModelSnapshotNode(self.layer_state8)
 
         self.layer_state9 = LayerState("", "", "Node 9", "Node 9")
-        self.layer_state9.output_size = 1
+        self.layer_state9.output_size = 0
         self.node9 = MultiModelSnapshotNode(self.layer_state9)
 
         self.layer_state10 = LayerState("", "", "Node 10", "Node 10")
-        self.layer_state10.output_size = 1
+        self.layer_state10.output_size = 0
         self.node10 = MultiModelSnapshotNode(self.layer_state10)
 
     def test_two_choice_example(self):
@@ -76,20 +76,25 @@ class TestAllCombinationsExample(unittest.TestCase):
 
         # update costs
         self.layer_state2.output_size = 5
+        self.layer_state4.output_size = 0
 
         mm_snapshot = MultiModelSnapshot()
         mm_snapshot.root = self.node0
-        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 1)
+        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
         node_sequences = execution_tree.generate_all_traversals_nodes()
         print('test')
         computed_str_set = self._to_string_set(node_sequences)
         expected_str_set = {
-            (('root', 1), ('Node 2', 5), ('Node 4', 5), ('Node 6', 0)),
-            (('root', 1), ('Node 2', 5), ('Node 6', 5), ('Node 4', 0)),
+            (('root', 0), ('Node 2', 5), ('Node 4', 5), ('Node 6', 0)),
+            (('root', 0), ('Node 2', 5), ('Node 6', 5), ('Node 4', 0)),
         }
 
         self.assertSetEqual(computed_str_set, expected_str_set)
         self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 5)
+
+        node_sequence, edge_sequence = execution_tree.dfs_traversal()
+        max_cost = max_cost_of_node_sequence(node_sequence)
+        self.assertEqual(max_cost, 5)
 
 
     def test_three_branch_example(self):
@@ -117,25 +122,32 @@ class TestAllCombinationsExample(unittest.TestCase):
 
         # update costs
         self.layer_state2.output_size = 5
+        self.layer_state4.output_size = 0
+        self.layer_state6.output_size = 0
+        self.layer_state8.output_size = 0
 
         mm_snapshot = MultiModelSnapshot()
         mm_snapshot.root = self.node0
-        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 1)
+        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
         node_sequences = execution_tree.generate_all_traversals_nodes()
         print('test')
         computed_str_set = self._to_string_set(node_sequences)
         expected_str_set = {
-            (('root', 1), ('Node 2', 5), ('Node 4', 5), ('Node 6', 5), ('Node 8', 0)),
-            (('root', 1), ('Node 2', 5), ('Node 4', 5), ('Node 8', 5), ('Node 6', 0)),
-            (('root', 1), ('Node 2', 5), ('Node 6', 5), ('Node 4', 5), ('Node 8', 0)),
-            (('root', 1), ('Node 2', 5), ('Node 6', 5), ('Node 8', 5), ('Node 4', 0)),
-            (('root', 1), ('Node 2', 5), ('Node 8', 5), ('Node 4', 5), ('Node 6', 0)),
-            (('root', 1), ('Node 2', 5), ('Node 8', 5), ('Node 6', 5), ('Node 4', 0)),
+            (('root', 0), ('Node 2', 5), ('Node 4', 5), ('Node 6', 5), ('Node 8', 0)),
+            (('root', 0), ('Node 2', 5), ('Node 4', 5), ('Node 8', 5), ('Node 6', 0)),
+            (('root', 0), ('Node 2', 5), ('Node 6', 5), ('Node 4', 5), ('Node 8', 0)),
+            (('root', 0), ('Node 2', 5), ('Node 6', 5), ('Node 8', 5), ('Node 4', 0)),
+            (('root', 0), ('Node 2', 5), ('Node 8', 5), ('Node 4', 5), ('Node 6', 0)),
+            (('root', 0), ('Node 2', 5), ('Node 8', 5), ('Node 6', 5), ('Node 4', 0)),
 
         }
 
         self.assertSetEqual(computed_str_set, expected_str_set)
         self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 5)
+
+        node_sequence, edge_sequence = execution_tree.dfs_traversal()
+        max_cost = max_cost_of_node_sequence(node_sequence)
+        self.assertEqual(max_cost, 5)
 
     def test_two_then_two_branch_example(self):
         # check test_two_then_two_branch_example.jpeg for better understanding
@@ -163,31 +175,38 @@ class TestAllCombinationsExample(unittest.TestCase):
         # update costs
         self.layer_state1.output_size = 5
         self.layer_state2.output_size = 3
+        self.layer_state4.output_size = 0
+        self.layer_state6.output_size = 0
+        self.layer_state10.output_size = 0
 
         mm_snapshot = MultiModelSnapshot()
         mm_snapshot.root = self.node0
-        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 1)
+        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
         node_sequences = execution_tree.generate_all_traversals_nodes()
         print('test')
         computed_str_set = self._to_string_set(node_sequences)
         expected_str_set = {
             # first go to node 2
-            (('root', 1), ('Node 1', 5), ('Node 2', 8), ('Node 4', 8), ('Node 6', 5), ('Node 10', 0)),
-            (('root', 1), ('Node 1', 5), ('Node 2', 8), ('Node 6', 8), ('Node 4', 5), ('Node 10', 0)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 4', 8), ('Node 6', 5), ('Node 10', 0)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 6', 8), ('Node 4', 5), ('Node 10', 0)),
 
-            (('root', 1), ('Node 1', 5), ('Node 2', 8), ('Node 10', 3), ('Node 6', 3), ('Node 4', 0)),
-            (('root', 1), ('Node 1', 5), ('Node 2', 8), ('Node 10', 3), ('Node 4', 3), ('Node 6', 0)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 10', 3), ('Node 6', 3), ('Node 4', 0)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 10', 3), ('Node 4', 3), ('Node 6', 0)),
 
-            (('root', 1), ('Node 1', 5), ('Node 2', 8), ('Node 4', 8), ('Node 10', 3), ('Node 6', 0)),
-            (('root', 1), ('Node 1', 5), ('Node 2', 8), ('Node 6', 8), ('Node 10', 3), ('Node 4', 0)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 4', 8), ('Node 10', 3), ('Node 6', 0)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 6', 8), ('Node 10', 3), ('Node 4', 0)),
 
-            (('root', 1), ('Node 1', 5), ('Node 10', 5), ('Node 2', 3), ('Node 4', 3), ('Node 6', 0)),
-            (('root', 1), ('Node 1', 5), ('Node 10', 5), ('Node 2', 3), ('Node 6', 3), ('Node 4', 0)),
+            (('root', 0), ('Node 1', 5), ('Node 10', 5), ('Node 2', 3), ('Node 4', 3), ('Node 6', 0)),
+            (('root', 0), ('Node 1', 5), ('Node 10', 5), ('Node 2', 3), ('Node 6', 3), ('Node 4', 0)),
 
         }
 
         self.assertSetEqual(computed_str_set, expected_str_set)
         self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 5)
+
+        node_sequence, edge_sequence = execution_tree.dfs_traversal()
+        max_cost = max_cost_of_node_sequence(node_sequence)
+        self.assertEqual(max_cost, 8)
 
     def test_two_then_three_branch_example(self):
         # check test_two_then_three_branch_example.jpeg for better understanding

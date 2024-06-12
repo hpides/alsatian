@@ -39,6 +39,23 @@ class Release:
         return self.__str__()
 
 
+def max_cost_of_node_sequence(node_sequence):
+    current_cost = 0
+    max_cost = 0
+    while node_sequence:
+        current_node = node_sequence.pop(0)
+        if isinstance(current_node, Intermediate):
+            current_cost += current_node.size
+            # check if we can release sth
+            while node_sequence and isinstance(node_sequence[0], Release):
+                release = node_sequence.pop(0)
+                current_cost -= release.intermediate.size
+
+        if current_cost > max_cost:
+            max_cost = current_cost
+
+    return max_cost
+
 class ExecutionTree:
     def __init__(self, root, edges):
         self.root: Intermediate = root
@@ -69,18 +86,13 @@ class ExecutionTree:
 
         return node_sequence, edge_sequence
 
-    def cost_of_node_sequence(self):
-        #TODO
-        pass
-
     def min_intermediate_cost_for_traversal(self):
         possible_traversals = self.generate_all_traversals_nodes()
         traversal_costs = []
         for traversal in possible_traversals:
-            max_cost_on_path = max([cost for _,cost in traversal])
+            max_cost_on_path = max([cost for _, cost in traversal])
             traversal_costs.append(max_cost_on_path)
         return min(traversal_costs)
-
 
     def generate_all_traversals_nodes(self):
         result = self._all_traversals({self.root}, set(), set(), [], 0)
@@ -124,7 +136,7 @@ class ExecutionTree:
                 new_cost = current_cost + choice.size
                 # 2) deduct the cost of the newly released intermediates
                 new_cost -= sum([r.size for r in release])
-                new_traversal_order = current_traversal_order + [(choice ,new_cost)]
+                new_traversal_order = current_traversal_order + [(choice, new_cost)]
 
                 traversal_orders += self._all_traversals(new_choices, new_saved, new_released, new_traversal_order,
                                                          new_cost)
