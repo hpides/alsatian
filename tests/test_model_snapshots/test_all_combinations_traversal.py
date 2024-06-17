@@ -55,6 +55,10 @@ class TestAllCombinationsExample(unittest.TestCase):
         self.layer_state10.output_size = 0
         self.node10 = MultiModelSnapshotNode(self.layer_state10)
 
+        self.layer_state11 = LayerState("", "", "Node 11", "Node 11")
+        self.layer_state11.output_size = 0
+        self.node11 = MultiModelSnapshotNode(self.layer_state11)
+
     def test_two_choice_example(self):
         # check test_two_choice_example.jpeg for better understanding
 
@@ -292,6 +296,47 @@ class TestAllCombinationsExample(unittest.TestCase):
 
         self.assertSetEqual(computed_str_set, expected_str_set)
         self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 0)
+
+    def test_two_then_two_branch_example_cheapest_path_first(self):
+        # check test_two_then_two_branch_example.jpeg for better understanding
+
+        edge0 = MultiModelSnapshotEdge("Edge 0-1", self.node0, self.node1)
+        edge1 = MultiModelSnapshotEdge("Edge 1-2", self.node1, self.node2)
+
+        edge2 = MultiModelSnapshotEdge("Edge 2-3", self.node2, self.node3)
+        edge3 = MultiModelSnapshotEdge("Edge 3-4", self.node3, self.node4)
+
+        edge4 = MultiModelSnapshotEdge("Edge 2-5", self.node2, self.node5)
+        edge5 = MultiModelSnapshotEdge("Edge 5-6", self.node5, self.node6)
+
+        edge8 = MultiModelSnapshotEdge("Edge 1-9", self.node1, self.node9)
+        edge9 = MultiModelSnapshotEdge("Edge 9-10", self.node9, self.node10)
+        edge10 = MultiModelSnapshotEdge("Edge 9-11", self.node9, self.node11)
+
+        # Connect edges to nodes
+        self.node0.edges.extend([edge0])
+        self.node1.edges.extend([edge1, edge8])
+        self.node2.edges.extend([edge2, edge4])
+        self.node3.edges.extend([edge3])
+        self.node5.edges.extend([edge5])
+        self.node9.edges.extend([edge9, edge10])
+
+        # update costs
+        self.layer_state1.output_size = 5
+        self.layer_state2.output_size = 3
+        self.layer_state4.output_size = 0
+        self.layer_state6.output_size = 0
+        self.layer_state9.output_size = 1
+        self.layer_state10.output_size = 0
+        self.layer_state11.output_size = 0
+
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.root = self.node0
+
+        execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
+        # execution_tree._annotate_intermediates_with_accumulated_path_costs()
+        node_seq, edge_seq = execution_tree.cheapest_path_first_traversal()
+        print('test')
 
     def _simplify(self, node_sequence):
         result = []

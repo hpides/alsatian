@@ -56,12 +56,13 @@ def max_cost_of_node_sequence(node_sequence):
 
     return max_cost
 
+
 class ExecutionTree:
     def __init__(self, root, edges):
         self.root: Intermediate = root
         self.edges: [Computation] = edges
 
-    def dfs_traversal(self):
+    def dfs_traversal(self, cheapest_path_first=False):
         node_sequence = []
         edge_sequence = []
         stack = [[None, self.root]]
@@ -80,11 +81,37 @@ class ExecutionTree:
                 for edge in self.edges:
                     if edge.input == current_node:
                         children.append([edge, edge.output])
-                children.reverse()
                 if len(children) > 0:
+                    # if cheapest path first is activated -> sort children so that cheapest path is chosen first
+                    if cheapest_path_first:
+                        children.sort(key=lambda x: x[1].accumulated_path_costs, reverse=True)
+                    else:
+                        children.reverse()
+
                     stack.extend([Release(current_node)] + children)
 
         return node_sequence, edge_sequence
+
+    def cheapest_path_first_traversal(self):
+        self._annotate_intermediates_with_accumulated_path_costs()
+        return self.dfs_traversal(cheapest_path_first=True)
+
+    def _annotate_intermediates_with_accumulated_path_costs(self, start=None, parent_costs=0):
+        if start is None:
+            start = self.root
+
+        # traverse down in DFS manner to annotate Intermediates
+        children = [edge.output for edge in self.edges if edge.input == start]
+
+        if len(children) == 0:
+            start.accumulated_path_costs = parent_costs
+            print('test')
+        else:
+            start.accumulated_path_costs = 0
+            for child in children:
+                self._annotate_intermediates_with_accumulated_path_costs(child, parent_costs + start.size)
+                start.accumulated_path_costs += child.accumulated_path_costs
+                print('test')
 
     def min_intermediate_cost_for_traversal(self):
         possible_traversals = self.generate_all_traversals_nodes()
