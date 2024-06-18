@@ -170,6 +170,18 @@ class ExecutionTree:
 
             return traversal_orders
 
+    def best_traversal(self, available_budget):
+        # TODO actually provide a real implementation that
+        # returns a map with keys: max items per iteration, and values: the node_sequence and edge_sequences
+        # for now just return on partition with "unlimited" budget/number of items
+
+        result = {}
+        node_sequence, edge_sequence = self.dfs_traversal()
+        result[100000] = (node_sequence, edge_sequence)
+        return result
+
+
+
 
 def flatten_perms(permutations):
     result = []

@@ -49,12 +49,15 @@ def run_model_search(exp_args: ExpArgs):
     num_workers = exp_args.num_workers
     batch_size = exp_args.batch_size
     num_target_classes = exp_args.num_target_classes
+    cache_size = exp_args.cache_size
 
     # prepare datasets
     dataset_paths = _prepare_datasets(exp_args)
     dataset_class = DatasetClass.CUSTOM_IMAGE_FOLDER
     train_data = CustomImageFolder(dataset_paths[TRAIN])
     len_train_data = len(train_data)
+    test_data = CustomImageFolder(dataset_paths[TRAIN])
+    len_test_data = len(test_data)
 
     model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
                                                  exp_args.distribution, exp_args.base_snapshot_save_path)
@@ -64,13 +67,14 @@ def run_model_search(exp_args: ExpArgs):
     clear_caches_and_check_io_limit()
 
     planner_config = PlannerConfig(num_workers, batch_size, num_target_classes, dataset_class, dataset_paths,
-                                   caching_loc)
+                                   caching_loc, cache_size)
 
     benchmark_level = exp_args.benchmark_level
     benchmarker = Benchmarker(torch.device('cuda'))
 
     if exp_args.approach == 'mosix':
-        args = [model_snapshots, len_train_data, planner_config, persistent_caching_path, model_store, benchmark_level]
+        args = [model_snapshots, len_train_data, len_test_data, planner_config, persistent_caching_path, model_store,
+                benchmark_level]
         measure, (sub_measurements, result) = benchmarker.benchmark_end_to_end(mosix.find_best_model, *args)
     elif exp_args.approach == 'shift':
         args = [model_snapshots, len_train_data, planner_config, persistent_caching_path, benchmark_level]
