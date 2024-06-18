@@ -20,8 +20,9 @@ def get_search_model_inputs():
         set_deterministic()
     else:
         num_workers = 12
-    save_path = '/mount-fs/tmp-dir'
+    save_path = '/mount-fs/tmp-dir2'
     model_snapshots, model_store = dummy_snap_and_mstore_four_models(save_path)
+    model_store.add_output_sizes_to_rich_snapshots('../experiments/model_resource_info/outputs/layer_output_infos.json')
     # datasets
     dataset_paths = {
         TRAIN: '/tmp/pycharm_project_924/data/imagenette-dummy/train',

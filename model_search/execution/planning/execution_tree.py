@@ -176,7 +176,7 @@ class ExecutionTree:
         # for now just return on partition with "unlimited" budget/number of items
 
         result = {}
-        node_sequence, edge_sequence = self.dfs_traversal()
+        node_sequence, edge_sequence = self.cheapest_path_first_traversal()
         result[128] = (node_sequence, edge_sequence)
         return result
 
