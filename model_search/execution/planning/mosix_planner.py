@@ -59,7 +59,8 @@ class MosixExtractFeaturesStep:
 
 def _get_input_cache_config(output_node_id, dataset_type, inp_lbl, data_range=None, write_cache_location=None):
     prefix = f'{output_node_id}-{dataset_type}-{inp_lbl}'
-    if dataset_type == TRAIN and data_range is not None:
+    # if dataset_type == TRAIN and data_range is not None:
+    if data_range is not None:
         prefix += f'-{data_range[0]}'
 
     return CacheConfig(location=write_cache_location, id_prefix=prefix)
@@ -67,7 +68,8 @@ def _get_input_cache_config(output_node_id, dataset_type, inp_lbl, data_range=No
 
 def _get_label_cache_config(dataset_type, inp_lbl, data_range=None, write_cache_location=None):
     prefix = f'{dataset_type}-{inp_lbl}'
-    if dataset_type == TRAIN and data_range is not None:
+    # if dataset_type == TRAIN and data_range is not None:
+    if data_range is not None:
         prefix += f'-{data_range[0]}'
 
     return CacheConfig(location=write_cache_location, id_prefix=prefix)
@@ -96,9 +98,7 @@ def _split_up_data_range(dataset_range, num_items):
 
 
 def _is_last_iteration(test_ranges, train_ranges):
-    result = ((len(test_ranges) == 0 and len(train_ranges) == 0)
-              or
-              (len(test_ranges) + len(train_ranges) == 1))
+    result = ((len(test_ranges) == 0 and len(train_ranges) == 0))
     return result
 
 
@@ -186,9 +186,9 @@ class MosixExecutionPlanner:
                 else:
                     raise NotImplementedError
 
-            # check that we have as many Score model steps as snapshot IDs, basically mak esur every model is scored
-            assert (sum([len(s.scored_models) for s in execution_steps if isinstance(s, ScoreModelStep)])
-                    == len(mm_snapshot.root.snapshot_ids))
+        # check that we have as many Score model steps as snapshot IDs, basically make sure every model is scored
+        assert (sum([len(s.scored_models) for s in execution_steps if isinstance(s, ScoreModelStep)])
+                == len(mm_snapshot.root.snapshot_ids))
 
         return execution_steps
 

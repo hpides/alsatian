@@ -29,8 +29,15 @@ def get_search_model_inputs():
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
     test_data = CustomImageFolder(dataset_paths[TEST])
+
+    # IMPORTANT NOTE:
+    # We can only expect exactly the same results between SHiFT and MOSIX if the cache size i slarge enough so that we
+    # do not have to split up computations into mulitple runs. Otherwise the batch sizes of Mosix will be adjusted which
+    # means SHiFT and MOSIX will use different batch sizes -> leading to ver similar but not equivalent results
+    cache_size = 10000
+
     planner_config = PlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths,
-                                   CacheLocation.SSD, cache_size=10000)
+                                   CacheLocation.SSD, cache_size=cache_size)
     persistent_caching_path = '/mount-ssd/cache-dir'
     return dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data, test_data
 

@@ -177,7 +177,7 @@ class ExecutionTree:
 
         result = {}
         node_sequence, edge_sequence = self.dfs_traversal()
-        result[100000] = (node_sequence, edge_sequence)
+        result[128] = (node_sequence, edge_sequence)
         return result
 
 
