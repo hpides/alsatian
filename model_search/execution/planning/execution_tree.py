@@ -93,25 +93,32 @@ class ExecutionTree:
         return node_sequence, edge_sequence
 
     def cheapest_path_first_traversal(self):
-        self._annotate_intermediates_with_accumulated_path_costs()
+        self.annotate_intermediates_with_max_path_costs()
         return self.dfs_traversal(cheapest_path_first=True)
 
-    def _annotate_intermediates_with_accumulated_path_costs(self, start=None, parent_costs=0):
+    def annotate_intermediates_with_max_path_costs(self, start=None, parent_costs=0):
         if start is None:
             start = self.root
 
-        # traverse down in DFS manner to annotate Intermediates
+        # get all children of the start node
         children = [edge.output for edge in self.edges if edge.input == start]
 
         if len(children) == 0:
-            start.accumulated_path_costs = parent_costs
-            print('test')
+            # if there are no children
+            # we have a leaf node and its costs are equal to the current nodes (start) cost and its parent's costs
+            start.accumulated_path_costs = parent_costs + start.size
         else:
+            # if there are children
             start.accumulated_path_costs = 0
+
+            # we calculate their max path cost
+            children_path_costs = []
             for child in children:
-                self._annotate_intermediates_with_accumulated_path_costs(child, parent_costs + start.size)
-                start.accumulated_path_costs += child.accumulated_path_costs
-                print('test')
+                self.annotate_intermediates_with_max_path_costs(child, parent_costs + start.size)
+                children_path_costs.append(child.accumulated_path_costs)
+
+            # and chose the max path as the number we propagate to the parent
+            start.accumulated_path_costs = max(children_path_costs)
 
     def min_intermediate_cost_for_traversal(self):
         possible_traversals = self.generate_all_traversals_nodes()
@@ -171,16 +178,19 @@ class ExecutionTree:
             return traversal_orders
 
     def best_traversal(self, available_budget):
-        # TODO actually provide a real implementation that
-        # returns a map with keys: max items per iteration, and values: the node_sequence and edge_sequences
-        # for now just return on partition with "unlimited" budget/number of items
+        # TODO the ultimate goal is to provide an close to optimal traversal with as limited overhead as possible
+        # for now we just do a DFS traversal to figure out the maximum budget needed and if this budget is above the
+        # available budget, we calculate the max number of items we can use for one DFS traversal of the DAG
+        # so, lets assume we calculate a max number of items = 100, we return:
+        # result[100] = (node_sequence, edge_sequence)
+        # a more advanced solution would return a map with multiple keys as sketched on page 71 of our Goodnotes
+        # another optimization is to optimize the traversal order, especially for the scenario where children are
+        # smaller than their parents, but here we should for sure first check how often that is actually the case
 
         result = {}
         node_sequence, edge_sequence = self.cheapest_path_first_traversal()
         result[128] = (node_sequence, edge_sequence)
         return result
-
-
 
 
 def flatten_perms(permutations):
