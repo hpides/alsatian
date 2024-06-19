@@ -120,19 +120,20 @@ class ExecutionTree:
             # and chose the max path as the number we propagate to the parent
             start.accumulated_path_costs = max(children_path_costs)
 
-    def min_intermediate_cost_for_traversal(self):
-        possible_traversals = self.generate_all_traversals_nodes()
+    def min_intermediate_cost_for_traversal(self, early_parent_release=False):
+        possible_traversals = self.generate_all_traversals_nodes(early_parent_release=early_parent_release)
         traversal_costs = []
         for traversal in possible_traversals:
             max_cost_on_path = max([cost for _, cost in traversal])
             traversal_costs.append(max_cost_on_path)
         return min(traversal_costs)
 
-    def generate_all_traversals_nodes(self):
-        result = self._all_traversals({self.root}, set(), set(), [], 0)
+    def generate_all_traversals_nodes(self, early_parent_release=False):
+        result = self._all_traversals({self.root}, set(), set(), [], 0, early_parent_release)
         return result
 
-    def _all_traversals(self, choices, saved, released, current_traversal_order, current_cost):
+    def _all_traversals(self, choices, saved, released, current_traversal_order, current_cost,
+                        early_parent_release=False):
         if len(choices) == 0:
             return [current_traversal_order]
         else:
@@ -156,11 +157,18 @@ class ExecutionTree:
                 # 2) see if making the choice allows us to release some intermediates from saved and move them to released
                 # we can release nodes where all their children are in the new saved set
                 release = set()
-                for node in new_saved:
+
+                if early_parent_release:
+                    release_saved = new_saved
+                else:
+                    release_saved = saved
+
+                for node in release_saved:
                     children = set([edge.output for edge in self.edges if edge.input == node])
-                    saved_or_released = new_saved.union(new_released)
+                    saved_or_released = release_saved.union(new_released)
                     if children.issubset(saved_or_released):
                         release.add(node)
+
                 # release them form saved and add them to released
                 new_saved.difference_update(release)
                 new_released.update(release)
@@ -173,7 +181,7 @@ class ExecutionTree:
                 new_traversal_order = current_traversal_order + [(choice, new_cost)]
 
                 traversal_orders += self._all_traversals(new_choices, new_saved, new_released, new_traversal_order,
-                                                         new_cost)
+                                                         new_cost, early_parent_release)
 
             return traversal_orders
 

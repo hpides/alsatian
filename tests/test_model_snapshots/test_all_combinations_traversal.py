@@ -59,11 +59,11 @@ class TestAllCombinationsExample(unittest.TestCase):
         self.layer_state11.output_size = 0
         self.node11 = MultiModelSnapshotNode(self.layer_state11)
 
-    def test_two_choice_example(self):
+    def test_two_choice_example_early_release_allowed(self):
         # check test_two_choice_example.jpeg for better understanding
         execution_tree = self._two_choice_execution_tree()
 
-        node_sequences = execution_tree.generate_all_traversals_nodes()
+        node_sequences = execution_tree.generate_all_traversals_nodes(early_parent_release=True)
 
         computed_str_set = self._to_string_set(node_sequences)
         expected_str_set = {
@@ -122,11 +122,11 @@ class TestAllCombinationsExample(unittest.TestCase):
 
         return execution_tree
 
-    def test_three_branch_example(self):
+    def test_three_branch_example_early_parent_release_allowed(self):
         # check test_three_branch_example.jpeg for better understanding
         execution_tree = self._three_branch_execution_tree()
 
-        node_sequences = execution_tree.generate_all_traversals_nodes()
+        node_sequences = execution_tree.generate_all_traversals_nodes(early_parent_release=True)
 
         computed_str_set = self._to_string_set(node_sequences)
         expected_str_set = {
@@ -189,10 +189,10 @@ class TestAllCombinationsExample(unittest.TestCase):
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
         return execution_tree
 
-    def test_two_then_two_branch_example(self):
+    def test_two_then_two_branch_example_early_parent_release_allowed(self):
         # check test_two_then_three_branch_example.jpeg for better understanding
         execution_tree = self._two_then_two_branch_execution_tree()
-        node_sequences = execution_tree.generate_all_traversals_nodes()
+        node_sequences = execution_tree.generate_all_traversals_nodes(early_parent_release=True)
         print('test')
         computed_str_set = self._to_string_set(node_sequences)
         expected_str_set = {
@@ -212,9 +212,54 @@ class TestAllCombinationsExample(unittest.TestCase):
         }
 
         self.assertSetEqual(computed_str_set, expected_str_set)
-        self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(), 5)
+        self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(early_parent_release=True), 5)
 
         node_sequence, edge_sequence = execution_tree.dfs_traversal()
+        max_cost = max_cost_of_node_sequence(node_sequence)
+        self.assertEqual(max_cost, 8)
+
+        execution_tree.annotate_intermediates_with_max_path_costs()
+        acc_max_costs = execution_tree.root.accumulated_path_costs
+        self.assertEqual(acc_max_costs, 8)
+
+        node_sequence, edge_sequence = execution_tree.dfs_traversal(cheapest_path_first=True)
+        max_cost = max_cost_of_node_sequence(node_sequence)
+        self.assertEqual(max_cost, 8)
+
+    def test_two_then_two_branch_example_early_parent_release_not_allowed(self):
+        # check test_two_then_three_branch_example.jpeg for better understanding
+        execution_tree = self._two_then_two_branch_execution_tree()
+        node_sequences = execution_tree.generate_all_traversals_nodes(early_parent_release=False)
+        print('test')
+        computed_str_set = self._to_string_set(node_sequences)
+        expected_str_set = {
+            # first go to node 2
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 4', 8), ('Node 6', 8), ('Node 10', 5)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 6', 8), ('Node 4', 8), ('Node 10', 5)),
+
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 10', 8), ('Node 6', 3), ('Node 4', 3)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 10', 8), ('Node 4', 3), ('Node 6', 3)),
+
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 4', 8), ('Node 10', 8), ('Node 6', 3)),
+            (('root', 0), ('Node 1', 5), ('Node 2', 8), ('Node 6', 8), ('Node 10', 8), ('Node 4', 3)),
+
+            (('root', 0), ('Node 1', 5), ('Node 10', 5), ('Node 2', 8), ('Node 4', 3), ('Node 6', 3)),
+            (('root', 0), ('Node 1', 5), ('Node 10', 5), ('Node 2', 8), ('Node 6', 3), ('Node 4', 3)),
+
+        }
+
+        self.assertSetEqual(computed_str_set, expected_str_set)
+        self.assertEqual(execution_tree.min_intermediate_cost_for_traversal(early_parent_release=False), 8)
+
+        node_sequence, edge_sequence = execution_tree.dfs_traversal()
+        max_cost = max_cost_of_node_sequence(node_sequence)
+        self.assertEqual(max_cost, 8)
+
+        execution_tree.annotate_intermediates_with_max_path_costs()
+        acc_max_costs = execution_tree.root.accumulated_path_costs
+        self.assertEqual(acc_max_costs, 8)
+
+        node_sequence, edge_sequence = execution_tree.dfs_traversal(cheapest_path_first=True)
         max_cost = max_cost_of_node_sequence(node_sequence)
         self.assertEqual(max_cost, 8)
 
@@ -262,7 +307,7 @@ class TestAllCombinationsExample(unittest.TestCase):
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
         return execution_tree
 
-    def test_two_then_three_branch_example(self):
+    def test_two_then_three_branch_example_early_parent_release_allowed(self):
         # check test_two_then_three_branch_example.jpeg for better understanding
 
         edge0 = MultiModelSnapshotEdge("Edge 0-1", self.node0, self.node1)
@@ -305,7 +350,7 @@ class TestAllCombinationsExample(unittest.TestCase):
         mm_snapshot = MultiModelSnapshot()
         mm_snapshot.root = self.node0
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
-        node_sequences = execution_tree.generate_all_traversals_nodes()
+        node_sequences = execution_tree.generate_all_traversals_nodes(early_parent_release=True)
         print('test')
         computed_str_set = self._to_string_set(node_sequences)
         expected_str_set = {
