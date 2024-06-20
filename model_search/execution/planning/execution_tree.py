@@ -1,3 +1,5 @@
+from math import floor
+
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot, MultiModelSnapshotEdge
 
 
@@ -228,8 +230,19 @@ class ExecutionTree:
         # smaller than their parents, but here we should for sure first check how often that is actually the case
 
         result = {}
-        node_sequence, edge_sequence = self.cheapest_path_first_traversal()
-        result[128] = (node_sequence, edge_sequence)
+
+        cost_seq, node_sequence, edge_sequence = self.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        # get the maximum cost we will see throughout the traversal of the DAG
+        max_item_cost = max(cost_seq)
+
+        # the max cost describes the cost per single item, so we can calculate the number of items by this:
+        # the max_item_cost is in number of floats for a single item
+        # the available budget is in MB, so we convert max_item cost to MB
+        max_item_cost = max_item_cost * 4 * 10 ** -6
+
+        max_num_items = floor(available_budget / max_item_cost)
+        result[max_num_items] = (node_sequence, edge_sequence)
+
         return result
 
 
