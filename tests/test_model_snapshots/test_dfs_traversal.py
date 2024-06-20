@@ -103,6 +103,7 @@ class TestDFSTraversal(unittest.TestCase):
 
         expected_ex_units = [
             [edge0],
+            (RELEASE_OUTPUT, "root-input"),
             [edge1],
             [edge4, edge8],
             [edge3, edge7],
@@ -110,7 +111,6 @@ class TestDFSTraversal(unittest.TestCase):
             [edge2, edge5, edge6],
             [edge9],
             (RELEASE_OUTPUT, self.node1.layer_state.id),
-            (RELEASE_OUTPUT, "root-input")
         ]
 
         self.assertEqual(expected_ex_units, ex_units)

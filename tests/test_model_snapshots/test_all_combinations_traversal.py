@@ -79,8 +79,13 @@ class TestAllCombinationsExample(unittest.TestCase):
         self.assertEqual(max_cost, 5)
 
         execution_tree.annotate_intermediates_with_max_path_costs()
-        acc_max_costs = execution_tree.root.accumulated_path_costs
+        acc_max_costs = execution_tree.root.accumulated_path_costs_without_persisting_leafs
         self.assertEqual(acc_max_costs, 5)
+
+        cost_seq, node_sequence, edge_sequence = \
+            execution_tree.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        max_cost = max(cost_seq)
+        self.assertEqual(max_cost, 5)
 
     def test_two_choice_example_max_costs(self):
         # check test_two_choice_example.jpeg for better understanding
@@ -94,8 +99,13 @@ class TestAllCombinationsExample(unittest.TestCase):
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
 
         execution_tree.annotate_intermediates_with_max_path_costs()
-        acc_max_costs = execution_tree.root.accumulated_path_costs
+        acc_max_costs = execution_tree.root.accumulated_path_costs_without_persisting_leafs
         self.assertEqual(acc_max_costs, 10)
+
+        cost_seq, node_sequence, edge_sequence = \
+            execution_tree.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        max_cost = max(cost_seq)
+        self.assertEqual(max_cost, 12)
 
     def _two_choice_execution_tree(self):
         # check test_two_choice_example.jpeg for better understanding
@@ -146,6 +156,11 @@ class TestAllCombinationsExample(unittest.TestCase):
         max_cost = max_cost_of_node_sequence(node_sequence)
         self.assertEqual(max_cost, 5)
 
+        cost_seq, node_sequence, edge_sequence = \
+            execution_tree.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        max_cost = max(cost_seq)
+        self.assertEqual(max_cost, 5)
+
     def test_three_branch_example_max_costs(self):
         # check test_three_branch_example.jpeg for better understanding
         execution_tree = self._three_branch_execution_tree()
@@ -159,8 +174,13 @@ class TestAllCombinationsExample(unittest.TestCase):
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
 
         execution_tree.annotate_intermediates_with_max_path_costs()
-        acc_max_costs = execution_tree.root.accumulated_path_costs
+        acc_max_costs = execution_tree.root.accumulated_path_costs_without_persisting_leafs
         self.assertEqual(acc_max_costs, 9)
+
+        cost_seq, node_sequence, edge_sequence = \
+            execution_tree.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        max_cost = max(cost_seq)
+        self.assertEqual(max_cost, 14)
 
     def _three_branch_execution_tree(self):
         # check test_three_branch_example.jpeg for better understanding
@@ -219,11 +239,12 @@ class TestAllCombinationsExample(unittest.TestCase):
         self.assertEqual(max_cost, 8)
 
         execution_tree.annotate_intermediates_with_max_path_costs()
-        acc_max_costs = execution_tree.root.accumulated_path_costs
+        acc_max_costs = execution_tree.root.accumulated_path_costs_without_persisting_leafs
         self.assertEqual(acc_max_costs, 8)
 
-        node_sequence, edge_sequence = execution_tree.dfs_traversal(cheapest_path_first=True)
-        max_cost = max_cost_of_node_sequence(node_sequence)
+        cost_seq, node_sequence, edge_sequence = \
+            execution_tree.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        max_cost = max(cost_seq)
         self.assertEqual(max_cost, 8)
 
     def test_two_then_two_branch_example_early_parent_release_not_allowed(self):
@@ -256,11 +277,12 @@ class TestAllCombinationsExample(unittest.TestCase):
         self.assertEqual(max_cost, 8)
 
         execution_tree.annotate_intermediates_with_max_path_costs()
-        acc_max_costs = execution_tree.root.accumulated_path_costs
+        acc_max_costs = execution_tree.root.accumulated_path_costs_without_persisting_leafs
         self.assertEqual(acc_max_costs, 8)
 
-        node_sequence, edge_sequence = execution_tree.dfs_traversal(cheapest_path_first=True)
-        max_cost = max_cost_of_node_sequence(node_sequence)
+        cost_seq, node_sequence, edge_sequence = \
+            execution_tree.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        max_cost = max(cost_seq)
         self.assertEqual(max_cost, 8)
 
     def test_two_then_two_branch_example_max_costs(self):
@@ -277,8 +299,13 @@ class TestAllCombinationsExample(unittest.TestCase):
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
 
         execution_tree.annotate_intermediates_with_max_path_costs()
-        acc_max_costs = execution_tree.root.accumulated_path_costs
+        acc_max_costs = execution_tree.root.accumulated_path_costs_without_persisting_leafs
         self.assertEqual(acc_max_costs, 10)
+
+        cost_seq, node_sequence, edge_sequence = \
+            execution_tree.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        max_cost = max(cost_seq)
+        self.assertEqual(max_cost, 12)
 
     def _two_then_two_branch_execution_tree(self):
         edge0 = MultiModelSnapshotEdge("Edge 0-1", self.node0, self.node1)
@@ -411,8 +438,14 @@ class TestAllCombinationsExample(unittest.TestCase):
         node_seq, edge_seq = execution_tree.cheapest_path_first_traversal()
 
         computed_seq = self._simplify_node_seq(node_seq)
-        expected_seq = ['root', 'Node 1', 'Node 10', 'Node 2', 'Node 6', 'Node 4', 'RELEASE-Node 2', 'RELEASE-Node 1', 'RELEASE-root']
+        expected_seq = ['root', 'Node 1', 'RELEASE-root', 'Node 10', 'Node 2', 'RELEASE-Node 1', 'Node 6', 'Node 4',
+                        'RELEASE-Node 2']
         self.assertListEqual(computed_seq, expected_seq)
+
+        cost_seq, node_sequence, edge_sequence = \
+            execution_tree.dfs_traversal(cheapest_path_first=True, return_costs=True)
+        max_cost = max(cost_seq)
+        self.assertEqual(max_cost, 12)
 
     def _simplify_node_seq(self, node_sequence):
         result = []

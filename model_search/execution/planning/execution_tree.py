@@ -62,35 +62,67 @@ class ExecutionTree:
         self.root: Intermediate = root
         self.edges: [Computation] = edges
 
-    def dfs_traversal(self, cheapest_path_first=False):
+    def dfs_traversal(self, cheapest_path_first=False, return_costs=False):
+        if cheapest_path_first:
+            self.annotate_intermediates_with_max_path_costs()
+
         node_sequence = []
         edge_sequence = []
         stack = [[None, self.root]]
+
+        cost_sequence = [0]
         while len(stack) > 0:
+
+            current_costs = cost_sequence[-1]
+
+            # unpack item on stack
             current_item = stack.pop()
+            if isinstance(current_item, tuple):
+                current_item, release_node = current_item
+            else:
+                release_node = None
 
             if isinstance(current_item, Release):
                 edge_sequence.append(current_item)
                 node_sequence.append(current_item)
-            else:
+                if current_item is not None:
+                    current_costs -= current_item.intermediate.size
+            elif isinstance(current_item, list):
                 current_edge, current_node = current_item
                 node_sequence.append(current_node)
                 edge_sequence.append(current_edge)
-                # Add release operation
+
+                current_costs += current_node.size
+
+                # collect all children
                 children = []
                 for edge in self.edges:
                     if edge.input == current_node:
                         children.append([edge, edge.output])
+
                 if len(children) > 0:
                     # if cheapest path first is activated -> sort children so that cheapest path is chosen first
                     if cheapest_path_first:
-                        children.sort(key=lambda x: x[1].accumulated_path_costs, reverse=True)
+                        children.sort(key=lambda x: x[1].accumulated_path_costs_without_persisting_leafs, reverse=True)
                     else:
                         children.reverse()
 
-                    stack.extend([Release(current_node)] + children)
+                    # add a release node to the last node
+                    new_nodes = [(children[0] if children else None, Release(current_node))] + children[1:]
+                    stack.extend(new_nodes)
+                    # if release node set from previous iteration -> prioritize it by adding it to the top of stack
+                    stack.append(release_node)
+                # elif len(children) == 0:
+                #     stack.append(Release(current_node))
+                elif release_node is not None:
+                    stack.append(release_node)
 
-        return node_sequence, edge_sequence
+            cost_sequence.append(current_costs)
+
+        if return_costs:
+            return cost_sequence, node_sequence, edge_sequence
+        else:
+            return node_sequence, edge_sequence
 
     def cheapest_path_first_traversal(self):
         self.annotate_intermediates_with_max_path_costs()
@@ -106,19 +138,19 @@ class ExecutionTree:
         if len(children) == 0:
             # if there are no children
             # we have a leaf node and its costs are equal to the current nodes (start) cost and its parent's costs
-            start.accumulated_path_costs = parent_costs + start.size
+            start.accumulated_path_costs_without_persisting_leafs = parent_costs + start.size
         else:
             # if there are children
-            start.accumulated_path_costs = 0
+            start.accumulated_path_costs_without_persisting_leafs = 0
 
             # we calculate their max path cost
             children_path_costs = []
             for child in children:
                 self.annotate_intermediates_with_max_path_costs(child, parent_costs + start.size)
-                children_path_costs.append(child.accumulated_path_costs)
+                children_path_costs.append(child.accumulated_path_costs_without_persisting_leafs)
 
             # and chose the max path as the number we propagate to the parent
-            start.accumulated_path_costs = max(children_path_costs)
+            start.accumulated_path_costs_without_persisting_leafs = max(children_path_costs)
 
     def min_intermediate_cost_for_traversal(self, early_parent_release=False):
         possible_traversals = self.generate_all_traversals_nodes(early_parent_release=early_parent_release)
