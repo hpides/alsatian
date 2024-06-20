@@ -102,6 +102,15 @@ def _is_last_iteration(test_ranges, train_ranges):
     return result
 
 
+def split_num_items_budget(train_ranges, test_ranges):
+    # NOTE: there might be some room for optimization here in case the sum of train and test ranges for one step is
+    # below the available budget
+    # the easies way to split is by for the first n iterations give train no budget
+    zero_budgets = [[0, 0]] * len(test_ranges)
+    train_ranges = zero_budgets + train_ranges
+    return train_ranges, test_ranges
+
+
 class MosixExecutionPlanner:
 
     def __init__(self, config: PlannerConfig):
@@ -122,10 +131,18 @@ class MosixExecutionPlanner:
         for num_items, (node_sequence, edge_sequence) in traversal_groups.items():
             # generate data ranges and for train
             test_ranges = []
+
+            train_ranges = _split_up_data_range(train_dataset_range, num_items)
+
             if first_iteration:
                 test_ranges = _split_up_data_range([0, len_test_data], num_items)
-                # TODO if test is also included we have to split the num of items between train and test steps
-            train_ranges = _split_up_data_range(train_dataset_range, num_items)
+                # if it is the first iteration, we also have to extract test features
+                # this means we also have to split the budget of items to process at once between train and test
+
+                # TODOS
+                # 1) check if budget calculation is realistic
+                # 2) see if with the adjustments we can actually run on very limited memory
+                train_ranges, test_ranges = split_num_items_budget(train_ranges, test_ranges)
 
             # generate execution steps based on generated ranges
             execution_steps = []
