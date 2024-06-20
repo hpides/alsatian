@@ -110,18 +110,8 @@ class MosixExecutionPlanner:
     def generate_execution_plan(self, mm_snapshot: MultiModelSnapshot, train_dataset_range: [int], len_test_data: int,
                                 first_iteration=False, strategy="DFS", model_input_size=3 * 224 * 224) -> ExecutionPlan:
 
-        # # TODO move this code to separate experiment file
-        # # TODO Implement cheapest path first algorithm for comparison
-        # # node_sequences = execution_tree.generate_all_traversals_nodes()
-        # cheapest_max_budget = execution_tree.min_intermediate_cost_for_traversal()
-        # dfs_max_budget = max_cost_of_node_sequence(node_sequence)
-        #
-        # print("cheapest_max_budget", cheapest_max_budget)
-        # print("dfs_max_budget", dfs_max_budget)
-        #
-        # assert False
-
         execution_tree = execution_tree_from_mm_snapshot(mm_snapshot, 0)
+
         # For now, assume that model always fits on GPU, leave out of memory models for future work
         available_budget = self.config.cache_size
         # returns a map with keys: max items per iteration, and values: the node_sequence and edge_sequences
