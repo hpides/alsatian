@@ -238,7 +238,7 @@ class ExecutionTree:
         # the max cost describes the cost per single item, so we can calculate the number of items by this:
         # the max_item_cost is in number of floats for a single item
         # the available budget is in MB, so we convert max_item cost to MB
-        max_item_cost = max_item_cost * 4 * 10 ** -6
+        max_item_cost = max_item_cost * 4 * (10 ** -6)
 
         max_num_items = floor(available_budget / max_item_cost)
         result[max_num_items] = (node_sequence, edge_sequence)

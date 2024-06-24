@@ -56,7 +56,7 @@ def run_model_search(exp_args: ExpArgs):
     dataset_class = DatasetClass.CUSTOM_IMAGE_FOLDER
     train_data = CustomImageFolder(dataset_paths[TRAIN])
     len_train_data = len(train_data)
-    test_data = CustomImageFolder(dataset_paths[TRAIN])
+    test_data = CustomImageFolder(dataset_paths[TEST])
     len_test_data = len(test_data)
 
     model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
