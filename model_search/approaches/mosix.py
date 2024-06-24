@@ -18,7 +18,7 @@ from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 
 
-def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner_config,
+def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, test_data_len, planner_config,
                     caching_path, model_store: ModelStore, benchmark_level: BenchmarkLevel = None):
     measurements = {}
     benchmarker = _init_benchmarker('find_best_model', benchmark_level)
@@ -46,19 +46,21 @@ def find_best_model(model_snapshots: [ModelSnapshot], train_data_length, planner
     first_iteration = True
     for i, data_range in enumerate(data_ranges):
         measurement, (measure, ranking) = benchmarker.micro_benchmark_gpu(
-            _sh_iteration, data_range, exec_engine, first_iteration, mm_snapshot, planner, ranking, benchmark_level)
+            _sh_iteration, data_range, test_data_len, exec_engine, first_iteration, mm_snapshot, planner, ranking,
+            benchmark_level)
         measurements[f'{SH_RANK_ITERATION_}{i}'] = measurement
         measurements[f'{RANK_ITERATION_DETAILS_}{i}'] = measure
         first_iteration = False
     return measurements, ranking
 
 
-def _sh_iteration(data_range, exec_engine, first_iteration, mm_snapshot, planner, ranking, benchmark_level):
+def _sh_iteration(train_data_range, len_test_data, exec_engine, first_iteration, mm_snapshot, planner, ranking,
+                  benchmark_level):
     measurements = {}
     benchmarker = _init_benchmarker('_sh_iteration', benchmark_level)
 
     measure, execution_plan = benchmarker.micro_benchmark_cpu(
-        planner.generate_execution_plan, mm_snapshot, data_range, first_iteration)
+        planner.generate_execution_plan, mm_snapshot, train_data_range, len_test_data, first_iteration)
     measurements[GEN_EXEC_PLAN] = measure
 
     measurements[EXEC_STEP_MEASUREMENTS] = exec_engine.execute_plan(execution_plan, benchmark_level=benchmark_level)

@@ -23,7 +23,7 @@ def distribute_into_buckets(total, num_buckets):
 
 def _higher_path(save_path: str, start):
     for i in range(start + 1, 100):
-        higher_path = save_path.replace(str(start), str(i))
+        higher_path = save_path.replace(f'/{start}', f'/{i}')
         if os.path.exists(higher_path):
             return higher_path
 

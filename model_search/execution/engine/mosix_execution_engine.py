@@ -44,12 +44,14 @@ class MosixExecutionEngine(BaselineExecutionEngine):
         return self.logger.log_dict
 
     def execute_mosix_extract_features_step(self, exec_step: MosixExtractFeaturesStep):
-        partial_model = self._init_model(exec_step)
-        data, data_loader = self._get_data_loader(exec_step)
-        self._extract_features_part_model(partial_model, data, data_loader, exec_step)
+        # if we process zero data -> skip step
+        if not exec_step.data_range == [0,0]:
+            partial_model = self._init_model(exec_step)
+            data, data_loader = self._get_data_loader(exec_step)
+            self._extract_features_part_model(partial_model, data, data_loader, exec_step)
 
-        # clear GPU memory after step to remove partial model
-        torch.cuda.empty_cache()
+            # clear GPU memory after step to remove partial model
+            torch.cuda.empty_cache()
 
     def _extract_features_part_model(self, partial_model, data_set, data_loader, exec_step):
 

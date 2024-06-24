@@ -20,34 +20,44 @@ def get_search_model_inputs():
         set_deterministic()
     else:
         num_workers = 12
-    save_path = '/mount-fs/tmp-dir'
+    save_path = '/mount-fs/tmp-dir2'
     model_snapshots, model_store = dummy_snap_and_mstore_four_models(save_path)
+    model_store.add_output_sizes_to_rich_snapshots('../experiments/model_resource_info/outputs/layer_output_infos.json')
     # datasets
     dataset_paths = {
         TRAIN: '/tmp/pycharm_project_924/data/imagenette-dummy/train',
         TEST: '/tmp/pycharm_project_924/data/imagenette-dummy/val'
     }
     train_data = CustomImageFolder(dataset_paths[TRAIN])
+    test_data = CustomImageFolder(dataset_paths[TEST])
+
+    # IMPORTANT NOTE:
+    # We can only expect exactly the same results between SHiFT and MOSIX if the cache size i slarge enough so that we
+    # do not have to split up computations into mulitple runs. Otherwise the batch sizes of Mosix will be adjusted which
+    # means SHiFT and MOSIX will use different batch sizes -> leading to ver similar but not equivalent results
+    cache_size = 10000
+
     planner_config = PlannerConfig(num_workers, 128, 100, DatasetClass.CUSTOM_IMAGE_FOLDER, dataset_paths,
-                                   CacheLocation.SSD)
+                                   CacheLocation.SSD, cache_size=cache_size)
     persistent_caching_path = '/mount-ssd/cache-dir'
-    return dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data
+    return dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data, test_data
 
 
 def _execute_mosix():
-    dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data = get_search_model_inputs()
+    dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data, test_data = get_search_model_inputs()
 
-    return mosix.find_best_model(model_snapshots, len(train_data), planner_config, persistent_caching_path, model_store)
+    return mosix.find_best_model(model_snapshots, len(train_data), len(test_data), planner_config,
+                                 persistent_caching_path, model_store)
 
 
 def _execute_shift():
-    dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data = get_search_model_inputs()
+    dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data, test_data = get_search_model_inputs()
 
     return shift.find_best_model(model_snapshots, len(train_data), planner_config, persistent_caching_path)
 
 
 def _execute_baseline():
-    dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data = get_search_model_inputs()
+    dataset_paths, model_snapshots, model_store, persistent_caching_path, planner_config, train_data, test_data = get_search_model_inputs()
 
     return baseline.find_best_model(model_snapshots, planner_config, persistent_caching_path)
 

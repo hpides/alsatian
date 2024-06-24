@@ -33,7 +33,7 @@ def dummy_snap_and_mstore_two_models(save_path):
 
 
 def dummy_snap_and_mstore_four_models(save_path):
-    dummy_model_store_path = '/mount-fs/tmp-dir/dummy-model-store.json'
+    dummy_model_store_path = f'{save_path}/dummy-model-store.json'
     if os.path.exists(dummy_model_store_path):
         model_store_dict = read_json_to_dict(dummy_model_store_path)
         model_store = model_store_from_dict(model_store_dict)
@@ -41,7 +41,7 @@ def dummy_snap_and_mstore_four_models(save_path):
         model_snapshots = list(model_store.models.values())
     else:
         # generate some dummy snapshots
-        retrain_idxs = [5, 7, 9]
+        retrain_idxs = [3, 5, 7]
         model_snapshots = generate_snapshots(RESNET_18, 4, RetrainDistribution.HARD_CODED, save_path=save_path,
                                              retrain_idxs=retrain_idxs, use_same_base=True)
 
