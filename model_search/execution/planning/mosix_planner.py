@@ -139,9 +139,6 @@ class MosixExecutionPlanner:
                 # if it is the first iteration, we also have to extract test features
                 # this means we also have to split the budget of items to process at once between train and test
 
-                # TODOS
-                # 1) check if budget calculation is realistic
-                # 2) see if with the adjustments we can actually run on very limited memory
                 train_ranges, test_ranges = split_num_items_budget(train_ranges, test_ranges)
 
             # generate execution steps based on generated ranges

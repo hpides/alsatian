@@ -62,6 +62,7 @@ class ExpArgs:
         self.default_cache_location = _str_to_cache_location(args[section]['default_cache_location'])
         self.limit_fs_io = args.getboolean(section, 'limit_fs_io')
         self.ssd_caching_active = args.getboolean(section, 'ssd_caching_active')
+        self.cache_size = args.getint(section, 'cache_size')
 
     def __str__(self):
         return str(self.__dict__)
