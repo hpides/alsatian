@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
         DISTRIBUTIONS: ["FIFTY_PERCENT"],
-        APPROACHES: ["shift", "mosix"],
+        APPROACHES: ["mosix"],
         NUM_WORKERS: [4, 8, 12],  # first entry baseline, second shift, third mosix
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [VIT_L_32],
