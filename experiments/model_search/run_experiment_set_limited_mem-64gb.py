@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', default='./config.ini', help='Configuration file path')
-    parser.add_argument('--base_config_section', default='debug-des-gpu-out-of-memory-10gb')
+    parser.add_argument('--base_config_section', default='debug-des-gpu-out-of-memory-64gb')
     args = parser.parse_args()
 
     # Read configuration file
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
         DISTRIBUTIONS: ["FIFTY_PERCENT"],
-        APPROACHES: ["baseline", "shift","mosix"],
+        APPROACHES: ["baseline", "shift", "mosix"],
         NUM_WORKERS: [12, 12, 12],  # first entry baseline, second shift, third mosix
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [VIT_L_32],
