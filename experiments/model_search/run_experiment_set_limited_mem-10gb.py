@@ -107,7 +107,7 @@ if __name__ == "__main__":
     eval_space = {
         DISTRIBUTIONS: ["FIFTY_PERCENT"],
         APPROACHES: ["mosix", "shift", "baseline"],
-        NUM_WORKERS: [[3, 3, 3]],  # first entry baseline, second shift, third mosix
+        NUM_WORKERS: [3, 3, 3],  # first entry baseline, second shift, third mosix
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [VIT_L_32],
         NUMS_MODELS: [35],
