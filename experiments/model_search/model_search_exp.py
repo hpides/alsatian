@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 import torch
 
@@ -61,7 +62,10 @@ def run_model_search(exp_args: ExpArgs):
 
     model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
                                                  exp_args.distribution, exp_args.base_snapshot_save_path)
-    model_store.add_output_sizes_to_rich_snapshots('../model_resource_info/outputs/layer_output_infos.json')
+
+    layer_output_info = os.path.join(pathlib.Path(__file__).parent.resolve(),
+                                     '../model_resource_info/outputs/layer_output_infos.json')
+    model_store.add_output_sizes_to_rich_snapshots(layer_output_info)
 
     # after generating the snapshots make sure they are not in the caches
     clear_caches_and_check_io_limit()
