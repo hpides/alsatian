@@ -64,6 +64,49 @@ class ExecutionTree:
         self.root: Intermediate = root
         self.edges: [Computation] = edges
 
+    def contains_leaf(self, children):
+        for child in children:
+            if self.is_leaf(child):
+                return True
+        return False
+
+    def is_leaf(self, node):
+        return len(self._collect_children(node)) == 0
+
+    def find_cheap_children(self, current_children_queue):
+        count_combined = 0
+        num_nodes = 0
+        while current_children_queue:
+            num_nodes += 1
+            current_node = current_children_queue.pop(0)
+
+            children = self._collect_children(current_node)
+
+            current_children_queue.extend(children)
+
+            sum_children = sum([child.size for child in children])
+            # print("is leaf", self.is_leaf(current_node))
+            # print("contains leaf", self.contains_leaf(children))
+            if not self.is_leaf(current_node) and not self.contains_leaf(children):
+                count_combined += 1
+                print("combined", count_combined)
+                print("sum_children", sum_children)
+                print("current_node.size", current_node.size)
+                print()
+            if sum_children < current_node.size and not self.is_leaf(current_node) and not self.contains_leaf(children):
+                return current_node, sum_children, children
+
+
+        print("num nodes", num_nodes)
+        return False, False, False
+
+    def _collect_children(self, current_node):
+        children = []
+        for edge in self.edges:
+            if edge.input == current_node:
+                children.append(edge.output)
+        return children
+
     def dfs_traversal(self, cheapest_path_first=False, return_costs=False):
         if cheapest_path_first:
             self.annotate_intermediates_with_max_path_costs()

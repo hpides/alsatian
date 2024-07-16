@@ -173,6 +173,37 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
     return metrics_of_interest
 
 
+def regroup_and_rename_times(times):
+    grouped_times = {}
+
+    grouped_times['prepare data'] = times[LOAD_DATA]
+    grouped_times['prepare data'] += times[DATA_TO_DEVICE]
+
+    grouped_times['prepare model'] = 0
+    if LOAD_STATE_DICT in times:
+        grouped_times['prepare model'] += times[LOAD_STATE_DICT]
+    if INIT_MODEL in times:
+        grouped_times['prepare model'] += times[INIT_MODEL]
+    if STATE_TO_MODEL in times:
+        grouped_times['prepare model'] += times[STATE_TO_MODEL]
+    if MODEL_TO_DEVICE in times:
+        grouped_times['prepare model'] += times[MODEL_TO_DEVICE]
+    if GET_COMPOSED_MODEL in times:
+        grouped_times['prepare model'] += times[GET_COMPOSED_MODEL]
+
+    grouped_times[INFERENCE] = times[INFERENCE]
+
+    grouped_times["proxy score"] = times[CALC_PROXY_SCORE]
+
+    if GEN_EXEC_PLAN in times:
+        grouped_times['exec planning'] = times[GEN_EXEC_PLAN]
+
+
+
+
+    return grouped_times
+
+
 def end_to_end_plot_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type):
     model_measurements = {}
     for model in models:

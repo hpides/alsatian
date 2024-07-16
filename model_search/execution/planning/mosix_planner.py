@@ -127,18 +127,17 @@ class MosixExecutionPlanner:
         traversal_groups = execution_tree.best_traversal(available_budget)
 
         execution_steps = []
-
-        for num_items, (node_sequence, edge_sequence) in traversal_groups.items():
-            # generate data ranges and for train
+        for max_num_items, (node_sequence, edge_sequence) in traversal_groups.items():
+            # if we only extract train features, we take the current dataset range and split it up into multiple
+            # sub-ranges to stay below the maximum number of items that still meet our budget
+            train_ranges = _split_up_data_range(train_dataset_range, max_num_items)
             test_ranges = []
 
-            train_ranges = _split_up_data_range(train_dataset_range, num_items)
-
             if first_iteration:
-                test_ranges = _split_up_data_range([0, len_test_data], num_items)
                 # if it is the first iteration, we also have to extract test features
-                # this means we also have to split the budget of items to process at once between train and test
-
+                # this means that we can not use all our "budget" in terms of items to process in one iteration for
+                # the train data. Thus , we split the budget of items to process at once equally between train and test
+                test_ranges = _split_up_data_range([0, len_test_data], max_num_items)
                 train_ranges, test_ranges = split_num_items_budget(train_ranges, test_ranges)
 
             # generate execution steps based on generated ranges
