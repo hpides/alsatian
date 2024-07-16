@@ -1,6 +1,6 @@
 import os
 
-from experiments.snapshots.generate import generate_snapshots, RetrainDistribution
+from experiments.snapshots.synthetic.generate import generate_snapshots, RetrainDistribution
 from global_utils.json_operations import read_json_to_dict, write_json_to_file
 from global_utils.model_names import RESNET_152
 from model_search.model_management.model_store import model_store_from_dict, ModelStore

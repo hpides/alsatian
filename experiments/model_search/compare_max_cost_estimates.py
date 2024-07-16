@@ -1,6 +1,6 @@
 ## TODO check sun of children vs current node
-from experiments.snapshots.generate import RetrainDistribution
-from experiments.snapshots.generate_sets.generate_set import get_architecture_models
+from experiments.snapshots.synthetic.generate import RetrainDistribution
+from experiments.snapshots.synthetic.generate_sets.generate_set import get_architecture_models
 from model_search.execution.planning.execution_tree import execution_tree_from_mm_snapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
 

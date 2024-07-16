@@ -6,8 +6,8 @@ import torch
 from custom.data_loaders.custom_image_folder import CustomImageFolder, create_sub_dataset
 from experiments.model_search.experiment_args import ExpArgs
 from experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
-from experiments.snapshots.generate_sets.generate_set import get_architecture_models
-from experiments.snapshots.generate_sets.twenty_resnet_152 import twenty_resnet_152_snapshots
+from experiments.snapshots.synthetic.generate_sets.generate_set import get_architecture_models
+from experiments.snapshots.synthetic.generate_sets.twenty_resnet_152 import twenty_resnet_152_snapshots
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import TRAIN, TEST, END_TO_END, DETAILED_TIMES
 from global_utils.model_names import VISION_MODEL_CHOICES

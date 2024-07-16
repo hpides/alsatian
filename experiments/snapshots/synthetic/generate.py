@@ -7,7 +7,7 @@ import torch.nn
 
 from custom.models.init_models import initialize_model
 from custom.models.split_indices import SPLIT_INDEXES
-from experiments.snapshots.retrain_distribution import normal_retrain_layer_dist_last_few, normal_retrain_layer_dist_25, \
+from experiments.snapshots.synthetic.retrain_distribution import normal_retrain_layer_dist_last_few, normal_retrain_layer_dist_25, \
     normal_retrain_layer_dist_50
 from global_utils.hash import state_dict_hash
 from global_utils.model_operations import split_model_in_two

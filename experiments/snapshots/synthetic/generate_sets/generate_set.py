@@ -1,6 +1,6 @@
 import os
 
-from experiments.snapshots.generate import generate_snapshots, RetrainDistribution
+from experiments.snapshots.synthetic.generate import generate_snapshots, RetrainDistribution
 from global_utils.json_operations import read_json_to_dict, write_json_to_file
 from global_utils.model_names import VISION_MODEL_CHOICES, RESNETS, TRANSFORMER_MODELS, MOBILE_V2, RESNET_34, RESNET_18, \
     EFF_NET_V2_S, RESNET_50, RESNET_101, VIT_B_16, VIT_B_32, RESNET_152, VIT_L_32, VIT_L_16, EFF_NET_V2_L, \
