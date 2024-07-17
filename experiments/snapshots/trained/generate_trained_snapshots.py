@@ -7,6 +7,7 @@ import time
 import numpy as np
 import torch
 from torch import nn, optim
+from torch.utils.data import Subset
 from torch.utils.data import random_split, DataLoader
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
@@ -18,6 +19,16 @@ from experiments.snapshots.synthetic.retrain_distribution import normal_retrain_
 from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_18, EFF_NET_V2_L, RESNET_152, VIT_L_32
 from global_utils.model_operations import split_model_in_two
 from global_utils.write_results import write_measurements_and_args_to_json_file
+
+STANFORD_CARS = "stanford-cars"
+
+STANFORD_DOGS = "stanford-dogs"
+
+IMAGE_WOOF = "image-woof"
+
+FOOD_101 = "food-101"
+
+CUB_BIRDS_200 = "cub-birds-200"
 
 DUMMY = "dummy"
 
@@ -45,6 +56,19 @@ def set_seeds(seed_value):
 def generate_4_digit_id():
     characters = string.ascii_letters + string.digits
     return ''.join(random.choices(characters, k=4))
+
+
+def subsample_random_items(dataset, sample_size):
+    # Ensure the sample size does not exceed the dataset size
+    if sample_size > len(dataset):
+        raise ValueError("Sample size cannot be larger than the dataset size.")
+
+    # Get random indices for the subsample
+    random_indices = random.sample(range(len(dataset)), sample_size)
+
+    # Create a subset of the dataset with the sampled indices
+    subset = Subset(dataset, random_indices)
+    return subset
 
 
 def get_retrain_index(architecture_name, distribution):
@@ -195,21 +219,33 @@ def get_datasets(train_data_path, test_data_path):
 
     train_size = int(0.8 * len(train_dataset))
     val_size = len(train_dataset) - train_size
-
     train_dataset, val_dataset = random_split(train_dataset, [train_size, val_size])
+
+    # cap datas set sizes
+    if len(train_dataset) > 15000 * 0.8:
+        train_dataset = subsample_random_items(train_dataset, int(15000 * 0.8))
+
+    if len(val_dataset) > 15000 * 0.2:
+        val_dataset = subsample_random_items(val_dataset, int(15000 * 0.2))
+
+    if len(test_dataset) > 10000:
+        test_dataset = subsample_random_items(test_dataset, 10000)
 
     return train_dataset, val_dataset, test_dataset
 
 
 def main(args):
-    set_seeds(42)
-
     # both numbers as figured out to be a good fit for all our models
     batch_size = 128
     num_workers = 12
 
     # prepare data config and data sets
     dataset_configs = {
+        FOOD_101: {NUM_CLASSES: 101},
+        STANFORD_DOGS: {NUM_CLASSES: 120},
+        STANFORD_CARS: {NUM_CLASSES: 196},
+        IMAGE_WOOF: {NUM_CLASSES: 10},
+        CUB_BIRDS_200: {NUM_CLASSES: 200},
         IMAGENETTE: {NUM_CLASSES: 10},
         DUMMY: {NUM_CLASSES: 10}
     }
@@ -234,8 +270,8 @@ def main(args):
     for param in first_model.parameters():
         param.requires_grad = False
     model = torch.nn.Sequential(first_model, second_model)
-    for name, param in model.named_parameters():
-        print(f'{name}: {param.requires_grad}')
+    # for name, param in model.named_parameters():
+    #     print(f'{name}: {param.requires_grad}')
 
     hyper_params = {
         "lr": 0.001,
@@ -258,18 +294,39 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     data_paths = {
-        DUMMY: "/mount-ssd/data/imagenette-dummy"
+        DUMMY: "/mount-ssd/data/imagenette-dummy",
+        FOOD_101: "/mount-ssd/data/food-101/prepared_data",
+        STANFORD_DOGS: "/mount-ssd/data/stanford_dogs/prepared_data",
+        STANFORD_CARS: "/mount-ssd/data/stanford-cars/car_data",
+        IMAGE_WOOF: "/mount-ssd/data/image-woof/imagewoof2",
+        CUB_BIRDS_200: "/mount-ssd/data/cub-birds-200/prepared_data",
+        IMAGENETTE: "/mount-ssd/data/imagenette2",
     }
 
     original_snapshot_save_path = args.snapshot_save_path
+
+    set_seeds(42)
+
     for model_name in [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]:
         args.model_name = model_name
-        for dataset_name in [DUMMY]:
-            args.dataset_name = dataset_name
-            for retrain_distribution in [TWENTY_FIVE_PERCENT]:
-                args.retrain_distribution = retrain_distribution
-                args.train_dataset_path = os.path.join(data_paths[dataset_name], 'train')
-                args.test_dataset_path = os.path.join(data_paths[dataset_name], 'test')
-                args.snapshot_save_path = os.path.join(original_snapshot_save_path, dataset_name)
+        model_count = 35
 
-                main(args)
+        while model_count > 0:
+            print("model-count:", model_count)
+
+            for dataset_name in [IMAGE_WOOF, STANFORD_DOGS, STANFORD_CARS, CUB_BIRDS_200, FOOD_101]:
+            # for dataset_name in [DUMMY]:
+                args.dataset_name = dataset_name
+                for retrain_distribution in [TWENTY_FIVE_PERCENT]:
+                    args.retrain_distribution = retrain_distribution
+                    args.train_dataset_path = os.path.join(data_paths[dataset_name], 'train')
+                    if dataset_name in [IMAGENETTE, IMAGE_WOOF]:
+                        args.test_dataset_path = os.path.join(data_paths[dataset_name], 'val')
+                    else:
+                        args.test_dataset_path = os.path.join(data_paths[dataset_name], 'test')
+                    args.snapshot_save_path = os.path.join(original_snapshot_save_path, dataset_name)
+
+                    print(args)
+                    main(args)
+
+            model_count -= 5
