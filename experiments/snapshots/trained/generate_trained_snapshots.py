@@ -74,7 +74,7 @@ def subsample_random_items(dataset, sample_size):
 def get_retrain_index(architecture_name, distribution):
     num_blocks = len(SPLIT_INDEXES[architecture_name])
     if distribution == TWENTY_FIVE_PERCENT:
-        retrain_idx = normal_retrain_layer_dist_25(num_blocks, 1)[0]
+        retrain_idx = random.choice(normal_retrain_layer_dist_25(num_blocks, 200))
     else:
         raise NotImplementedError
 
@@ -284,6 +284,7 @@ def main(args):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(description="Train a model on a dataset with optional layer freezing.")
     parser.add_argument('--model_name', type=str, choices=VISION_MODEL_CHOICES)
     parser.add_argument('--train_dataset_path', type=str)
@@ -315,7 +316,7 @@ if __name__ == '__main__':
             print("model-count:", model_count)
 
             for dataset_name in [IMAGE_WOOF, STANFORD_DOGS, STANFORD_CARS, CUB_BIRDS_200, FOOD_101]:
-            # for dataset_name in [DUMMY]:
+                # for dataset_name in [DUMMY]:
                 args.dataset_name = dataset_name
                 for retrain_distribution in [TWENTY_FIVE_PERCENT]:
                     args.retrain_distribution = retrain_distribution
