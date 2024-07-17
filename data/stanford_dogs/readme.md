@@ -1,0 +1,3 @@
+- download fom here 
+- http://vision.stanford.edu/aditya86/ImageNetDogs/
+- -run prepare script
