@@ -7,11 +7,21 @@ import torch.nn
 
 from custom.models.init_models import initialize_model
 from custom.models.split_indices import SPLIT_INDEXES
-from experiments.snapshots.synthetic.retrain_distribution import normal_retrain_layer_dist_last_few, normal_retrain_layer_dist_25, \
+from experiments.snapshots.synthetic.retrain_distribution import normal_retrain_layer_dist_last_few, \
+    normal_retrain_layer_dist_25, \
     normal_retrain_layer_dist_50
 from global_utils.hash import state_dict_hash
 from global_utils.model_operations import split_model_in_two
 from model_search.model_snapshots.base_snapshot import ModelSnapshot, generate_snapshot_id
+
+HARD_CODED = "HARD_CODED"
+RANDOM = "RANDOM"
+TOP_LAYERS = "TOP_LAYERS"
+TWENTY_FIVE_PERCENT = "TWENTY_FIVE_PERCENT"
+FIFTY_PERCENT = "FIFTY_PERCENT"
+LAST_ONE_LAYER = "LAST_ONE_LAYER"
+
+RETRAIN_DIST_CHOICES = [HARD_CODED, RANDOM, TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT, LAST_ONE_LAYER]
 
 
 class RetrainDistribution(Enum):
