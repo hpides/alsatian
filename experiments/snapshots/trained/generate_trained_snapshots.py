@@ -282,6 +282,10 @@ def main(args):
 
     generate_trained_snapshot(model, train_data_loader, val_data_loader, test_data_loader, hyper_params)
 
+    # clear space on GPU for next models
+    del model
+    torch.cuda.empty_cache()
+
 
 if __name__ == '__main__':
 
