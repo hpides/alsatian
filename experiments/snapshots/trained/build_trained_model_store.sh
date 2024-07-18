@@ -2,7 +2,7 @@
 
 # Assigning command line arguments to variables
 repository_url=github.com/slin96/model-search-paper.git
-script_to_start=experiments/snapshots/trained/build_trained_snapshots.py
+script_to_start=experiments/snapshots/trained/build_trained_model_store.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=trained-snapshots
