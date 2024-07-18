@@ -313,7 +313,7 @@ if __name__ == '__main__':
     set_seeds(42)
 
     # for model_name in [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]:
-    for model_name in [VIT_L_32]:
+    for model_name in [EFF_NET_V2_L]:
         args.model_name = model_name
         model_count = 35
 
