@@ -65,8 +65,8 @@ def get_model_store_save_path(base_model_store_save_path, architecture_name):
 if __name__ == '__main__':
     dataset_names = [IMAGE_WOOF, STANFORD_DOGS, STANFORD_CARS, CUB_BIRDS_200, FOOD_101]
     model_architectures = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
-    snapshot_base_path = "/mount-fs/trained-snapshots-OLD"
-    base_model_store_save_path = "/mount-fs/trained-snapshots-OLD/modelstore_savepath"
+    snapshot_base_path = "/mount-fs/trained-snapshots"
+    base_model_store_save_path = "/mount-fs/trained-snapshots/modelstore_savepath"
     epochs_trained = 20
 
     for architecture_name in model_architectures:
