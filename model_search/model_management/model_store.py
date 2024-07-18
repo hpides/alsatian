@@ -37,6 +37,60 @@ def model_store_from_dict(_dict):
     return model_store
 
 
+def match_keys(target_sd_format, current_sd):
+
+    if not next(iter(current_sd)).startswith("0.0"):
+        # we only need to adjust of the current sd starts like this
+        return current_sd
+    def remove_duplicates(input_list):
+        seen = set()
+        result = []
+        for item in input_list:
+            if item not in seen:
+                seen.add(item)
+                result.append(item)
+        return result
+
+    def extract_prefixes(_keys, prefix_length):
+        prefixes = []
+        for k in _keys:
+            split = k.split('.')
+            prefix = ".".join(split[:prefix_length])
+            prefixes.append(prefix)
+
+        return prefixes
+
+    # Example dictionary with the given keys
+    reference_keys = list(target_sd_format.keys())
+    current_keys = list(current_sd.keys())
+
+    reference_keys_prefixes = remove_duplicates(extract_prefixes(reference_keys, 1))
+    current_keys_prefixes = remove_duplicates(extract_prefixes(current_keys, 2))
+
+    prefix_mapping = {}
+    for i, r_pre in enumerate(reference_keys_prefixes):
+        prefix_mapping[current_keys_prefixes[i]] = r_pre
+
+    for k in list(current_sd.keys()):
+        current_components = k.split(".")
+        replace = current_components[:2]
+        keep = current_components[2:]
+
+        old_prefix = ".".join(replace)
+
+        if old_prefix in prefix_mapping:
+
+            new_prefix = prefix_mapping[old_prefix]
+
+            new_key = ".".join([new_prefix] + keep)
+
+            current_sd[new_key] = current_sd[k]
+
+        del current_sd[k]
+
+    return current_sd
+
+
 class ModelStore:
 
     def __init__(self, save_path: str, caching_service=None):
@@ -103,12 +157,13 @@ class ModelStore:
     def _gen_rich_model_snapshot(self, snapshot: ModelSnapshot) -> RichModelSnapshot:
         model = initialize_model(snapshot.architecture_id, sequential_model=True, features_only=True)
         state_dict = torch.load(snapshot.state_dict_path)
-        model.load_state_dict(state_dict)
+        adjusted_state_dict = match_keys(model.state_dict(), state_dict)
+        model.load_state_dict(adjusted_state_dict)
         _, filename = os.path.split(snapshot.state_dict_path)
         file_name_prefix = filename.replace('.pt', '')
         layer_states = self._gen_model_layers(model, self.save_path, name_prefix=file_name_prefix)
 
-        dict_hash = state_dict_hash(state_dict)
+        dict_hash = state_dict_hash(adjusted_state_dict)
         architecture_name = snapshot.architecture_id
         rich_model_snapshot = RichModelSnapshot(
             architecture_name=architecture_name,
