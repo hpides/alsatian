@@ -107,15 +107,11 @@ if __name__ == "__main__":
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
         DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
-        # APPROACHES: ["mosix", "baseline", "shift"],
-        APPROACHES: ["baseline"],
+        APPROACHES: ["mosix", "shift", "baseline"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
-        SNAPSHOT_SET_STRINGS: [RESNET_18],
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
         NUMS_MODELS: [36], # one extra model being the pretrained model with no adjustments
-        # BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"],
-        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
-        # DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
-        DATA_ITEMS: [(800, 200)]
+        BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"],
+        DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
