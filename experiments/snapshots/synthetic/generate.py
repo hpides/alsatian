@@ -107,6 +107,7 @@ def generate_snapshot(architecture_name, model, save_path):
     sd_hash = state_dict_hash(pre_trained_state)
     snapshot_id = generate_snapshot_id(architecture_name, sd_hash)
     state_dict_path = os.path.join(save_path, f'{snapshot_id}.pt')
+    state_dict_path = os.path.abspath(state_dict_path)
     if not os.path.exists(state_dict_path):
         torch.save(pre_trained_state, state_dict_path)
     snapshot = ModelSnapshot(architecture_name, state_dict_path, sd_hash, snapshot_id)
