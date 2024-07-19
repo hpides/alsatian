@@ -63,6 +63,7 @@ class ExpArgs:
         self.limit_fs_io = args.getboolean(section, 'limit_fs_io')
         self.ssd_caching_active = args.getboolean(section, 'ssd_caching_active')
         self.cache_size = args.getint(section, 'cache_size')
+        self.trained_snapshots = args.getboolean(section, 'trained_snapshots')
 
     def __str__(self):
         return str(self.__dict__)

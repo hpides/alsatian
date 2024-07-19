@@ -14,6 +14,7 @@ from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.abstract_execution_engine import ExecutionEngine
 from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep, ScoreModelStep
 from model_search.executionsteplogger import ExecutionStepLogger
+from model_search.model_management.model_store import match_keys
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.proxies.nn_proxy import linear_proxy
 
@@ -24,6 +25,9 @@ def load_model_state(state_dict_path):
 
 
 def load_state_dict_in_model(model, state_dict):
+    if next(iter(state_dict)).startswith("0.0"):
+        state_dict = match_keys(model.state_dict(), state_dict)
+
     model.load_state_dict(state_dict)
 
 

@@ -62,6 +62,28 @@ def get_model_store_save_path(base_model_store_save_path, architecture_name):
     return os.path.join(base_model_store_save_path, f'{architecture_name}-model-store')
 
 
+def get_trained_models_and_model_store(architecture_name, base_model_store_save_path):
+    model_store_save_path = get_model_store_save_path(base_model_store_save_path, architecture_name)
+    model_store_json_path = os.path.join(model_store_save_path, 'model_store.json')
+    model_store_dict = read_json_to_dict(model_store_json_path)
+    model_store = model_store_from_dict(model_store_dict)
+
+    if architecture_name == EFF_NET_V2_L:
+        # for this model we generated to many models (we want 36 as for the other so delete some models)
+        delete_ids = [
+            'eff_net_v2_l-6a0dd65fd91eb5702a40c09de2cf7252-jz4ypeil',
+            'eff_net_v2_l-a5aa9f15446c79f7ec5235ac540d6d37-qhpj19m3',
+            'eff_net_v2_l-eedd455100d51b24a26cc33befc8985b-2fre2up5',
+            'eff_net_v2_l-d62b74df8796107e97c5f4ab5d8c6dbe-c25o71ni',
+            'eff_net_v2_l-27bf5bc5912dea173661c48c3ec6b6ce-qx0mvbks',
+            'eff_net_v2_l-ecf10261a0eea7ed1375827c0d5d4227-0r19dy60',
+        ]
+        for _id in delete_ids:
+            del model_store.models[_id]
+
+    return list(model_store.models.values()), model_store
+
+
 if __name__ == '__main__':
     dataset_names = [IMAGE_WOOF, STANFORD_DOGS, STANFORD_CARS, CUB_BIRDS_200, FOOD_101]
     model_architectures = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]

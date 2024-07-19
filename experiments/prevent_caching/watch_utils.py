@@ -14,8 +14,7 @@ LIMIT_IO = 'limit_io'
 def clear_caches_and_check_io_limit():
     if LIMIT_IO in os.environ and os.environ[LIMIT_IO] == TRUE:
         # check if script for clearing the caches is active
-        assert active_file_up_to_date('/mount-fs', 10), \
-            "script to clear caches does not seem to be active (look into prevent_caching directory for info)"
+        assert active_file_up_to_date('/mount-fs',10), "script to clear caches does not seem to be active (look into prevent_caching directory for info)"
         # clear caches by writing file
         write_empty_file(os.path.join('/mount-fs', FLAG_FLUSH_CACHES))
         # in the worst case it takes 1 sec for the watch script on the host machine to realize
