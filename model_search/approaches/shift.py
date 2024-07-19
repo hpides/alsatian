@@ -20,15 +20,19 @@ from model_search.execution.planning.planner_config import PlannerConfig
 from model_search.execution.planning.shift_planner import ShiftExecutionPlanner
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 
+TOP_1_ACC = "top-1-acc"
 
-def get_sorted_model_scores(execution_steps):
+
+def get_sorted_model_scores(execution_steps, score_metric="top-1-acc"):
     scores = []
     for step in execution_steps:
         if isinstance(step, ScoreModelStep):
             for snapshot_id in step.scored_models:
-                scores.append([step.execution_result[SCORE], snapshot_id])
+                scores.append([step.execution_result[score_metric], snapshot_id])
 
-    return sorted(scores)
+    reverse = (score_metric == TOP_1_ACC)
+
+    return sorted(scores, reverse=reverse)
 
 
 def divide_snapshots(execution_steps):
@@ -36,7 +40,9 @@ def divide_snapshots(execution_steps):
     print(ranking)
     snapshot_ids = [s[1] for s in ranking]
     cut = len(ranking) // 2
-    return snapshot_ids[:cut], snapshot_ids[cut:]
+    keep = snapshot_ids[:cut]
+    prune = snapshot_ids[cut:]
+    return keep, prune
 
 
 def get_data_ranges(search_space_len, train_data_len) -> [int]:
@@ -66,7 +72,7 @@ def get_data_ranges(search_space_len, train_data_len) -> [int]:
     return ranges
 
 
-def prune_snapshots(model_snapshots, keep_snapshot_ids):
+def keep_snapshots(model_snapshots, keep_snapshot_ids):
     return [snap for snap in model_snapshots if snap.id in keep_snapshot_ids]
 
 
@@ -103,8 +109,8 @@ def _sh_iteration(data_range, exec_engine, first_iteration, model_snapshots, pla
     measurements[GEN_EXEC_PLAN] = measure
 
     measurements[EXEC_STEP_MEASUREMENTS] = exec_engine.execute_plan(execution_plan, benchmark_level=benchmark_level)
-    _, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
-    model_snapshots = prune_snapshots(model_snapshots, keep_snapshot_ids)
+    keep_snapshot_ids, prune_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
+    model_snapshots = keep_snapshots(model_snapshots, keep_snapshot_ids)
     ranking = get_sorted_model_scores(execution_plan.execution_steps)
 
     return measurements, (ranking, model_snapshots)

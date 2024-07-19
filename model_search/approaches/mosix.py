@@ -65,7 +65,7 @@ def _sh_iteration(train_data_range, len_test_data, exec_engine, first_iteration,
     measurements[GEN_EXEC_PLAN] = measure
 
     measurements[EXEC_STEP_MEASUREMENTS] = exec_engine.execute_plan(execution_plan, benchmark_level=benchmark_level)
-    pruned_snapshot_ids, keep_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
+    keep_snapshot_ids, pruned_snapshot_ids = divide_snapshots(execution_plan.execution_steps)
     mm_snapshot.prune_snapshots(pruned_snapshot_ids)
     ranking = get_sorted_model_scores(execution_plan.execution_steps)
 
