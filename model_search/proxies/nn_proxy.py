@@ -57,19 +57,18 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
     # eval model on test data
     model.eval()
     total_loss = 0.0
-    total_samples = 0
 
     features, labels = collect_features_and_labels(caching_service, device, test_feature_ids, test_label_ids)
 
+    loss_func = torch.nn.CrossEntropyLoss()
+
     for feature_batch, label_batch in zip(features, labels):
         outputs = model(feature_batch)
-        loss = torch.nn.CrossEntropyLoss()(outputs, label_batch)
+        loss = loss_func(outputs, label_batch)
 
-        batch_size = feature_batch.size(0)
-        total_loss += loss.item() * batch_size
-        total_samples += batch_size
+        total_loss += loss.item()
 
-    average_loss = total_loss / total_samples
+    average_loss = total_loss / len(features)
 
     print('done inference')
     return average_loss
