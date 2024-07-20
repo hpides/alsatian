@@ -1,4 +1,5 @@
 import os.path
+from statistics import median
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -155,21 +156,25 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
     # TODO so far we expect only 1 file
     assert len(files) == 1
 
-    # parse file
-    data = parse_json_file(files[0])
-    measurements = data[MEASUREMENTS]
+    collected_metrics = []
+    for file in files:
 
-    # actual extraction
-    metrics_of_interest = extract_metrics_of_interest(measurements, approach)
-    print(metrics_of_interest)
+        # parse file
+        data = parse_json_file(file)
+        measurements = data[MEASUREMENTS]
 
-    if not approach == BASELINE and not measure_type == "STEPS_DETAILS":
-        # check validity of data
-        # check diff between measured end to end time and the sum of the more detailed times
-        diff_end_to_end_vs_details = metrics_of_interest[END_TO_END] - metrics_of_interest[SUM_DETAILED_TIMES]
-        assert diff_end_to_end_vs_details > 0 and diff_end_to_end_vs_details < 2
+        # actual extraction
+        metrics_of_interest = extract_metrics_of_interest(measurements, approach)
+        collected_metrics.append(metrics_of_interest)
+        print(metrics_of_interest)
 
-    return metrics_of_interest
+        if not approach == BASELINE and not measure_type == "STEPS_DETAILS":
+            # check validity of data
+            # check diff between measured end to end time and the sum of the more detailed times
+            diff_end_to_end_vs_details = metrics_of_interest[END_TO_END] - metrics_of_interest[SUM_DETAILED_TIMES]
+            assert diff_end_to_end_vs_details > 0 and diff_end_to_end_vs_details < 2
+
+    return collected_metrics
 
 
 def regroup_and_rename_times(times):
@@ -200,16 +205,20 @@ def regroup_and_rename_times(times):
     return grouped_times
 
 
-def end_to_end_plot_times(root_dir, file_template, models, approaches, distribution, measure_type):
+def end_to_end_plot_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type):
     model_measurements = {}
     for model in models:
         model_measurements[model] = {}
         for approach in approaches:
-            config = [distribution, approach, model, measure_type]
+            config = [distribution, approach, model, data_items, measure_type]
             file_ids = [file_template.format(*config)]
 
             times = extract_times_of_interest(root_dir, file_ids, approach, measure_type)
-            model_measurements[model][approach] = times[END_TO_END]
+
+            # get median of end to end
+            end_to_end_times = [x[END_TO_END] for x in times]
+
+            model_measurements[model][approach] = median(end_to_end_times)
 
     return model_measurements
 
@@ -231,10 +240,11 @@ def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_l
     return model_measurements
 
 
-def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, measure_type, plot_save_path):
+def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
+                          plot_save_path):
     # Extracting the data
     data = end_to_end_plot_times(
-        data_root_dir, file_template, models, approaches, distribution, measure_type)
+        data_root_dir, file_template, models, approaches, distribution, data_items, measure_type)
     models = list(data.keys())
     methods = list(next(iter(data.values())).keys())
     # Number of models and methods
@@ -317,20 +327,17 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    # data_items = 4000
-    # distribution = "TWENTY_FIVE_PERCENT"
-    # approach = "mosix"
-    # model = "resnet18"
-    # granularity = "STEPS_DETAILS"
-    # file_template = f'des-gpu-imagenette-trained-snapshots-base-distribution-{distribution}-approach-{approach}-cache-CPU-snapshot-{model}-models-36-level-{granularity}'
-    file_template = 'des-gpu-imagenette-trained-snapshots-base-distribution-{}-approach-{}-cache-CPU-snapshot-{}-models-36-level-{}'
+    file_template = 'des-gpu-imagenette-trained-snapshots-base-distribution-{}-approach-{}-cache-CPU-snapshot-{}-models-36-items-{}-level-{}'
 
-    models = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
+    # models = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
+    models = [RESNET_18]
     approaches = ['baseline', 'shift', 'mosix']
     distribution = "TWENTY_FIVE_PERCENT"
     measure_type = 'EXECUTION_STEPS'
 
-    for data_items in [1000, 2000, 4000, 8000]:
-        root_dir = f'/Users/nils/Downloads/trained-snapshot-results/{data_items}'
+    # for data_items in [1000, 2000, 4000, 8000]:
+    for data_items in [1000, 2000]:
+        root_dir = "/Users/nils/Downloads/des-gpu-imagenette-trained-snapshots/"
         plot_save_path = f'./plots-trained-snapshots/{data_items}'
-        plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, measure_type, plot_save_path)
+        plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
+                              plot_save_path)

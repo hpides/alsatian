@@ -10,6 +10,7 @@ VIT_L_16 = 'vit_l_16'
 VIT_L_32 = 'vit_l_32'
 EFF_NET_V2_S = 'eff_net_v2_s'
 EFF_NET_V2_L = 'eff_net_v2_l'
+BERT = 'bert'
 
 RESNETS = [RESNET_152, RESNET_101, RESNET_50, RESNET_34, RESNET_18]
 EFF_NETS = [EFF_NET_V2_S, EFF_NET_V2_L]

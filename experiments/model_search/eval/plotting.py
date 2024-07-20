@@ -205,6 +205,8 @@ def regroup_and_rename_times(times):
 
 
 def end_to_end_plot_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type):
+    # TODO might be able to copy over from plot trained snapshots
+
     model_measurements = {}
     for model in models:
         model_measurements[model] = {}

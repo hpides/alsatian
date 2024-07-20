@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # torch.save(sd, './sd.pt')
 
     # Replace 'path_to_imdb' with the actual path to your IMDb dataset
-    imdb_path = './aclImdb/train'
+    imdb_path = '/Users/nils/Desktop/aclImdb-dummy/train'
     texts, labels = load_imdb_data(imdb_path)
 
     print(f'Number of texts: {len(texts)}')
@@ -79,21 +79,24 @@ if __name__ == '__main__':
             start_time = time.time()
             for batch in tqdm(loader, desc='Inference'):
                 input_ids, attention_mask, labels = batch
-                starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
-                starter.record()
+                print("input_ids: ", input_ids.shape)
+                print("attention_mask: ", attention_mask.shape)
+                print("labels: ", labels.shape)
+                # starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+                # starter.record()
                 input_ids = input_ids.to(device)
                 attention_mask = attention_mask.to(device)
 
                 start_time = time.time()
                 outputs = model(input_ids, attention_mask=attention_mask)
-                ender.record()
-                torch.cuda.synchronize()  # WAIT FOR GPU SYNC
-                elapsed = starter.elapsed_time(ender)
+                # ender.record()
+                # torch.cuda.synchronize()  # WAIT FOR GPU SYNC
+                # elapsed = starter.elapsed_time(ender)
                 end_time = time.time()
 
                 batch_count += 1
                 inference_times.append(end_time - start_time)
-                inference_cuda_times.append(elapsed * 10**-3)
+                # inference_cuda_times.append(elapsed * 10**-3)
 
                 if batch_count == num_batches:
                     break
