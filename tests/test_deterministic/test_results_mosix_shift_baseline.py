@@ -85,5 +85,5 @@ class TestDeterministicOutput(unittest.TestCase):
         base_ids = ranking_ids(self.baseline_out)
 
         self.assertEqual(mosix_ids, shift_ids)
-        self.assertEqual(mosix_ids, base_ids[-2:])
-        self.assertEqual(shift_ids, base_ids[-2:])
+        self.assertEqual(mosix_ids, base_ids[:2])
+        self.assertEqual(shift_ids, base_ids[:2])

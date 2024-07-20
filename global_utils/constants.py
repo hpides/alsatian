@@ -1,3 +1,4 @@
+MODEL_RANKING = "model_ranking"
 EXEC_STEP_MEASUREMENTS = 'exec_step_measurements'
 GEN_EXEC_PLAN = 'gen_exec_plan'
 RANK_ITERATION_DETAILS_ = 'sh_rank_iteration_details_'
@@ -44,3 +45,4 @@ TRAIN = 'train'
 TEST = 'test'
 
 SCORE = 'score'
+

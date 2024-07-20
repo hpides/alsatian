@@ -2,7 +2,7 @@ import torch
 
 from experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.benchmark_util import Benchmarker
-from global_utils.constants import EXEC_STEP_MEASUREMENTS, GEN_EXEC_PLAN
+from global_utils.constants import EXEC_STEP_MEASUREMENTS, GEN_EXEC_PLAN, MODEL_RANKING
 from global_utils.global_constants import TRAIN
 from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.approaches.shift import get_sorted_model_scores
@@ -30,6 +30,7 @@ def find_best_model(model_snapshots: [ModelSnapshot], planner_config, caching_pa
     measurements[EXEC_STEP_MEASUREMENTS] = exec_engine.execute_plan(execution_plan, benchmark_level=benchmark_level)
 
     ranking = get_sorted_model_scores(execution_plan.execution_steps)
+    measurements[f'{MODEL_RANKING}'] = ranking
 
     return measurements, ranking
 

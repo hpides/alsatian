@@ -1,0 +1,2 @@
+- no prep needed just download form
+  - https://github.com/fastai/imagenette#imagewoof

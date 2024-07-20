@@ -1,0 +1,4 @@
+- download from here
+  - https://data.caltech.edu/records/65de6-vp158
+- use short python script to transform data for Pytorch ImageFolder
+  - [prepare_data.py](prepare_data.py)

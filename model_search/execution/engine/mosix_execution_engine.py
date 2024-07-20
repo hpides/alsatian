@@ -175,7 +175,7 @@ class MosixExecutionEngine(BaselineExecutionEngine):
             linear_proxy, train_loader, test_loader, exex_step.num_classes, device=torch.device(CUDA)
         )
         self.logger.log_value(CALC_PROXY_SCORE, measurement)
-        exex_step.execution_result = {'score': score}
+        exex_step.execution_result = {'loss': score[0], 'top-1-acc': score[1]}
         exex_step.execution_logs = self.logger
 
     def _get_proxy_data_loader(self, cache_prefixes, dataset_type=None):
