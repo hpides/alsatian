@@ -53,7 +53,7 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
 
                                 file_id = (f"{new_base_file_id}-distribution-{distribution}-approach-{approach}"
                                            f"-cache-{cache_location}-snapshot-{snapshot_set}"
-                                           f"-models-{num_models}-level-{bench_level}")
+                                           f"-models-{num_models}-items-{train_items + test_items}-level-{bench_level}")
 
                                 print("RUN:", file_id)
 
@@ -105,13 +105,20 @@ if __name__ == "__main__":
 
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
+    # run once for detailed numbers
     eval_space = {
         DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
         APPROACHES: ["mosix", "shift", "baseline"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
         NUMS_MODELS: [36], # one extra model being the pretrained model with no adjustments
-        BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"],
+        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+
+    # run 3 times for median numbers
+    for i in range(3):
+        eval_space[BENCHMARK_LEVELS] = ["EXECUTION_STEPS"]
+        run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+

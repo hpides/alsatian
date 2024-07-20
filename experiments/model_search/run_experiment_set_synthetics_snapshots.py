@@ -49,7 +49,7 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
 
                                 file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
                                            f"-cache-{cache_location}-snapshot-{snapshot_set}"
-                                           f"-models-{num_models}-data-items-{train_items + test_items}-level-{bench_level}")
+                                           f"-models-{num_models}-items-{train_items + test_items}-level-{bench_level}")
 
                                 print("RUN:", file_id)
 
