@@ -4,15 +4,16 @@ import pathlib
 import torch
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder, create_sub_dataset
+from data.imdb.reduced_imdb import get_reduced_imbdb_bert_base_uncased_datasets
 from experiments.model_search.experiment_args import ExpArgs
 from experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
-from experiments.snapshots.synthetic.generate import TWENTY_FIVE_PERCENT, RetrainDistribution
+from experiments.snapshots.synthetic.generate import RetrainDistribution
 from experiments.snapshots.synthetic.generate_sets.generate_set import get_architecture_models
 from experiments.snapshots.synthetic.generate_sets.twenty_resnet_152 import twenty_resnet_152_snapshots
 from experiments.snapshots.trained.build_trained_model_store import get_trained_models_and_model_store
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import TRAIN, TEST, END_TO_END, DETAILED_TIMES
-from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32
+from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32, BERT
 from model_search.approaches import baseline, mosix, shift
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.planning.planner_config import PlannerConfig
@@ -27,10 +28,8 @@ def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path,
         return twenty_resnet_152_snapshots(snapshot_save_path)
     elif trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
         return get_trained_models_and_model_store(snapshot_set_string, base_save_path)
-    elif snapshot_set_string in VISION_MODEL_CHOICES and not trained_snapshots:
+    elif snapshot_set_string in VISION_MODEL_CHOICES +  [BERT] and not trained_snapshots:
         return get_architecture_models(base_save_path, distribution, num_models, [snapshot_set_string])
-
-
     else:
         # TODO sets are already implemented, just need to add the right strings and a parameter for the number of models
         raise NotImplementedError
@@ -62,11 +61,20 @@ def run_model_search(exp_args: ExpArgs):
     cache_size = exp_args.cache_size
 
     # prepare datasets
-    dataset_paths = _prepare_datasets(exp_args)
-    dataset_class = DatasetClass.CUSTOM_IMAGE_FOLDER
-    train_data = CustomImageFolder(dataset_paths[TRAIN])
+    if "Imdb" in exp_args.train_data:
+        dataset_class = DatasetClass.IMDB
+        train_data, test_data = get_reduced_imbdb_bert_base_uncased_datasets(
+            exp_args.train_data.replace("train", ""), exp_args.num_train_items, exp_args.num_test_items)
+        # TODO this is a bit hacky but should work for now
+        dataset_paths = {TRAIN: exp_args.train_data + f"##{exp_args.num_train_items}" + f"##{exp_args.num_test_items}",
+                         TEST: exp_args.test_data + f"##{exp_args.num_train_items}" + f"##{exp_args.num_test_items}"}
+    else:
+        dataset_paths = _prepare_datasets(exp_args)
+        dataset_class = DatasetClass.CUSTOM_IMAGE_FOLDER
+        train_data = CustomImageFolder(dataset_paths[TRAIN])
+        test_data = CustomImageFolder(dataset_paths[TEST])
+
     len_train_data = len(train_data)
-    test_data = CustomImageFolder(dataset_paths[TEST])
     len_test_data = len(test_data)
 
     model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
