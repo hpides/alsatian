@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from transformers import BertModel, BertTokenizer, BertForSequenceClassification
-
+from torchinfo import summary
 
 class BertEmbeddings(nn.Module):
     def __init__(self, original_model):
@@ -58,11 +58,16 @@ if __name__ == '__main__':
     original_model = BertModel.from_pretrained(model_name)
     seq_bert_model = get_sequential_bert_model()
 
+    sd = seq_bert_model.state_dict()
+    torch.save(sd, "./test-sd.pt")
+
     text = "Hello, how are you?"
     tokenizer = BertTokenizer.from_pretrained(model_name)
     inputs = tokenizer(text, return_tensors='pt')
     input_ids = inputs['input_ids']
     attention_mask = inputs['attention_mask']
+
+    summary(original_model, input_data=input_ids)
 
     original_model.eval()
     seq_bert_model.eval()
