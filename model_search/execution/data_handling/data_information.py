@@ -6,6 +6,7 @@ from typing import Callable, Optional
 class DatasetClass(Enum):
     CUSTOM_IMAGE_FOLDER = 1
     CACHED_FEATURES = 2
+    IMDB = 3
 
 
 class DataInfo(ABC):

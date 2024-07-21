@@ -371,7 +371,7 @@ SPLIT_INDEXES = {
     ],
     BERT: [
         14,  # last linear layer if there is one
-        13,  # poller
+        13,  # pooler
         12,  # last encoder block
         11,
         10,
