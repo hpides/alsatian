@@ -18,3 +18,4 @@ __pycache__
 /data/imagenette-dummy/
 /experiments/prevent_caching/active-*
 /experiments/model_search/results/dummy/
+/data/imdb/data/
