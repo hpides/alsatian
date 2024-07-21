@@ -153,8 +153,7 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
     for file_id in file_ids:
         # find file
         files += extract_files_by_name(root_dir, [file_id])
-    # TODO so far we expect only 1 file
-    assert len(files) == 1
+    assert len(files) >= 2
 
     collected_metrics = []
     for file in files:
@@ -329,14 +328,12 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 if __name__ == '__main__':
     file_template = 'des-gpu-imagenette-trained-snapshots-base-distribution-{}-approach-{}-cache-CPU-snapshot-{}-models-36-items-{}-level-{}'
 
-    # models = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
-    models = [RESNET_18]
+    models = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
     approaches = ['baseline', 'shift', 'mosix']
     distribution = "TWENTY_FIVE_PERCENT"
     measure_type = 'EXECUTION_STEPS'
 
-    # for data_items in [1000, 2000, 4000, 8000]:
-    for data_items in [1000, 2000]:
+    for data_items in [1000, 2000, 4000, 8000]:
         root_dir = "/Users/nils/Downloads/des-gpu-imagenette-trained-snapshots/"
         plot_save_path = f'./plots-trained-snapshots/{data_items}'
         plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
