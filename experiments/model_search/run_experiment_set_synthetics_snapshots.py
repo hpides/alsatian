@@ -104,10 +104,12 @@ if __name__ == "__main__":
 
     # run once to for detailed numbers
     eval_space = {
-        DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT],
+        # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
+        DISTRIBUTIONS: [FIFTY_PERCENT],
         APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
+        # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L],
         NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
