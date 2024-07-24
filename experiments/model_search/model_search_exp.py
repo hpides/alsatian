@@ -61,7 +61,7 @@ def run_model_search(exp_args: ExpArgs):
     cache_size = exp_args.cache_size
 
     # prepare datasets
-    if "Imdb" in exp_args.train_data:
+    if "imdb" in exp_args.train_data.lower():
         dataset_class = DatasetClass.IMDB
         train_data, test_data = get_reduced_imbdb_bert_base_uncased_datasets(
             exp_args.train_data.replace("train", ""), exp_args.num_train_items, exp_args.num_test_items)

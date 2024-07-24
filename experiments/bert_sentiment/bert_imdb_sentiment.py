@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # torch.save(sd, './sd.pt')
 
     # Replace 'path_to_imdb' with the actual path to your IMDb dataset
-    imdb_path = '/Users/nils/Desktop/aclImdb-dummy/train'
+    imdb_path = '/tmp/pycharm_project_924/experiments/bert_sentiment/imdb_dummy_data'
     texts, labels = load_imdb_data(imdb_path)
 
     print(f'Number of texts: {len(texts)}')
