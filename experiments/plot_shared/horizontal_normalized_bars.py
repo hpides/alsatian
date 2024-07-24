@@ -5,6 +5,16 @@ from matplotlib.ticker import FixedLocator
 
 
 def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=None, file_name=None):
+    FONT_SIZE = 18
+    plt.rcParams.update({
+        'font.size': FONT_SIZE,  # General font size
+        'axes.titlesize': FONT_SIZE,  # Title font size
+        'axes.labelsize': FONT_SIZE,  # X and Y label font size
+        'xtick.labelsize': FONT_SIZE,  # X tick labels font size
+        'ytick.labelsize': FONT_SIZE,  # Y tick labels font size
+        'legend.fontsize': FONT_SIZE,  # Legend font size
+    })
+
     data = normalize_to_percent(data)
 
     models = list(data.keys())
@@ -17,19 +27,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
 
     fig, ax = plt.subplots(figsize=(8, num_models / 2))
 
-    # Specify non-transparent colors
-    colors = [
-        (0.12156863, 0.46666667, 0.70588235),  # Blue
-        (1.0, 0.49803922, 0.05490196),  # Orange
-        (0.17254902, 0.62745098, 0.17254902),  # Green
-        (0.83921569, 0.15294118, 0.15686275),  # Red
-        (0.58039216, 0.40392157, 0.74117647),  # Purple
-        (0.54901961, 0.3372549, 0.29411765),  # Brown
-        (0.89019608, 0.46666667, 0.76078431),  # Pink
-        (0.49803922, 0.49803922, 0.49803922),  # Gray
-        (0.7372549, 0.74117647, 0.13333333),  # Yellow
-        (0.09019608, 0.74509804, 0.81176471)  # Cyan
-    ]
+    colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
 
     # Plotting stacked horizontal bars for each model
     for i, (model, task_times) in enumerate(data.items()):
@@ -43,23 +41,17 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
             left += time
 
     ax.set_yticks(range(num_models))
-    ax.set_yticklabels(models, fontsize='large')
+    ax.set_yticklabels(models)
     ax.xaxis.set_major_locator(FixedLocator(range(0, 101, 20)))
-    ax.set_xticklabels([f"{i}%" for i in range(0, 101, 20)], fontsize='large')
+    ax.set_xticklabels([f"{i}%" for i in range(0, 101, 20)])
     ax.set_xlim(0, 100)  # Set x-axis limit to ensure it ends at 100%
-    ax.set_xlabel('Percentage', fontsize='large')
-    ax.set_ylabel('Model', fontsize='large')
-    ax.set_title(title, fontsize='large')
+    ax.set_xlabel('Time distribution in percent')
+    # ax.set_ylabel('Model', fontsize='large')
+    ax.set_title(title)
 
     # Create a custom legend
     handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
-    if num_models == 12:
-        magic = 1.15
-    elif num_models == 4:
-        magic = 1.5
-    else:
-        magic = 1.2
-    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.5, magic), ncol=4, fontsize='large')
+    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.38, 1.5), ncol=4)
 
     plt.grid(axis='x')
 
