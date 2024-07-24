@@ -7,7 +7,14 @@ from experiments.plot_shared.plotting_util import plot_stacked_bar_chart
 from global_utils.constants import STATE_DICT_SIZE, LOAD_DATA, DATA_TO_DEVICE, INFERENCE, MODEL_TO_DEVICE, \
     CALC_PROXY_SCORE, STATE_TO_MODEL, LOAD_STATE_DICT
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L
+from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L
+
+MODEL_NAME_MAPPING = {
+    RESNET_18: "ResNet-18",
+    RESNET_152: "ResNet-152",
+    VIT_L_32: "ViT-L-32",
+    EFF_NET_V2_L: "EfficientNetV2-L"
+}
 
 
 def extract_and_filter(file, disk_speed):
@@ -28,12 +35,32 @@ def extract_and_filter(file, disk_speed):
     return result
 
 
+def group_times(agg_data):
+    result = {}
+    result['prepare model'] = agg_data['load_state_dict'] + agg_data['model_to_device'] + agg_data[
+        'load_state_to_model']
+    result['prepare data'] = agg_data['load_data'] + agg_data['data_to_device']
+    result['inference'] = agg_data['inference']
+    result['proxy score'] = agg_data['calc_proxy_score']
+
+    return result
+
+
 def get_aggregated_data(root_dir, file_id, agg_func, disk_speed, expected_files=5):
     files = extract_files_by_name(root_dir, [file_id])
     assert len(files) == 5, file_id
     extracted_data = [extract_and_filter(f, disk_speed) for f in files]
     agg_data = aggregate_measurements(extracted_data, agg_func)
-    return agg_data
+    grouped_times = group_times(agg_data)
+    return grouped_times
+
+
+def rename_model_names(data):
+    result = {}
+    for k, v in data.items():
+        new_key = MODEL_NAME_MAPPING[k]
+        result[new_key] = v
+    return result
 
 
 def plot_time_dist(root_dir, file_template, model_names, disk_speed, file_name_prefix=""):
@@ -54,19 +81,19 @@ def plot_time_dist(root_dir, file_template, model_names, disk_speed, file_name_p
                     ignore = []
                     file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'.replace('.',
                                                                                                                    '')
-                    plot_horizontal_normalized_bar_chart(data, save_path='./plots', file_name=f'{file_name_prefix}normalized-{file_name}',
+                    data = rename_model_names(data)
+
+                    plot_horizontal_normalized_bar_chart(data, save_path='./plots',
+                                                         file_name=f'{file_name_prefix}normalized-{file_name}',
                                                          ignore=ignore)
-                    plot_stacked_bar_chart(data, save_path='./plots', file_name=f'{file_name_prefix}stacked-{file_name}')
+                    plot_stacked_bar_chart(data, save_path='./plots',
+                                           file_name=f'{file_name_prefix}stacked-{file_name}')
 
 
 if __name__ == '__main__':
     root_dir = '/Users/nils/Downloads/bottleneck-analysis'
     file_template = 'bottleneck_analysis-model-{}-items-{}-split-{}-dataset_type-{}'
     disk_speed = 200  # in MB/s
-
-    model_names = VISION_MODEL_CHOICES.copy()
+    model_names = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
 
     plot_time_dist(root_dir, file_template, model_names, disk_speed)
-
-    model_names = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
-    plot_time_dist(root_dir, file_template, model_names, disk_speed, 'PART-')
