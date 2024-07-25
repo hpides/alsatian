@@ -108,7 +108,7 @@ if __name__ == "__main__":
     # run once for detailed numbers
     eval_space = {
         DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
-        APPROACHES: ["mosix", "shift", "baseline"],
+        APPROACHES: ["mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
         SNAPSHOT_SET_STRINGS: [RESNET_18],
