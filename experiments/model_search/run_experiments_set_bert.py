@@ -108,9 +108,9 @@ if __name__ == "__main__":
         APPROACHES: ["mosix", "shift", "baseline"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [BERT],
-        NUMS_MODELS: [3],
+        NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
-        DATA_ITEMS: [(20, 10), (800, 200), (1600, 400), (3200, 800), (6400, 1600)]
+        DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
 
