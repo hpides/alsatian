@@ -8,7 +8,7 @@ python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=synsthetic-snapshot-median-run
 repo_name=model-search-paper
 config_file=experiments/model_search/config.ini
-config_section=des-gpu-imagenette-trained-snapshots-base
+config_section=des-gpu-imagenette-trained-snapshots-base-woof
 
 
 # Function to read the access token from file
