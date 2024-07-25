@@ -105,7 +105,7 @@ if __name__ == "__main__":
     # run once to for detailed numbers
     eval_space = {
         DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
-        APPROACHES: ["mosix", "shift", "baseline"],
+        APPROACHES: ["baseline", "mosix", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [BERT],
         NUMS_MODELS: [35],
