@@ -111,7 +111,8 @@ if __name__ == "__main__":
         # APPROACHES: ["baseline", "shift", "mosix"],
         APPROACHES: ["mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
+        # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
+        SNAPSHOT_SET_STRINGS: [VIT_L_32, RESNET_18, RESNET_152],
         NUMS_MODELS: [36], # one extra model being the pretrained model with no adjustments
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
