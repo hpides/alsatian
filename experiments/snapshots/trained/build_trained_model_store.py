@@ -87,7 +87,7 @@ def get_trained_models_and_model_store(architecture_name, base_model_store_save_
 if __name__ == '__main__':
     dataset_names = [IMAGE_WOOF, STANFORD_DOGS, STANFORD_CARS, CUB_BIRDS_200, FOOD_101]
     model_architectures = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
-    snapshot_base_path = "/mount-fs/trained-snapshots"
+    snapshot_base_path = "/mount-ssd/snapshot-dir"
     base_model_store_save_path = "/mount-fs/trained-snapshots/modelstore_savepath"
     epochs_trained = 20
 
@@ -103,6 +103,8 @@ if __name__ == '__main__':
         # next to the trained snapshots also add a snapshot that is the on form PyTorch pretrained on ImageNet
         pre_model = initialize_model(architecture_name, pretrained=True, sequential_model=True, features_only=True)
         state_dict = pre_model.state_dict()
+        for k, v in state_dict.items():
+            state_dict[k] = v.to("cpu")
         sd_save_path = os.path.join(model_store_save_path, 'imagenet_model.pth')
         torch.save(state_dict, sd_save_path)
         sd_hash = state_dict_hash(state_dict)
