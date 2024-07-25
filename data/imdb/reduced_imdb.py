@@ -1,18 +1,48 @@
 import os
 import random
+import shutil
+from typing import Tuple
 
 import torch
+from torch import Tensor
 from torch.utils.data import TensorDataset
 from tqdm import tqdm
 from transformers import BertTokenizer
 
-TEST_LABELS_PT = "test_labels.pt"
+LABELS_PT = "labels.pt"
 
-TRAIN_LABELS_PT = "train_labels.pt"
+ENCODINGS_PT = "train_encodings.pt"
 
-TEST_ENCODINGS_PT = "test_encodings.pt"
 
-TRAIN_ENCODINGS_PT = "train_encodings.pt"
+class CustomTensorDataset(TensorDataset):
+    """
+    This extends the standard PyTorch TensorDataset by adding the option to artificially size the dataset
+    """
+    tensors: Tuple[Tensor, ...]
+
+    def __init__(self, *tensors: Tensor) -> None:
+        super().__init__(*tensors)
+        indices = torch.randperm(tensors[0].shape[0])
+        shuffled_tensors = []
+        for tensor in self.tensors:
+            shuffled = tensor[indices]
+            shuffled_tensors.append(shuffled)
+
+        self.all_tensors = tuple(shuffled_tensors)
+
+    def set_subrange(self, from_index, to_index):
+        new_tensors = []
+        for tensor in self.tensors:
+            partial_tensor = tensor[from_index:to_index]
+            new_tensors.append(partial_tensor)
+
+        self.tensors = tuple(new_tensors)
+
+    def __getitem__(self, index):
+        return tuple(tensor[index] for tensor in self.tensors)
+
+    def __len__(self):
+        return self.tensors[0].size(0)
 
 
 def load_imdb_data(path):
@@ -34,50 +64,48 @@ def load_imdb_data(path):
     return texts, labels
 
 
-def get_reduced_imbdb_bert_base_uncased_datasets(root_data_path, train_samples, test_samples):
-    base_path = os.path.join(root_data_path, f"bert-base-uncased-{train_samples}-{test_samples}")
+def create_sub_dataset(dataset_path: str, size: int):
+    new_dataset_base_path = dataset_path + f'-{size}'
+    if not os.path.exists(new_dataset_base_path):
+        items_per_class = int(size / 2)
+        for label in ['pos', 'neg']:
+            files_paths = []
+            label_path = os.path.join(dataset_path, label)
+            print(f'Checking directory: {label_path}')
+            if os.path.exists(label_path):
+                for filename in tqdm(os.listdir(label_path), desc=f'Loading {label} reviews'):
+                    files_paths.append(os.path.join(label_path, filename))
+            sampled_files = random.sample(files_paths, items_per_class)
+
+            dst_path = os.path.join(new_dataset_base_path, label)
+            os.makedirs(dst_path)
+            for file in sampled_files:
+                shutil.copy2(file, dst_path)
+
+    return new_dataset_base_path
+
+
+def get_imbdb_bert_base_uncased_datasets(data_path):
+    base_path = os.path.join(data_path, f"bert-base-uncased-cached")
 
     if not os.path.isdir(base_path):
-        train_texts, train_labels = load_imdb_data(os.path.join(root_data_path, "train"))
-        test_texts, test_labels = load_imdb_data(os.path.join(root_data_path, "test"))
-
-        num_train_samples = len(train_texts)
-        num_test_samples = len(test_texts)
-
-        assert num_train_samples >= train_samples
-        assert num_test_samples >= test_samples
-
-        train_indices = random.sample(range(num_train_samples), train_samples)
-        test_indices = random.sample(range(num_test_samples), test_samples)
-
-        reduced_texts_train, reduced_labels_train = _reduced_data(train_indices, train_texts, train_labels)
-        reduced_texts_test, reduced_labels_test = _reduced_data(test_indices, test_texts, test_labels)
+        texts, labels = load_imdb_data(data_path)
 
         tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
         # Tokenize and encode the dataset
-        train_encodings, train_labels = _get_encodings_and_labels(tokenizer, reduced_texts_train, reduced_labels_train)
-        test_encodings, test_labels = _get_encodings_and_labels(tokenizer, reduced_texts_test, reduced_labels_test)
+        encodings, labels = _get_encodings_and_labels(tokenizer, texts, labels)
 
         # save data for future reuse
         os.makedirs(base_path)
-        torch.save(train_encodings, os.path.join(base_path, TRAIN_ENCODINGS_PT))
-        torch.save(test_encodings, os.path.join(base_path, TEST_ENCODINGS_PT))
-        torch.save(train_labels, os.path.join(base_path, TRAIN_LABELS_PT))
-        torch.save(test_labels, os.path.join(base_path, TEST_LABELS_PT))
+        torch.save(encodings, os.path.join(base_path, ENCODINGS_PT))
+        torch.save(labels, os.path.join(base_path, LABELS_PT))
 
     else:
-        train_encodings = torch.load(os.path.join(base_path, TRAIN_ENCODINGS_PT))
-        test_encodings = torch.load(os.path.join(base_path, TEST_ENCODINGS_PT))
-        train_labels = torch.load(os.path.join(base_path, TRAIN_LABELS_PT))
-        test_labels = torch.load(os.path.join(base_path, TEST_LABELS_PT))
+        encodings = torch.load(os.path.join(base_path, ENCODINGS_PT))
+        labels = torch.load(os.path.join(base_path, LABELS_PT))
 
-    # Create DataLoader object
-    train_dataset = TensorDataset(train_encodings['input_ids'], train_encodings['attention_mask'], train_labels)
-
-    test_dataset = TensorDataset(test_encodings['input_ids'], test_encodings['attention_mask'], test_labels)
-
-    return train_dataset, test_dataset
+    return CustomTensorDataset(encodings['input_ids'], encodings['attention_mask'], labels)
 
 
 def _get_encodings_and_labels(tokenizer, texts, labels):
@@ -95,6 +123,7 @@ def _reduced_data(indices, texts, labels):
 
 
 if __name__ == '__main__':
-    train_data, test_data = get_reduced_imbdb_bert_base_uncased_datasets("./data/aclImdb/", 10, 5)
+    create_sub_dataset(
+        "/Users/nils/uni/programming/model-search-paper/experiments/bert_sentiment/imdb_dummy_data/train", 3)
 
     print("test")

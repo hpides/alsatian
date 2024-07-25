@@ -3,8 +3,10 @@ import pathlib
 
 import torch
 
-from custom.data_loaders.custom_image_folder import CustomImageFolder, create_sub_dataset
-from data.imdb.reduced_imdb import get_reduced_imbdb_bert_base_uncased_datasets
+from custom.data_loaders import custom_image_folder
+from custom.data_loaders.custom_image_folder import CustomImageFolder
+from data.imdb import reduced_imdb
+from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
 from experiments.model_search.experiment_args import ExpArgs
 from experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
 from experiments.snapshots.synthetic.generate import RetrainDistribution
@@ -28,21 +30,20 @@ def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path,
         return twenty_resnet_152_snapshots(snapshot_save_path)
     elif trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
         return get_trained_models_and_model_store(snapshot_set_string, base_save_path)
-    elif snapshot_set_string in VISION_MODEL_CHOICES +  [BERT] and not trained_snapshots:
+    elif snapshot_set_string in VISION_MODEL_CHOICES + [BERT] and not trained_snapshots:
         return get_architecture_models(base_save_path, distribution, num_models, [snapshot_set_string])
     else:
-        # TODO sets are already implemented, just need to add the right strings and a parameter for the number of models
         raise NotImplementedError
 
 
-def _prepare_datasets(exp_args):
+def _prepare_datasets(exp_args, create_sub_dataset_func):
     train_data_path = exp_args.train_data
     if exp_args.num_train_items > 0:
-        train_data_path = create_sub_dataset(exp_args.train_data, exp_args.num_train_items)
+        train_data_path = create_sub_dataset_func(exp_args.train_data, exp_args.num_train_items)
 
     test_data_path = exp_args.test_data
     if exp_args.num_test_items > 0:
-        test_data_path = create_sub_dataset(exp_args.test_data, exp_args.num_test_items)
+        test_data_path = create_sub_dataset_func(exp_args.test_data, exp_args.num_test_items)
 
     dataset_paths = {
         TRAIN: train_data_path,
@@ -62,14 +63,12 @@ def run_model_search(exp_args: ExpArgs):
 
     # prepare datasets
     if "imdb" in exp_args.train_data.lower():
+        dataset_paths = _prepare_datasets(exp_args, reduced_imdb.create_sub_dataset)
         dataset_class = DatasetClass.IMDB
-        train_data, test_data = get_reduced_imbdb_bert_base_uncased_datasets(
-            exp_args.train_data.replace("train", ""), exp_args.num_train_items, exp_args.num_test_items)
-        # TODO this is a bit hacky but should work for now
-        dataset_paths = {TRAIN: exp_args.train_data + f"##{exp_args.num_train_items}" + f"##{exp_args.num_test_items}",
-                         TEST: exp_args.test_data + f"##{exp_args.num_train_items}" + f"##{exp_args.num_test_items}"}
+        train_data = get_imbdb_bert_base_uncased_datasets(dataset_paths[TRAIN])
+        test_data = get_imbdb_bert_base_uncased_datasets(dataset_paths[TEST])
     else:
-        dataset_paths = _prepare_datasets(exp_args)
+        dataset_paths = _prepare_datasets(exp_args, custom_image_folder.create_sub_dataset)
         dataset_class = DatasetClass.CUSTOM_IMAGE_FOLDER
         train_data = CustomImageFolder(dataset_paths[TRAIN])
         test_data = CustomImageFolder(dataset_paths[TEST])

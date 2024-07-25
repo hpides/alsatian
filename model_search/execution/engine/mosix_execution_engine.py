@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 
 from custom.data_loaders.cache_service_dataset import CacheServiceDataset
 from custom.data_loaders.custom_image_folder import CustomImageFolder
+from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
 from global_utils.constants import LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, LABEL, MODEL_TO_DEVICE, \
     CUDA, CALC_PROXY_SCORE, TRAIN, TEST, GET_COMPOSED_MODEL
 from global_utils.deterministic import check_deterministic_env_var_set
@@ -45,7 +46,7 @@ class MosixExecutionEngine(BaselineExecutionEngine):
 
     def execute_mosix_extract_features_step(self, exec_step: MosixExtractFeaturesStep):
         # if we process zero data -> skip step
-        if not exec_step.data_range == [0,0]:
+        if not exec_step.data_range == [0, 0]:
             partial_model = self._init_model(exec_step)
             data, data_loader = self._get_data_loader(exec_step)
             self._extract_features_part_model(partial_model, data, data_loader, exec_step)
@@ -69,7 +70,10 @@ class MosixExecutionEngine(BaselineExecutionEngine):
         for i, (batch) in enumerate(data_loader):
 
             if exec_step.extract_labels:
-                inputs, labels = batch
+                if len(batch) == 3:
+                    inputs, labels = batch[:-1], batch[-1]
+                else:
+                    inputs, labels = batch
             else:
                 inputs = batch
 
@@ -128,10 +132,16 @@ class MosixExecutionEngine(BaselineExecutionEngine):
         return prefix
 
     def _get_data_loader(self, exec_step: MosixExtractFeaturesStep):
-        if (isinstance(exec_step.data_info, DatasetInformation)
-                and exec_step.data_info.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER):
-            data = CustomImageFolder(exec_step.data_info.dataset_path, exec_step.data_info.transform)
-            # init data loader
+        if isinstance(exec_step.data_info, DatasetInformation):
+            if exec_step.data_info.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
+                data = CustomImageFolder(exec_step.data_info.dataset_path, exec_step.data_info.transform)
+
+            elif exec_step.data_info.data_set_class == DatasetClass.IMDB:
+                data = get_imbdb_bert_base_uncased_datasets(exec_step.data_info.dataset_path)
+
+            else:
+                raise NotImplementedError
+
             data_loader = torch.utils.data.DataLoader(
                 data, batch_size=exec_step.data_info.batch_size, shuffle=False,
                 num_workers=exec_step.data_info.num_workers

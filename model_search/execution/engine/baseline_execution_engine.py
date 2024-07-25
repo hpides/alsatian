@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from custom.data_loaders.cache_service_dataset import CacheServiceDataset
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.models.init_models import initialize_model
-from data.imdb.reduced_imdb import get_reduced_imbdb_bert_base_uncased_datasets
+from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
 from global_utils.constants import LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, MODEL_TO_DEVICE, CUDA, INPUT, LABEL, \
     LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, CALC_PROXY_SCORE
 from global_utils.deterministic import check_deterministic_env_var_set
@@ -104,19 +104,8 @@ class BaselineExecutionEngine(ExecutionEngine):
         if exec_step.inp_data.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
             data = CustomImageFolder(exec_step.inp_data.dataset_path, exec_step.inp_data.transform)
         elif exec_step.inp_data.data_set_class == DatasetClass.IMDB:
-            path_components = exec_step.inp_data.dataset_path.split("##")
-            base_path = path_components[0]
-            num_train_items = int(path_components[1])
-            num_test_items = int(path_components[2])
+            data = get_imbdb_bert_base_uncased_datasets(exec_step.inp_data.dataset_path)
 
-            if "train" in base_path:
-                base_path = base_path.replace("train", "")
-                data, _ = get_reduced_imbdb_bert_base_uncased_datasets(
-                    base_path, num_train_items, num_test_items)
-            elif "test" in base_path:
-                base_path = base_path.replace("test", "")
-                _, data = get_reduced_imbdb_bert_base_uncased_datasets(
-                    base_path, num_train_items, num_test_items)
         else:
             raise NotImplementedError
 
