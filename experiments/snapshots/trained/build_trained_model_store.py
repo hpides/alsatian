@@ -71,12 +71,12 @@ def get_trained_models_and_model_store(architecture_name, base_model_store_save_
     if architecture_name == EFF_NET_V2_L:
         # for this model we generated to many models (we want 36 as for the other so delete some models)
         delete_ids = [
-            'eff_net_v2_l-6a0dd65fd91eb5702a40c09de2cf7252-jz4ypeil',
-            'eff_net_v2_l-a5aa9f15446c79f7ec5235ac540d6d37-qhpj19m3',
-            'eff_net_v2_l-eedd455100d51b24a26cc33befc8985b-2fre2up5',
-            'eff_net_v2_l-d62b74df8796107e97c5f4ab5d8c6dbe-c25o71ni',
-            'eff_net_v2_l-27bf5bc5912dea173661c48c3ec6b6ce-qx0mvbks',
-            'eff_net_v2_l-ecf10261a0eea7ed1375827c0d5d4227-0r19dy60',
+            'eff_net_v2_l-e92a66bafef812a6afdac7f307dbf1ac-hkvbys8h',
+            'eff_net_v2_l-4b2637f71e89ed721040184ea414df7a-ptekjjj3',
+            'eff_net_v2_l-50416073c122743ddd2fdf13f977bbc0-78ywe5bo',
+            'eff_net_v2_l-80e2c11d7856ebbeae16b83d6d820a2f-2dh8qxge',
+            'eff_net_v2_l-5a12f02a9bd5c88dd6a7be8274372d41-rpkyd784',
+            'eff_net_v2_l-5fc92fc4db6d3374a468ef4482e80a8d-9kyrv978'
         ]
         for _id in delete_ids:
             del model_store.models[_id]
