@@ -43,7 +43,7 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
         model = efficientnet_v2_l(
             weights=EfficientNet_V2_L_Weights.IMAGENET1K_V1) if pretrained else efficientnet_v2_l()
     elif model_name == BERT and features_only:
-        model = get_sequential_bert_model()
+        model = get_sequential_bert_model(pretrained=pretrained)
     else:
         raise ValueError(f"Unknown model: {model_name}")
 

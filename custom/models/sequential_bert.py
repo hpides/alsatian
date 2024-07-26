@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from transformers import BertModel, BertTokenizer, BertForSequenceClassification
+from transformers import BertModel, BertTokenizer, BertForSequenceClassification, BertConfig
 from torchinfo import summary
 from transformers.modeling_attn_mask_utils import _prepare_4d_attention_mask_for_sdpa
 
@@ -83,9 +83,14 @@ class BertPooler(nn.Module):
         return hidden_states, pooled_output
 
 
-def get_sequential_bert_model():
+def get_sequential_bert_model(pretrained=True):
     model_name = 'bert-base-uncased'
-    original_model = BertModel.from_pretrained(model_name)
+    if pretrained:
+        original_model = BertModel.from_pretrained(model_name)
+    else:
+        config = BertConfig()
+        original_model = BertModel(config)
+
 
     seq_model = torch.nn.Sequential()
     seq_model.append(BertEmbeddings(original_model))
@@ -101,9 +106,19 @@ def get_sequential_bert_model():
 if __name__ == '__main__':
     model_name = 'bert-base-uncased'
     original_model = BertModel.from_pretrained(model_name)
-    seq_bert_model = get_sequential_bert_model()
+    seq_bert_model_pretrained = get_sequential_bert_model(pretrained=True)
+    seq_bert_model_pretrained_sd = seq_bert_model_pretrained.state_dict()
+    seq_bert_model_random = get_sequential_bert_model(pretrained=False)
+    seq_bert_model_random_sd = seq_bert_model_random.state_dict()
 
-    sd = seq_bert_model.state_dict()
+    for key, t1, t2 in zip(list(seq_bert_model_pretrained_sd.keys()), list(seq_bert_model_pretrained_sd.values()), list(seq_bert_model_random_sd.values())):
+        t1 = t1.to("cpu")
+        t2 = t2.to("cpu")
+        if not ("running" in key or "tracked" in key):
+            print(key, torch.equal(t1, t2))
+
+
+    sd = seq_bert_model_pretrained.state_dict()
     torch.save(sd, "./test-sd.pt")
 
     # text = "Hello, how are you?"
@@ -139,7 +154,7 @@ if __name__ == '__main__':
     # seq_bert_model.to("cuda")
     # original_model.to("cuda")
 
-    seq_bert_model.eval()
+    seq_bert_model_pretrained.eval()
     with torch.no_grad():
-        seq_model_output = seq_bert_model((input_ids, attention_mask))
+        seq_model_output = seq_bert_model_pretrained((input_ids, attention_mask))
         # original_output = original_model(input_ids, attention_mask=attention_mask)
