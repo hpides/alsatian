@@ -50,6 +50,7 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
         bottom += values[i]
     # plt.xlabel(x_label)
     plt.ylabel('time in seconds')
+    plt.xlabel('avail. memory in GB',labelpad=20, x=0.1)
     plt.title(title)
     plt.xticks(indices, approaches)
     # Reverse the order of handles and labels for the legend

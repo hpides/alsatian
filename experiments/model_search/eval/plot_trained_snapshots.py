@@ -4,6 +4,7 @@ from statistics import median
 import numpy as np
 from matplotlib import pyplot as plt
 
+from experiments.model_search.eval.plot_synthetic_snapshots import MODEL_NAME_MAPPING
 from experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
@@ -241,6 +242,11 @@ def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_l
 
 def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                           plot_save_path):
+
+    plt.rcParams.update({'font.size': 20})
+    colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
+    colors = ['#bae4bc', '#43a2ca', '#0868ac']
+
     # Extracting the data
     data = end_to_end_plot_times(
         data_root_dir, file_template, models, approaches, distribution, data_items, measure_type)
@@ -250,19 +256,17 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     n_models = len(models)
     n_methods = len(methods)
     # Creating a bar plot
-    bar_width = 0.2
+    bar_width = 0.3
     index = np.arange(n_models)
     # Create a figure and an axis
     fig, ax = plt.subplots()
     # Plot each method
     # Create a figure and an axis with a larger width
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    plt.rcParams.update({'font.size': 16})
+    fig, ax = plt.subplots(figsize=(8, 4))
 
     for i, method in enumerate(methods):
         method_values = [data[model][method] for model in models]
-        bars = ax.bar(index + i * bar_width, method_values, bar_width, label=method)
+        bars = ax.bar(index + i * bar_width, method_values, bar_width, label=method, color=colors[i])
 
         # Add annotations for shift and mosix
         if method in ['shift', 'mosix']:
@@ -273,11 +277,12 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
                         va='bottom')
 
     # Adding labels and title
-    ax.set_xlabel('Model Architectures')
+    # ax.set_xlabel('Model Architectures')
     ax.set_ylabel('Time in seconds')
     ax.set_xticks(index + bar_width * (n_methods - 1) / 2)
-    ax.set_xticklabels(models, fontsize=14, rotation=45, ha='right')  # Rotate x-axis labels
-    ax.tick_params(axis='x', labelsize=18)
+    ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models], rotation=15, ha='right')  # Rotate x-axis labels
+    # ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models])
+    ax.tick_params(axis='x')
     ax.legend()
     # Save the plot as SVG and PNG
     plt.tight_layout()
