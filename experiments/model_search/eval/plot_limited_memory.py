@@ -11,7 +11,7 @@ from global_utils.model_names import VIT_L_32
 
 def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_path, file_name, config_names, x_label,
                                           title):
-    FONT_SIZE = 9
+    FONT_SIZE = 18
     plt.rcParams.update({
         'font.size': FONT_SIZE,  # General font size
         'axes.titlesize': FONT_SIZE,  # Title font size
@@ -19,8 +19,9 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
         'xtick.labelsize': FONT_SIZE,  # X tick labels font size
         'ytick.labelsize': FONT_SIZE,  # Y tick labels font size
         'legend.fontsize': FONT_SIZE,  # Legend font size
-        'svg.fonttype': 'none',
     })
+
+    colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac', '#b30086']
 
     # Maintain the order of the keys as they appear in the JSON inputs
     categories = list(config_1.keys()) + [key for key in config_2.keys() if key not in config_1] + [key for key in
@@ -38,12 +39,13 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
     approaches = config_names
     bar_width = 0.8
     indices = np.arange(len(approaches))
-    plt.figure(figsize=(3.5, 5))
+    plt.figure(figsize=(3, 5))
     # Stack the bars
     bottom = np.zeros(len(approaches))
     bars = []
     for i, category in enumerate(categories):
-        bar = plt.bar(indices, values[i], bar_width, bottom=bottom, label=category)
+        print(i)
+        bar = plt.bar(indices, values[i], bar_width, bottom=bottom, label=category, color=colors[i])
         bars.append(bar)
         bottom += values[i]
     # plt.xlabel(x_label)
@@ -52,7 +54,7 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
     plt.xticks(indices, approaches)
     # Reverse the order of handles and labels for the legend
     handles, labels = plt.gca().get_legend_handles_labels()
-    legend = plt.legend(handles[::-1], labels[::-1], ncol=4)
+    # legend = plt.legend(handles[::-1], labels[::-1], ncol=3)
 
     # Save the legend to a separate SVG file
     fig_legend = plt.figure(figsize=(3, 1))
@@ -86,7 +88,7 @@ def plot_approaches_across_memory_config(root_dir, model_distribution, model_dis
                 file_id = f"distribution-{model_dist}-approach-{approach}-cache-{device}-snapshot-{model}-cache_size-{mosix_cache_size}-models-35-level-STEPS_DETAILS"
                 detailed_numbers = extract_times_of_interest(root_dir, [file_id], approach, "STEPS_DETAILS")[
                     SUM_OVER_STEPS_DETAILED_NUMS_AGG]
-                # detailed_numbers = regroup_and_rename_times(detailed_numbers)
+                detailed_numbers = regroup_and_rename_times(detailed_numbers)
                 collected_data.append(detailed_numbers)
             plot_file_name = f'approaches_across_memory_config-{approach}-{model}-{model_distribution}'
             stacked_bar_plot_three_configurations(collected_data[0], collected_data[1], collected_data[2], output_path,

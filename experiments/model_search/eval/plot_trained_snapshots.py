@@ -326,7 +326,7 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    file_template = 'des-gpu-imagenette-trained-snapshots-base-distribution-{}-approach-{}-cache-CPU-snapshot-{}-models-36-items-{}-level-{}'
+    file_template = '-distribution-{}-approach-{}-cache-CPU-snapshot-{}-models-36-items-{}-level-{}'
 
     models = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
     approaches = ['baseline', 'shift', 'mosix']
