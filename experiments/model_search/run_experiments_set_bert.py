@@ -11,9 +11,9 @@ from experiments.model_search.experiment_args import ExpArgs, _str_to_distributi
     _str_to_benchmark_level
 from experiments.model_search.model_search_exp import run_model_search
 from experiments.prevent_caching.watch_utils import LIMIT_IO
+from experiments.snapshots.synthetic.generate import TWENTY_FIVE_PERCENT, FIFTY_PERCENT, TOP_LAYERS
 from global_utils.deterministic import TRUE
-from global_utils.model_names import RESNET_152, RESNET_18, MOBILE_V2, VIT_L_32, EFF_NET_V2_L, RESNET_50, RESNET_101, \
-    VIT_B_16, EFF_NET_V2_S, RESNET_34
+from global_utils.model_names import BERT
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 DATA_ITEMS = "data_itmes"
@@ -29,8 +29,6 @@ DISTRIBUTIONS = "distributions"
 def run_exp(exp_args):
     return run_model_search(exp_args)
 
-# exp_args.snapshot_set_string, exp_args.num_models,
-#                                                  exp_args.distribution, exp_args.base_snapshot_save_path
 
 def run_exp_set(base_exp_args, eval_space, base_file_id):
     for train_items, test_items in eval_space[DATA_ITEMS]:
@@ -49,9 +47,7 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
                             for bench_level in eval_space[BENCHMARK_LEVELS]:
                                 base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
 
-                                new_base_file_id = base_file_id.replace("1000", str(train_items + test_items))
-
-                                file_id = (f"{new_base_file_id}-distribution-{distribution}-approach-{approach}"
+                                file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
                                            f"-cache-{cache_location}-snapshot-{snapshot_set}"
                                            f"-models-{num_models}-items-{train_items + test_items}-level-{bench_level}")
 
@@ -95,7 +91,7 @@ if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', default='./config.ini', help='Configuration file path')
-    parser.add_argument('--base_config_section', default='des-gpu-imagenette-trained-snapshots-base-woof')
+    parser.add_argument('--base_config_section', default='des-gpu-bert-synthetic')
     args = parser.parse_args()
 
     # Read configuration file
@@ -105,20 +101,22 @@ if __name__ == "__main__":
 
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
-    # run once for detailed numbers
+
+    # run once to for detailed numbers
     eval_space = {
-        DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
-        APPROACHES: ["baseline", "shift", "mosix"],
+        DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT , FIFTY_PERCENT],
+        # APPROACHES: ["baseline", "mosix", "shift"],
+        APPROACHES: ["mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
-        NUMS_MODELS: [36], # one extra model being the pretrained model with no adjustments
+        SNAPSHOT_SET_STRINGS: [BERT],
+        NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
-        DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
+        # DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
+        DATA_ITEMS: [(1600, 400), (6400, 1600)]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
 
-    # run 3 times for median numbers
+    # run multiple times for median values
+    eval_space[BENCHMARK_LEVELS] = ["EXECUTION_STEPS"]
     for i in range(3):
-        eval_space[BENCHMARK_LEVELS] = ["EXECUTION_STEPS"]
         run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
-

@@ -1,4 +1,5 @@
 from custom.data_loaders.custom_image_folder import CustomImageFolder
+from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine
 from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep, ScoreModelStep
@@ -28,6 +29,9 @@ class ShiftExecutionEngine(BaselineExecutionEngine):
         # init data loader
         if exec_step.inp_data.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
             data = CustomImageFolder(exec_step.inp_data.dataset_path, exec_step.inp_data.transform)
+            data.set_subrange(exec_step.data_range[0], exec_step.data_range[1])
+        elif exec_step.inp_data.data_set_class == DatasetClass.IMDB:
+            data = get_imbdb_bert_base_uncased_datasets(exec_step.inp_data.dataset_path)
             data.set_subrange(exec_step.data_range[0], exec_step.data_range[1])
         else:
             raise NotImplementedError

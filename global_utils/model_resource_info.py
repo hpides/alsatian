@@ -24,14 +24,33 @@ def _inference(model, batch, device):
     return output
 
 
-def layer_output_sizes(model, input_shape: [int]):
+def layer_output_sizes(model, input_shape: [int] = None, input_data=None):
     result = {}
 
-    prev_out = torch.randn(size=[1] + input_shape, dtype=torch.float)
+    if input_data:
+        prev_out = input_data
+    else:
+        prev_out = torch.randn(size=[1] + input_shape, dtype=torch.float)
+
     for layer in model:
         out = layer(prev_out)
         output_size = _multiply_list(out.shape)
         result[architecture_hash(layer)] = output_size
+        prev_out = out
+
+    return result
+
+def bert_layer_output_sizes(model, input_data):
+    result = {}
+
+    prev_out = input_data
+
+    for layer in model:
+        out = layer(prev_out)
+        output_size = _multiply_list(out[0].shape) + _multiply_list(out[1].shape)
+        # for all other models we assume to be the intermediates of type float32, here we have int64
+        # so to have consistent sizes we multiply by 2
+        result[architecture_hash(layer)] = output_size * 2
         prev_out = out
 
     return result

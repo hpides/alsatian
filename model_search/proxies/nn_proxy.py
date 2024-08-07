@@ -31,7 +31,17 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
 
     caching_service = train_dataset.caching_service
 
-    input_dimension = caching_service.get_item(train_feature_ids[0]).shape
+    # get first item to determine shape
+    bert_features = False
+    first_item = caching_service.get_item(train_feature_ids[0])
+    if torch.is_tensor(first_item):
+        input_dimension = first_item.shape
+    else:
+        # if it is not a tensor we are in the bert use case, in this case we use the CLS token as input
+        last_hidden_state = first_item[0]
+        cls_hidden_state = last_hidden_state[:, 0, :]
+        input_dimension = cls_hidden_state.shape
+        bert_features = True
 
     # init objects
     model = torch.nn.Linear(input_dimension[1], num_classes)
@@ -40,7 +50,8 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
 
     # the features should be very small and fit into GPU memory, if not we have to adjust this code and load the data
     # multiple times in the training loop below
-    features, labels = collect_features_and_labels(caching_service, device, train_feature_ids, train_label_ids)
+    features, labels = collect_features_and_labels(caching_service, device, train_feature_ids, train_label_ids, bert_features)
+
 
     # train model on train data
     model.train()
@@ -60,7 +71,7 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
     total_samples = 0
     correct_predictions = 0
 
-    features, labels = collect_features_and_labels(caching_service, device, test_feature_ids, test_label_ids)
+    features, labels = collect_features_and_labels(caching_service, device, test_feature_ids, test_label_ids, bert_features)
 
     loss_func = torch.nn.CrossEntropyLoss()
 
@@ -82,12 +93,16 @@ def linear_proxy(train_data_loader: DataLoader, test_data_loader: DataLoader, nu
     return average_loss, top1_accuracy
 
 
-def collect_features_and_labels(caching_service, device, train_feature_ids, train_label_ids):
+def collect_features_and_labels(caching_service, device, train_feature_ids, train_label_ids, bert_features):
     features = []
     labels = []
     for feature_id, label_id in zip(train_feature_ids, train_label_ids):
         feature_batch = caching_service.get_item(feature_id)
         label_batch = caching_service.get_item(label_id)
+        if bert_features:
+            last_hidden_state = feature_batch[0]
+            cls_hidden_state = last_hidden_state[:, 0, :]
+            feature_batch = cls_hidden_state
         feature_batch, label_batch = feature_batch.to(device), label_batch.to(device)
         feature_batch, label_batch = torch.squeeze(feature_batch), torch.squeeze(label_batch)
         features.append(feature_batch)

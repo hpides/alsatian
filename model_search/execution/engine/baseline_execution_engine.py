@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from custom.data_loaders.cache_service_dataset import CacheServiceDataset
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.models.init_models import initialize_model
+from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
 from global_utils.constants import LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, MODEL_TO_DEVICE, CUDA, INPUT, LABEL, \
     LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, CALC_PROXY_SCORE
 from global_utils.deterministic import check_deterministic_env_var_set
@@ -36,7 +37,10 @@ def load_model_to_device(model, device):
 
 
 def load_data_to_device(batch):
-    batch = batch.to(CUDA)
+    if isinstance(batch, list):
+        batch = [batch[0].to(CUDA), batch[1].to(CUDA)]
+    else:
+        batch = batch.to(CUDA)
     return batch
 
 
@@ -99,6 +103,9 @@ class BaselineExecutionEngine(ExecutionEngine):
         # init data loader
         if exec_step.inp_data.data_set_class == DatasetClass.CUSTOM_IMAGE_FOLDER:
             data = CustomImageFolder(exec_step.inp_data.dataset_path, exec_step.inp_data.transform)
+        elif exec_step.inp_data.data_set_class == DatasetClass.IMDB:
+            data = get_imbdb_bert_base_uncased_datasets(exec_step.inp_data.dataset_path)
+
         else:
             raise NotImplementedError
 
@@ -116,7 +123,11 @@ class BaselineExecutionEngine(ExecutionEngine):
 
         # extract features
         start = time.perf_counter()
-        for i, (inputs, labels) in enumerate(data_loader):
+        for i, data in enumerate(data_loader):
+            if len(data) == 2:
+                inputs, labels = data
+            else:
+                inputs, labels = data[:-1], data[-1]
             batch_measures = {}
             batch_measures[LOAD_DATA] = time.perf_counter() - start
 

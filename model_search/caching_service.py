@@ -88,7 +88,11 @@ class CachingService:
     def cache_on_cpu(self, _id, data):
         self._check_id_not_exists(_id)
         if self._is_cuda(data):
-            self._cpu_cache[_id] = data.to(CPU)
+            if isinstance(data, list) or isinstance(data, tuple):
+                data = [x.to(CPU) for x in data]
+                self._cpu_cache[_id] = data
+            else:
+                self._cpu_cache[_id] = data.to(CPU)
         else:
             self._cpu_cache[_id] = data
 
@@ -97,12 +101,16 @@ class CachingService:
             return data.is_cuda
         elif isinstance(data, torch.nn.Module):
             return next(data.parameters()).is_cuda
+        elif isinstance(data, list) or isinstance(data, tuple):
+            return self._is_cuda(data[0])
         else:
             raise NotImplementedError
 
     def cache_persistent(self, _id, data, is_guaranteed_cpu_data=False):
         self._check_id_not_exists(_id)
-        if (not is_guaranteed_cpu_data) and data.is_cuda:
+        if isinstance(data, list) or isinstance(data, tuple):
+            data = [x.to(CPU) for x in data]
+        elif (not is_guaranteed_cpu_data) and data.is_cuda:
             data = data.to(CPU)
         path = self._get_path(_id)
         torch.save(data, path)

@@ -368,5 +368,20 @@ SPLIT_INDEXES = {
         5,  # last 22 encoder block
         4,  # last 23 encoder block
         3  # last 24 encoder block
+    ],
+    BERT: [
+        14,  # last linear layer if there is one
+        13,  # pooler
+        12,  # last encoder block
+        11,
+        10,
+        9,
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
     ]
 }

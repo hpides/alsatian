@@ -2,13 +2,13 @@
 
 # Assigning command line arguments to variables
 repository_url=github.com/slin96/model-search-paper.git
-script_to_start=experiments/model_search/run_experiment_set_trained_snapshots.py
+script_to_start=experiments/model_search/run_experiments_set_bert.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=synsthetic-snapshot-median-run
 repo_name=model-search-paper
 config_file=experiments/model_search/config.ini
-config_section=des-gpu-imagenette-trained-snapshots-base-woof
+config_section=des-gpu-bert-synthetic
 
 
 # Function to read the access token from file

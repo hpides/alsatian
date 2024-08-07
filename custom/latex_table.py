@@ -15,7 +15,8 @@ if __name__ == '__main__':
         VIT_L_16: 'vit-l-16',
         VIT_L_32: 'vit-l-32',
         VIT_B_16: 'vit-b-16',
-        VIT_B_32: 'vit-b-32'
+        VIT_B_32: 'vit-b-32',
+        BERT: 'bert'
     }
 
     refs = {
@@ -30,7 +31,8 @@ if __name__ == '__main__':
         VIT_L_16: ('Dosovitskiy et al.', 'vit'),
         VIT_L_32: ('Dosovitskiy et al.', 'vit'),
         VIT_B_16: ('Dosovitskiy et al.', 'vit'),
-        VIT_B_32: ('Dosovitskiy et al.', 'vit')
+        VIT_B_32: ('Dosovitskiy et al.', 'vit'),
+        BERT: ('Devlin et al.', 'bert')
     }
 
     acl_open = '\\acl{'
@@ -38,8 +40,11 @@ if __name__ == '__main__':
     cite_open = '\\cite{'
 
     for model_name in [MOBILE_V2, RESNET_18, RESNET_34, RESNET_50, RESNET_101, RESNET_152, EFF_NET_V2_S, EFF_NET_V2_L,
-                       VIT_B_16, VIT_B_32, VIT_L_16, VIT_L_32]:
-        model = initialize_model(model_name)
+                       VIT_B_16, VIT_B_32, VIT_L_16, VIT_L_32, BERT]:
+        if model_name in [BERT]:
+            model = initialize_model(model_name, features_only=True)
+        else:
+            model = initialize_model(model_name)
         num_params = count_parameters(model)
         formatted_params = f"{num_params:,}"
         model_size_mb = round(get_model_size(model) / (1000 * 1000), 1)

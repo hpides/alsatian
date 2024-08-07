@@ -7,6 +7,7 @@ import torch.nn
 from custom.models.init_models import initialize_model
 from global_utils.hash import state_dict_hash, architecture_hash
 from global_utils.json_operations import dict_to_dict
+from global_utils.state_dict_comparison import _compare_state_dicts_key_wise
 from model_search.caching_service import CachingService
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.model_snapshots.multi_model_snapshot import MultiModelSnapshot
@@ -38,10 +39,10 @@ def model_store_from_dict(_dict):
 
 
 def match_keys(target_sd_format, current_sd):
-
     if not next(iter(current_sd)).startswith("0.0"):
         # we only need to adjust of the current sd starts like this
         return current_sd
+
     def remove_duplicates(input_list):
         seen = set()
         result = []
@@ -79,7 +80,6 @@ def match_keys(target_sd_format, current_sd):
         old_prefix = ".".join(replace)
 
         if old_prefix in prefix_mapping:
-
             new_prefix = prefix_mapping[old_prefix]
 
             new_key = ".".join([new_prefix] + keep)
@@ -87,6 +87,10 @@ def match_keys(target_sd_format, current_sd):
             current_sd[new_key] = current_sd[k]
 
         del current_sd[k]
+
+    for k in list(current_sd.keys()):
+        if "running" in k or "tracked" in k:
+            current_sd[k] = target_sd_format[k]
 
     return current_sd
 
@@ -144,6 +148,7 @@ class ModelStore:
 
     def get_composed_model(self, layer_state_ids: [str]) -> torch.nn.Module:
         # returns a sequential model, that is a sequential model chained of the layer states given
+        print(len(layer_state_ids))
         layers = []
         for layer_id in layer_state_ids:
             layer = self._init_layer(layer_id)
@@ -155,9 +160,15 @@ class ModelStore:
         pass
 
     def _gen_rich_model_snapshot(self, snapshot: ModelSnapshot) -> RichModelSnapshot:
-        model = initialize_model(snapshot.architecture_id, sequential_model=True, features_only=True)
+        model = initialize_model(snapshot.architecture_id, sequential_model=True, features_only=True, pretrained=True)
         state_dict = torch.load(snapshot.state_dict_path)
+        for k, v in state_dict.items():
+            state_dict[k] = v.to("cpu")
         adjusted_state_dict = match_keys(model.state_dict(), state_dict)
+
+        # print how many values in state ict are matching
+        _compare_state_dicts_key_wise(model.state_dict(), state_dict)
+
         model.load_state_dict(adjusted_state_dict)
         _, filename = os.path.split(snapshot.state_dict_path)
         file_name_prefix = filename.replace('.pt', '')

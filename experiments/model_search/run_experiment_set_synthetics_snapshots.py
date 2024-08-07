@@ -11,9 +11,9 @@ from experiments.model_search.experiment_args import ExpArgs, _str_to_distributi
     _str_to_benchmark_level
 from experiments.model_search.model_search_exp import run_model_search
 from experiments.prevent_caching.watch_utils import LIMIT_IO
+from experiments.snapshots.synthetic.generate import TWENTY_FIVE_PERCENT, FIFTY_PERCENT, TOP_LAYERS
 from global_utils.deterministic import TRUE
-from global_utils.model_names import RESNET_152, RESNET_18, MOBILE_V2, VIT_L_32, EFF_NET_V2_L, RESNET_50, RESNET_101, \
-    VIT_B_16, EFF_NET_V2_S, RESNET_34
+from global_utils.model_names import RESNET_152, RESNET_18, VIT_L_32, EFF_NET_V2_L
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 DATA_ITEMS = "data_itmes"
@@ -47,11 +47,9 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
                             for bench_level in eval_space[BENCHMARK_LEVELS]:
                                 base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
 
-                                new_base_file_id = base_file_id.replace("1000", str(train_items + test_items))
-
-                                file_id = (f"{new_base_file_id}-distribution-{distribution}-approach-{approach}"
+                                file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
                                            f"-cache-{cache_location}-snapshot-{snapshot_set}"
-                                           f"-models-{num_models}-level-{bench_level}")
+                                           f"-models-{num_models}-items-{train_items + test_items}-level-{bench_level}")
 
                                 print("RUN:", file_id)
 
@@ -93,7 +91,7 @@ if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', default='./config.ini', help='Configuration file path')
-    parser.add_argument('--base_config_section', default='des-gpu-imagenette-base-1000')
+    parser.add_argument('--base_config_section', default='des-gpu-imagenette-synthetic')
     args = parser.parse_args()
 
     # Read configuration file
@@ -103,14 +101,20 @@ if __name__ == "__main__":
 
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
+
+    # run once to for detailed numbers
     eval_space = {
-        DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
-        APPROACHES: ["mosix"],
+        DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
+        APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_34, RESNET_50, RESNET_101, RESNET_152, MOBILE_V2, VIT_L_32,
-                               EFF_NET_V2_S, EFF_NET_V2_L],
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
         NUMS_MODELS: [35],
-        BENCHMARK_LEVELS: ["STEPS_DETAILS", "EXECUTION_STEPS"],
+        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
     }
     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+
+    # run multiple times for median values
+    eval_space[BENCHMARK_LEVELS] = ["EXECUTION_STEPS"]
+    for i in range(3):
+        run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)

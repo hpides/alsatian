@@ -5,6 +5,7 @@ from custom.models.custom_mobilenet import mobilenet_v2, MobileNet_V2_Weights
 from custom.models.custom_resnet import *
 from custom.models.efficientnet import efficientnet_v2_s, efficientnet_v2_l, EfficientNet_V2_L_Weights, \
     EfficientNet_V2_S_Weights
+from custom.models.sequential_bert import get_sequential_bert_model
 from custom.models.split_indices import SPLIT_INDEXES
 from custom.models.vision_transformer import Encoder, vit_b_16, vit_b_32, vit_l_16, vit_l_32, ViT_L_32_Weights, \
     ViT_L_16_Weights, ViT_B_32_Weights, ViT_B_16_Weights
@@ -41,6 +42,8 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
     elif model_name == EFF_NET_V2_L:
         model = efficientnet_v2_l(
             weights=EfficientNet_V2_L_Weights.IMAGENET1K_V1) if pretrained else efficientnet_v2_l()
+    elif model_name == BERT and features_only:
+        model = get_sequential_bert_model(pretrained=pretrained)
     else:
         raise ValueError(f"Unknown model: {model_name}")
 
@@ -60,6 +63,14 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
             model.classifier = nn.Sequential(
                 nn.Dropout(p=model.dropout, inplace=True),
                 nn.Linear(model.lastconv_output_channels, new_num_classes),
+            )
+        elif model_name == BERT:
+            model: torch.nn.Sequential = model
+            model.append(
+                torch.nn.Sequential(
+                    nn.Dropout(p=0.1, inplace=False),
+                    nn.Linear(in_features=768, out_features=new_num_classes, bias=True)
+                )
             )
         else:
             raise ValueError(f"Unknown model: {model_name}")
@@ -97,3 +108,7 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
         model = first
 
     return model
+
+if __name__ == '__main__':
+    bert_model = initialize_model(BERT, features_only=True, sequential_model=True)
+    print("test")

@@ -1,15 +1,16 @@
 import os.path
+from statistics import median
 
 import numpy as np
 from matplotlib import pyplot as plt
 
 from experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
+from experiments.snapshots.synthetic.generate import TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT
 from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
     EXEC_STEP_MEASUREMENTS
 from global_utils.global_constants import MEASUREMENTS
-from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2, RESNET_50, RESNET_101, EFF_NET_V2_L, \
-    EFF_NET_V2_S, RESNET_34
+from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L
 
 CALC_PROXY_SCORE_NUMBERS = "calc_proxy_score_numbers"
 
@@ -37,6 +38,14 @@ CLEAR_CACHES = "clear_caches"
 
 DETAILED_METRICS_OF_INTEREST = [GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE,
                                 INFERENCE, STATE_TO_MODEL, INIT_MODEL, LOAD_STATE_DICT, CALC_PROXY_SCORE]
+
+MODEL_NAME_MAPPING = {
+    RESNET_18: "ResNet-18",
+    RESNET_152: "ResNet-152",
+    VIT_L_32: "ViT-L-32",
+    EFF_NET_V2_L: "EffNetV2-L"
+}
+
 
 
 def _non_relevant_key(key, ignore_prefixes):
@@ -153,24 +162,27 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
     for file_id in file_ids:
         # find file
         files += extract_files_by_name(root_dir, [file_id])
-    # TODO so far we expect only 1 file
-    assert len(files) == 1
+    assert len(files) >= 2
 
-    # parse file
-    data = parse_json_file(files[0])
-    measurements = data[MEASUREMENTS]
+    collected_metrics = []
+    for file in files:
 
-    # actual extraction
-    metrics_of_interest = extract_metrics_of_interest(measurements, approach)
-    print(metrics_of_interest)
+        # parse file
+        data = parse_json_file(file)
+        measurements = data[MEASUREMENTS]
 
-    if not approach == BASELINE and not measure_type == "STEPS_DETAILS":
-        # check validity of data
-        # check diff between measured end to end time and the sum of the more detailed times
-        diff_end_to_end_vs_details = metrics_of_interest[END_TO_END] - metrics_of_interest[SUM_DETAILED_TIMES]
-        assert diff_end_to_end_vs_details > 0 and diff_end_to_end_vs_details < 2
+        # actual extraction
+        metrics_of_interest = extract_metrics_of_interest(measurements, approach)
+        collected_metrics.append(metrics_of_interest)
+        print(metrics_of_interest)
 
-    return metrics_of_interest
+        if not approach == BASELINE and not measure_type == "STEPS_DETAILS":
+            # check validity of data
+            # check diff between measured end to end time and the sum of the more detailed times
+            diff_end_to_end_vs_details = metrics_of_interest[END_TO_END] - metrics_of_interest[SUM_DETAILED_TIMES]
+            assert diff_end_to_end_vs_details > 0 and diff_end_to_end_vs_details < 2
+
+    return collected_metrics
 
 
 def regroup_and_rename_times(times):
@@ -198,37 +210,23 @@ def regroup_and_rename_times(times):
     if GEN_EXEC_PLAN in times:
         grouped_times['exec planning'] = times[GEN_EXEC_PLAN]
 
-
-
-
     return grouped_times
 
 
-def end_to_end_plot_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type):
-    # TODO might be able to copy over from plot trained snapshots
-
+def end_to_end_plot_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type):
     model_measurements = {}
     for model in models:
         model_measurements[model] = {}
         for approach in approaches:
-            split = distribution.split('-')
-            if len(split) > 1 and approach == 'mosix':
-                dist = split[0]
-            elif len(split) > 1:
-                dist = split[1]
-            else:
-                dist = distribution
-            config = [dist, approach, caching_location, model, num_models, measure_type]
-            if caching_location in ['GPU', 'CPU']:
-                file_ids = [file_template.format(*config)]
-            else:
-                file_ids = []
-                for device in ['GPU', 'CPU']:
-                    config = [dist, approach, device, model, num_models, measure_type]
-                    file_ids.append(file_template.format(*config))
+            config = [distribution, approach, model, data_items, measure_type]
+            file_ids = [file_template.format(*config)]
 
             times = extract_times_of_interest(root_dir, file_ids, approach, measure_type)
-            model_measurements[model][approach] = times[END_TO_END]
+
+            # get median of end to end
+            end_to_end_times = [x[END_TO_END] for x in times]
+
+            model_measurements[model][approach] = median(end_to_end_times)
 
     return model_measurements
 
@@ -250,30 +248,33 @@ def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_l
     return model_measurements
 
 
-def plot_end_to_end_times(data_root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
+def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                           plot_save_path):
+
+    plt.rcParams.update({'font.size': 20})
+    colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
+    colors = ['#bae4bc', '#43a2ca', '#0868ac']
+
     # Extracting the data
     data = end_to_end_plot_times(
-        data_root_dir, models, approaches, distribution, caching_location, num_models, measure_type)
+        data_root_dir, file_template, models, approaches, distribution, data_items, measure_type)
     models = list(data.keys())
     methods = list(next(iter(data.values())).keys())
     # Number of models and methods
     n_models = len(models)
     n_methods = len(methods)
     # Creating a bar plot
-    bar_width = 0.2
+    bar_width = 0.3
     index = np.arange(n_models)
     # Create a figure and an axis
     fig, ax = plt.subplots()
     # Plot each method
     # Create a figure and an axis with a larger width
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    plt.rcParams.update({'font.size': 16})
+    fig, ax = plt.subplots(figsize=(8, 4))
 
     for i, method in enumerate(methods):
         method_values = [data[model][method] for model in models]
-        bars = ax.bar(index + i * bar_width, method_values, bar_width, label=method)
+        bars = ax.bar(index + i * bar_width, method_values, bar_width, label=method, color=colors[i])
 
         # Add annotations for shift and mosix
         if method in ['shift', 'mosix']:
@@ -284,15 +285,16 @@ def plot_end_to_end_times(data_root_dir, models, approaches, distribution, cachi
                         va='bottom')
 
     # Adding labels and title
-    ax.set_xlabel('Model Architectures')
+    # ax.set_xlabel('Model Architectures')
     ax.set_ylabel('Time in seconds')
     ax.set_xticks(index + bar_width * (n_methods - 1) / 2)
-    ax.set_xticklabels(models, fontsize=14, rotation=45, ha='right')  # Rotate x-axis labels
-    ax.tick_params(axis='x', labelsize=18)
+    ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models], rotation=15, ha='right')  # Rotate x-axis labels
+    # ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models])
+    ax.tick_params(axis='x')
     ax.legend()
     # Save the plot as SVG and PNG
     plt.tight_layout()
-    plot_file_name = f'end_to_end-{distribution}-{caching_location}-{num_models}-{measure_type}'
+    plot_file_name = f'end_to_end-{distribution}-{measure_type}'
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.svg'))
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
 
@@ -337,22 +339,16 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 
 
 if __name__ == '__main__':
-    data_items = 4000
-    root_dir = f'/Users/nils/Downloads/imagenette-1000-8000-des-gpu-server/{data_items}'
-    file_template = f'des-gpu-imagenette-base-{data_items}' + '-distribution-{}-approach-{}-cache-{}-snapshot-{}-models-{}-level-{}.json'
+    file_template = 'des-gpu-imagenette-synthetic-distribution-{}-approach-{}-cache-CPU-snapshot-{}-models-35-items-{}-level-{}'
 
-    models = [RESNET_18,
-              RESNET_34, RESNET_50,
-              RESNET_101,
-              RESNET_152, MOBILE_V2, EFF_NET_V2_S,
-              EFF_NET_V2_L, VIT_L_32]
+    models = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
     approaches = ['baseline', 'shift', 'mosix']
-    distributions = ['LAST_ONE_LAYER', 'TWENTY_FIVE_PERCENT-LAST_ONE_LAYER']
-    caching_location = 'GPU-else-CPU'
-    num_models = 35
+    distributions = [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT]
     measure_type = 'EXECUTION_STEPS'
-    plot_save_path = f'./plots-imagenette-{data_items}-gpu-des-gpu-server'
 
     for distribution in distributions:
-        plot_end_to_end_times(root_dir, models, approaches, distribution, caching_location, num_models, measure_type,
-                              plot_save_path)
+        for data_items in [1000, 2000, 4000, 8000]:
+            root_dir = "/Users/nils/Downloads/des-gpu-imagenette-synthetic-snapshots"
+            plot_save_path = f'./plots-synthetic-snapshots/{data_items}'
+            plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
+                                  plot_save_path)
