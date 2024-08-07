@@ -11,7 +11,6 @@ from experiments.model_search.experiment_args import ExpArgs
 from experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
 from experiments.snapshots.synthetic.generate import RetrainDistribution
 from experiments.snapshots.synthetic.generate_sets.generate_set import get_architecture_models
-from experiments.snapshots.synthetic.generate_sets.twenty_resnet_152 import twenty_resnet_152_snapshots
 from experiments.snapshots.trained.build_trained_model_store import get_trained_models_and_model_store
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import TRAIN, TEST, END_TO_END, DETAILED_TIMES
@@ -25,10 +24,7 @@ TRAINED_DISTRIBUTIONS = [RetrainDistribution.TWENTY_FIVE_PERCENT]
 
 
 def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False):
-    if snapshot_set_string == 'twenty_resnet_152':
-        snapshot_save_path = os.path.join(base_save_path, snapshot_set_string)
-        return twenty_resnet_152_snapshots(snapshot_save_path)
-    elif trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
+    if trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
         return get_trained_models_and_model_store(snapshot_set_string, base_save_path)
     elif snapshot_set_string in VISION_MODEL_CHOICES + [BERT] and not trained_snapshots:
         return get_architecture_models(base_save_path, distribution, num_models, [snapshot_set_string])
