@@ -1,2 +1,5 @@
-- download form here, then use prepare script
+- download from here
   - https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/
+- prepare data for use (make sure to adjust files)
+  - [prepare_data.py](prepare_data.py)
+- prepared data also in our nextcloud

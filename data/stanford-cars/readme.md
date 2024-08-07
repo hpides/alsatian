@@ -1,3 +1,4 @@
 - download from here
   - https://www.kaggle.com/datasets/jutrera/stanford-car-dataset-by-classes-folder?select=car_data
-- no prep needed
+- no data pre needed
+- data also in our nextcloud
