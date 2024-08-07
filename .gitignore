@@ -19,3 +19,10 @@ __pycache__
 /experiments/prevent_caching/active-*
 /experiments/model_search/results/dummy/
 /data/imdb/data/
+/data/cub-birds-200/
+/data/food-101/
+/data/image-woof/
+/data/imdb/
+/data/stanford-cars/
+/data/stanford_dogs/
+/experiments/bert_sentiment/imdb_dummy_data/
