@@ -1,6 +1,6 @@
 import random
 
-from experiments.plot_shared.file_parsing import get_raw_data
+from experiments.side_experiments.plot_shared.file_parsing import get_raw_data
 from global_utils.global_constants import MEASUREMENTS
 from global_utils.model_names import VISION_MODEL_CHOICES
 from model_search.approaches.shift import get_data_ranges

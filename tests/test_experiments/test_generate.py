@@ -8,7 +8,7 @@ from torchvision.models import resnet18
 
 from custom.models.init_models import initialize_model
 from custom.models.split_indices import SPLIT_INDEXES
-from experiments.snapshots.synthetic.generate import generate_snapshots, RetrainDistribution
+from experiments.main_experiments.snapshots.synthetic.generate import generate_snapshots, RetrainDistribution
 from global_utils.model_names import RESNET_18
 from global_utils.model_operations import state_dict_equal, split_model_in_two
 
