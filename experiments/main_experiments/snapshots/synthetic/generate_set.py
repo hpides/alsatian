@@ -29,7 +29,7 @@ def _higher_path(save_path: str, start):
 
 
 def generate_snapshot_set(architecture_name, num_models, distribution: RetrainDistribution, base_path,
-                          reuse_allowed=False):
+                          reuse_allowed=False, retrain_idxs=None):
     save_path = _save_path(architecture_name, base_path, distribution, num_models)
     dummy_model_store_path = os.path.join(save_path, 'model_store.json')
     if os.path.exists(dummy_model_store_path):
@@ -47,7 +47,8 @@ def generate_snapshot_set(architecture_name, num_models, distribution: RetrainDi
         # make sure save path exists
         os.makedirs(save_path)
         # generate some dummy snapshots
-        model_snapshots = generate_snapshots(architecture_name, num_models, distribution, save_path=save_path)
+        model_snapshots = generate_snapshots(architecture_name, num_models, distribution, save_path=save_path,
+                                             retrain_idxs=retrain_idxs)
 
         # add the snapshots to a model store
         model_store = ModelStore(save_path)
@@ -103,7 +104,7 @@ def _compose_pregenerates_set(base_path, distribution, model_set, num_models):
     model_store = ModelStore("")
     for architecture_name, num_models in zip(model_set, model_counts):
         model_snapshots, model_store = generate_snapshot_set(architecture_name, num_models, distribution, base_path,
-                                                   reuse_allowed=True)
+                                                             reuse_allowed=True)
         model_snapshots = list(model_store.models.values())[:num_models]
         agg_snapshots += model_snapshots
         for snap in model_snapshots:
