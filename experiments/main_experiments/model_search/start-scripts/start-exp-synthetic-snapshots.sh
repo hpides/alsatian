@@ -2,12 +2,12 @@
 
 # Assigning command line arguments to variables
 repository_url=github.com/slin96/model-search-paper.git
-script_to_start=experiments/model_search/run_experiment_set_synthetics_snapshots.py
+script_to_start=experiments/main_experiments/model_search/run_experiment_set_synthetics_snapshots.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
-branch=synsthetic-snapshot-median-run
+branch=model-search-synthetic
 repo_name=model-search-paper
-config_file=experiments/model_search/config.ini
+config_file=experiments/main_experiments/model_search/config.ini
 config_section=des-gpu-imagenette-synthetic
 
 
