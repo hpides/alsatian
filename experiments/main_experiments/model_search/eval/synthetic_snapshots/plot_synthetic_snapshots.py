@@ -213,7 +213,7 @@ def regroup_and_rename_times(times):
     return grouped_times
 
 
-def end_to_end_plot_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type):
+def end_to_end_plot_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type, not_aggregated=False):
     model_measurements = {}
     for model in models:
         model_measurements[model] = {}
@@ -226,7 +226,10 @@ def end_to_end_plot_times(root_dir, file_template, models, approaches, distribut
             # get median of end to end
             end_to_end_times = [x[END_TO_END] for x in times]
 
-            model_measurements[model][approach] = median(end_to_end_times)
+            if not_aggregated:
+                model_measurements[model][approach] = end_to_end_times
+            else:
+                model_measurements[model][approach] = median(end_to_end_times)
 
     return model_measurements
 
@@ -299,6 +302,71 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
 
 
+
+
+def plot_end_to_end_times_error(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
+                          plot_save_path):
+    plt.rcParams.update({'font.size': 20})
+    colors = ['#bae4bc', '#43a2ca', '#0868ac']
+
+    # Extracting the data
+    data = end_to_end_plot_times(
+        data_root_dir, file_template, models, approaches, distribution, data_items, measure_type, not_aggregated=True)
+
+    models = list(data.keys())
+    methods = list(next(iter(data.values())).keys())
+
+    # Number of models and methods
+    n_models = len(models)
+    n_methods = len(methods)
+
+    # Creating a bar plot
+    bar_width = 0.3
+    index = np.arange(n_models)
+
+    # Create a figure and an axis
+    fig, ax = plt.subplots(figsize=(8, 4))
+
+    for i, method in enumerate(methods):
+        # Get the list of values for each model and method
+        method_values = [data[model][method] for model in models]
+
+        # Calculate the median and the 2.5th and 97.5th percentiles
+        medians = [np.median(values) for values in method_values]
+        percentiles_2_5 = [np.percentile(values, 2.5) for values in method_values]
+        percentiles_97_5 = [np.percentile(values, 97.5) for values in method_values]
+
+        # Calculate the error bars: the difference between the median and the 2.5th/97.5th percentiles
+        lower_errors = [median - p2_5 for median, p2_5 in zip(medians, percentiles_2_5)]
+        upper_errors = [p97_5 - median for median, p97_5 in zip(medians, percentiles_97_5)]
+        error_bars = [lower_errors, upper_errors]
+
+        # Plot the bars with error bars
+        bars = ax.bar(index + i * bar_width, medians, bar_width, label=method, color=colors[i],
+                      yerr=error_bars, capsize=5)
+
+        # Add annotations for shift and mosix speedups
+        if method in ['shift', 'mosix']:
+            for bar, model in zip(bars, models):
+                baseline_value = np.median(data[model]['baseline'])
+                speedup = baseline_value / np.median(data[model][method])
+                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.2f}x', ha='center',
+                va = 'bottom')
+
+        # Adding labels and title
+        ax.set_ylabel('Time in seconds')
+        ax.set_xticks(index + bar_width * (n_methods - 1) / 2)
+        ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models], rotation=15, ha='right')
+        ax.tick_params(axis='x')
+        ax.legend()
+
+        # Save the plot as SVG and PNG
+        plt.tight_layout()
+        plot_file_name = f'percentile-end_to_end-{distribution}-{measure_type}'
+        plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.svg'))
+        plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
+
+
 def plot_sh_iterations(root_dir, model, approach, distribution, caching_location, num_models, measure_type,
                        plot_save_path):
     data = sh_iteration_plot_times(root_dir, model, approach, distribution, caching_location, num_models, measure_type)
@@ -348,7 +416,9 @@ if __name__ == '__main__':
 
     for distribution in distributions:
         for data_items in [1000, 2000, 4000, 8000]:
-            root_dir = "/Users/nils/Downloads/des-gpu-imagenette-synthetic-snapshots"
-            plot_save_path = f'./plots-synthetic-snapshots/{data_items}'
+            root_dir = '/Users/nils/uni/programming/model-search-paper/experiments/main_experiments/model_search/eval/synthetic_snapshots/results/des-gpu-imagenette-synthetic-snapshots'
+            plot_save_path = os.path.abspath(f'./plots/{data_items}')
             plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
+                                  plot_save_path)
+            plot_end_to_end_times_error(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                                   plot_save_path)

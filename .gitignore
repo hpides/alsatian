@@ -26,3 +26,5 @@ __pycache__
 /data/stanford-cars/
 /data/stanford_dogs/
 /experiments/side_experiments/bert_sentiment/imdb_dummy_data/
+/experiments/main_experiments/model_search/eval/synthetic_snapshots/results/des-gpu-imagenette-synthetic-snapshots.zip
+/experiments/main_experiments/model_search/eval/synthetic_snapshots/results/des-gpu-imagenette-synthetic-snapshots/
