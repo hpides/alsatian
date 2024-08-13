@@ -1,4 +1,4 @@
-from experiments.model_search.benchmark_level import BenchmarkLevel
+from experiments.main_experiments.model_search.benchmark_level import BenchmarkLevel
 from experiments.main_experiments.snapshots.synthetic.generate import RetrainDistribution
 from model_search.execution.planning.execution_plan import CacheLocation
 
