@@ -1,6 +1,6 @@
 import torch
 
-from experiments.model_search.benchmark_level import BenchmarkLevel
+from experiments.main_experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import EXEC_STEP_MEASUREMENTS, GEN_EXEC_PLAN, MODEL_RANKING
 from global_utils.global_constants import TRAIN

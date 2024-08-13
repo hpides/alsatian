@@ -4,7 +4,7 @@ import os
 import torch
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
-from experiments.model_search.benchmark_level import BenchmarkLevel
+from experiments.main_experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import SCORE, SH_RANK_ITERATION_, RANK_ITERATION_DETAILS_, GEN_EXEC_PLAN, \
     EXEC_STEP_MEASUREMENTS, MODEL_RANKING
