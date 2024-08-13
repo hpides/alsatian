@@ -254,7 +254,20 @@ def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_l
 def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                           plot_save_path):
 
-    plt.rcParams.update({'font.size': 20})
+    plt.rcParams.update({'font.size': 24})
+
+    plt.rcParams.update({'text.usetex': True
+                            , 'pgf.rcfonts': False
+                            , 'text.latex.preamble': r"""\usepackage{iftex}
+                                                  \ifxetex
+                                                      \usepackage[libertine]{newtxmath}
+                                                      \usepackage[tt=false]{libertine}
+                                                      \setmonofont[StylisticSet=3]{inconsolata}
+                                                  \else
+                                                      \RequirePackage[tt=false, type1=true]{libertine}
+                                                  \fi"""
+                         })
+
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
 
@@ -294,12 +307,25 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models], rotation=15, ha='right')  # Rotate x-axis labels
     # ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models])
     ax.tick_params(axis='x')
-    ax.legend()
-    # Save the plot as SVG and PNG
+    # Remove the legend from the actual plot
+    # Save the plot without legend
     plt.tight_layout()
     plot_file_name = f'end_to_end-{distribution}-{measure_type}'
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.svg'))
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
+
+    # Extract the legend
+    fig_legend = plt.figure(figsize=(8, 2))
+    legend = fig_legend.legend(*ax.get_legend_handles_labels(), loc='center', ncol=3, frameon=False)
+    fig_legend.tight_layout()
+
+    # Save the legend separately
+    legend_file_name = 'legend'
+    fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.svg'))
+    fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.png'))
+
+    plt.close(fig_legend)
+    plt.close(fig)
 
 
 
@@ -307,6 +333,9 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
 def plot_end_to_end_times_error(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                           plot_save_path):
     plt.rcParams.update({'font.size': 20})
+
+
+
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
 
     # Extracting the data
