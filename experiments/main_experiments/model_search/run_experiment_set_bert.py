@@ -10,7 +10,7 @@ from experiments.model_search.experiment_args import ExpArgs, _str_to_distributi
     _str_to_benchmark_level
 from experiments.model_search.model_search_exp import run_model_search
 
-from experiments.side_experiments.prevent_caching.watch_utils import LIMIT_IO
+from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from experiments.main_experiments.snapshots.synthetic.generate import TWENTY_FIVE_PERCENT, FIFTY_PERCENT, TOP_LAYERS
 from global_utils.deterministic import TRUE
 from global_utils.model_names import BERT

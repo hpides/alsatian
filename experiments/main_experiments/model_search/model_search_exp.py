@@ -8,7 +8,7 @@ from custom.data_loaders.custom_image_folder import CustomImageFolder
 from data.imdb import reduced_imdb
 from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
 from experiments.main_experiments.model_search.experiment_args import ExpArgs
-from experiments.side_experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
+from experiments.main_experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
 from experiments.main_experiments.snapshots.synthetic.generate import RetrainDistribution
 from experiments.main_experiments.snapshots.synthetic.generate_set import get_architecture_models
 from experiments.main_experiments.snapshots.trained.build_trained_model_store import get_trained_models_and_model_store

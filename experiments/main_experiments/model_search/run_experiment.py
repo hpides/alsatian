@@ -4,7 +4,7 @@ import os
 
 from experiments.model_search.experiment_args import ExpArgs
 from experiments.model_search.model_search_exp import run_model_search
-from experiments.side_experiments.prevent_caching.watch_utils import LIMIT_IO
+from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from global_utils.constants import SSD_CACHING_ACTIVE
 from global_utils.deterministic import TRUE
 from global_utils.write_results import write_measurements_and_args_to_json_file
