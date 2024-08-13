@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import torch
 
-from experiments.model_search.benchmark_level import BenchmarkLevel
+from experiments.main_experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.benchmark_util import Benchmarker
 from model_search.caching_service import CachingService
 from model_search.execution.planning.execution_plan import ExecutionPlan, ExecutionStep
