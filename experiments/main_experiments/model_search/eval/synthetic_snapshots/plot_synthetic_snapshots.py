@@ -4,13 +4,15 @@ from statistics import median
 import numpy as np
 from matplotlib import pyplot as plt
 
-from experiments.side_experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from experiments.main_experiments.snapshots.synthetic.generate import TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT
+from experiments.side_experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
     EXEC_STEP_MEASUREMENTS
 from global_utils.global_constants import MEASUREMENTS
 from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L
+
+MOSIX = "mosix"
 
 CALC_PROXY_SCORE_NUMBERS = "calc_proxy_score_numbers"
 
@@ -39,6 +41,8 @@ CLEAR_CACHES = "clear_caches"
 DETAILED_METRICS_OF_INTEREST = [GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE,
                                 INFERENCE, STATE_TO_MODEL, INIT_MODEL, LOAD_STATE_DICT, CALC_PROXY_SCORE]
 
+SHIFT = "shift"
+
 MODEL_NAME_MAPPING = {
     RESNET_18: "ResNet-18",
     RESNET_152: "ResNet-152",
@@ -46,6 +50,11 @@ MODEL_NAME_MAPPING = {
     EFF_NET_V2_L: "EffNetV2-L"
 }
 
+APPROACH_NAME_MAPPING = {
+    BASELINE: "Base",
+    SHIFT: "SucHalv",
+    MOSIX: "MOSIX"
+}
 
 
 def _non_relevant_key(key, ignore_prefixes):
@@ -213,7 +222,8 @@ def regroup_and_rename_times(times):
     return grouped_times
 
 
-def end_to_end_plot_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type, not_aggregated=False):
+def end_to_end_plot_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
+                          not_aggregated=False):
     model_measurements = {}
     for model in models:
         model_measurements[model] = {}
@@ -253,7 +263,6 @@ def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_l
 
 def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                           plot_save_path):
-
     plt.rcParams.update({'font.size': 24})
 
     plt.rcParams.update({'text.usetex': True
@@ -288,9 +297,13 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     # Create a figure and an axis with a larger width
     fig, ax = plt.subplots(figsize=(8, 4))
 
+    max_method_value = 0
     for i, method in enumerate(methods):
         method_values = [data[model][method] for model in models]
-        bars = ax.bar(index + i * bar_width, method_values, bar_width, label=method, color=colors[i])
+        max_method_value = max(max_method_value, max(method_values))
+        print(max_method_value)
+        bars = ax.bar(index + i * bar_width, method_values, bar_width, label=APPROACH_NAME_MAPPING[method],
+                      color=colors[i])
 
         # Add annotations for shift and mosix
         if method in ['shift', 'mosix']:
@@ -305,14 +318,18 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     ax.set_ylabel('Time in seconds')
     ax.set_xticks(index + bar_width * (n_methods - 1) / 2)
     ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models], rotation=15, ha='right')  # Rotate x-axis labels
-    # ax.set_xticklabels([MODEL_NAME_MAPPING[model] for model in models])
     ax.tick_params(axis='x')
+    if int(max_method_value) < 1000:
+        y_ticks = list(range(0, int(max_method_value) + 200, 200))
+    else:
+        y_ticks = list(range(0, int(max_method_value) + 500, 500))
+    ax.set_yticks(y_ticks)
     # Remove the legend from the actual plot
     # Save the plot without legend
     plt.tight_layout()
     plot_file_name = f'end_to_end-{distribution}-{measure_type}'
-    plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.svg'))
-    plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
+    plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.svg'))
+    plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.png'))
 
     # Extract the legend
     fig_legend = plt.figure(figsize=(8, 2))
@@ -328,13 +345,10 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     plt.close(fig)
 
 
-
-
-def plot_end_to_end_times_error(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
-                          plot_save_path):
+def plot_end_to_end_times_error(data_root_dir, file_template, models, approaches, distribution, data_items,
+                                measure_type,
+                                plot_save_path):
     plt.rcParams.update({'font.size': 20})
-
-
 
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
 
@@ -380,7 +394,7 @@ def plot_end_to_end_times_error(data_root_dir, file_template, models, approaches
                 baseline_value = np.median(data[model]['baseline'])
                 speedup = baseline_value / np.median(data[model][method])
                 ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.2f}x', ha='center',
-                va = 'bottom')
+                        va='bottom')
 
         # Adding labels and title
         ax.set_ylabel('Time in seconds')
@@ -449,5 +463,6 @@ if __name__ == '__main__':
             plot_save_path = os.path.abspath(f'./plots/{data_items}')
             plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                                   plot_save_path)
-            plot_end_to_end_times_error(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
-                                  plot_save_path)
+            plot_end_to_end_times_error(root_dir, file_template, models, approaches, distribution, data_items,
+                                        measure_type,
+                                        plot_save_path)
