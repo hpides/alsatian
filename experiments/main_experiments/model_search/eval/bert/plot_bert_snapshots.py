@@ -309,7 +309,7 @@ if __name__ == '__main__':
                 measure_type = 'STEPS_DETAILS'
             else:
                 measure_type = 'EXECUTION_STEPS'
-            root_dir = "/Users/nils/Downloads/des-gpu-bert-synthetic/"
+            root_dir = os.path.abspath("./results/des-gpu-bert-synthetic/")
             plot_save_path = f'./plots/{data_items}'
             plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                                   plot_save_path)

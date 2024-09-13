@@ -19,12 +19,14 @@ Results of experiments in the paper:
 ### Running an existing experiment:
 
 - we run our experiments in a docker container
-  - a prebuild image (`slin96/model-search-experiments:latest`) can be found [here](https://hub.docker.com/repository/docker/slin96/model-search-experiments/general)
-  - instructions on how to start the container or build a new one can be found [here](..%2F..%2Fdocker_setup) 
-  - to have a realistic setup and prevent caching of result from previous runs, we 
-    - limit the I/O of the docker container for specific directories 
-    - and run a script on the host machines that empties caches when triggered by the experiment script
-    - see [readme.md](..%2Fprevent_caching%2Freadme.md) for details
+    - a prebuild image (`slin96/model-search-experiments:latest`) can be
+      found [here](https://hub.docker.com/repository/docker/slin96/model-search-experiments/general)
+    - instructions on how to start the container or build a new one can be
+      found [here](..%2F..%2F..%2Fsetup%2Fdocker_setup)
+    - to have a realistic setup and prevent caching of result from previous runs, we
+        - limit the I/O of the docker container for specific directories
+        - and run a script on the host machines that empties caches when triggered by the experiment script
+        - see [readme.md](..%2Fprevent_caching%2Freadme.md) for details
 
 - to run an existing experiments we need to ssh into the target machine, make sure the model snapshots and datasets are
   available and then run the start script of our choice
@@ -63,7 +65,9 @@ Results of experiments in the paper:
       in [generate_set.py](..%2Fsnapshots%2Fsynthetic%2Fgenerate_set.py)
 - trained snapshots
     - short description here [trained](..%2Fsnapshots%2Ftrained)
-    - TODO describe how/where to place them
+- our scripts are designed such that once snapshots are generated (which can take a significant amount of time) they are
+  reused. This implies (a) you have to delete existing snapshots to make sure you generate new ones (b) you can get our
+  generated snapshots upon request if you want to reproduce our experiments
 
 ### Datasets
 

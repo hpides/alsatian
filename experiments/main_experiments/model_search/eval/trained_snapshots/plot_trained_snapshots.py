@@ -363,7 +363,7 @@ if __name__ == '__main__':
     measure_type = 'EXECUTION_STEPS'
 
     for data_items in [1000, 2000, 4000, 8000]:
-        root_dir = "/Users/nils/Downloads/des-gpu-imagenette-trained-snapshots/"
+        root_dir = os.path.abspath("./results/des-gpu-imagenette-trained-snapshots/")
         plot_save_path = f'./plots/{data_items}'
         plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                               plot_save_path)

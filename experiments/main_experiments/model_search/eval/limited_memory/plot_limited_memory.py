@@ -118,7 +118,7 @@ def plot_approaches_across_memory_config(root_dir, model_distribution, model_dis
 if __name__ == '__main__':
     output_path = './plots'
     model_distribution = "FIFTY_PERCENT"
-    root_dir = f'/Users/nils/Downloads/limited-memory-exps'
+    root_dir = os.path.abspath(f'./results/limited-memory-exps')
     model_dist = "FIFTY_PERCENT"
 
     for approach in ['mosix', 'baseline', 'shift']:

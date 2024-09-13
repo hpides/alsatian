@@ -27,9 +27,10 @@
 
 #### Results
 
-- the experiment was executed on the hardware as described in [readme.md](..%2F..%2Fexp_environment%2Freadme.md)
+- the experiment was executed on the hardware as described in [setup](..%2F..%2F..%2Fsetup)[readme.md](..%2F..%2Fexp_environment%2Freadme.md)
   and is also documented in every single result file
-- the single result files can be found here: TODO insert path
+- the results of the experiment should be placed in [results](model_rank%2Fresults) to be available for plotting
+- the results that we show in the paper can be downloaded from our nextcloud
 
 
 

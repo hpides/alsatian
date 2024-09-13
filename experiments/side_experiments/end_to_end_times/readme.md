@@ -11,7 +11,7 @@
 
 - for the experiments we had the following setup
 - **Hardware**
-    - DES GPU server
+    - GPU server
     - 2 GPUs (NVIDIA RTX A5000, 24GB)
     - AMD Ryzen Threadripper PRO 3995WX 64-Cores, 128 logical cores
 - **Our Setup**

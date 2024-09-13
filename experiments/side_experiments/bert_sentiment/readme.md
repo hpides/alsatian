@@ -2,7 +2,7 @@
 
 - for the experiments we had the following setup
 - **Hardware**
-    - DES GPU server
+    - GPU server
     - 2 GPUs (NVIDIA RTX A5000, 24GB)
     - AMD Ryzen Threadripper PRO 3995WX 64-Cores, 128 logical cores
 - **Our Setup**
@@ -14,5 +14,5 @@
 
 
 ## General
-- we want to investigate how much time we spend on loading the model to GPU vs actually performing inferecne
+- we want to investigate how much time we spend on loading the model to GPU vs actually performing inference
 - data: https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz

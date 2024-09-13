@@ -1,3 +1,4 @@
+import os
 from statistics import median
 
 from experiments.side_experiments.plot_shared.data_transform import aggregate_measurements
@@ -90,7 +91,7 @@ def plot_time_dist(root_dir, file_template, model_names, disk_speed, file_name_p
 
 
 if __name__ == '__main__':
-    root_dir = '/Users/nils/Downloads/bottleneck-analysis'
+    root_dir = os.path.abspath('../results/bottleneck-analysis')
     file_template = 'bottleneck_analysis-model-{}-items-{}-split-{}-dataset_type-{}'
     disk_speed = 200  # in MB/s
     model_names = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]

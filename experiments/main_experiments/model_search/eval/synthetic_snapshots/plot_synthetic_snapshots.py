@@ -459,7 +459,7 @@ if __name__ == '__main__':
 
     for distribution in distributions:
         for data_items in [1000, 2000, 4000, 8000]:
-            root_dir = '/Users/nils/uni/programming/model-search-paper/experiments/main_experiments/model_search/eval/synthetic_snapshots/results/des-gpu-imagenette-synthetic-snapshots'
+            root_dir = os.path.abspath('./results/des-gpu-imagenette-synthetic-snapshots')
             plot_save_path = os.path.abspath(f'./plots/{data_items}')
             plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                                   plot_save_path)

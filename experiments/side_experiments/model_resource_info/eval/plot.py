@@ -1,3 +1,4 @@
+import os.path
 from statistics import mean
 
 import matplotlib.pyplot as plt
@@ -30,7 +31,7 @@ def plot(data, metric, output_path=None):
 
 
 if __name__ == '__main__':
-    root_dir = '/Users/nils/Downloads/model_resource_info'
+    root_dir = os.path.abspath('./results/model_resource_info')
     model_names = VISION_MODEL_CHOICES
     batch_size = 32
     metrics = ['num_params', 'num_params_mb', 'output_size_mb', 'gpu_inf_times']
@@ -40,5 +41,5 @@ if __name__ == '__main__':
 
         measurements = get_raw_data(root_dir, [_id], expected_files=1)[MEASUREMENTS]
         for metric in metrics:
-            output_path = f'../plots/{metric}-{_id}'
+            output_path = f'./plots/{metric}-{_id}'
             plot(measurements, metric, output_path)

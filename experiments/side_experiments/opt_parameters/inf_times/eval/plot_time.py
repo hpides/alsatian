@@ -60,7 +60,7 @@ def plot_inf_times(data, save_path):
 
 
 if __name__ == '__main__':
-    root_dir = '/Users/nils/Downloads/inference-time-exp'
+    root_dir = './results/inference-time-exp'
     batch_sizes = [32, 128, 256, 512, 1024]
 
     save_path = '../plots/inf_times'

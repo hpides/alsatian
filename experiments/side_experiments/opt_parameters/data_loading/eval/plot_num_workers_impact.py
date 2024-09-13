@@ -53,7 +53,7 @@ def multi_line_plot(data, output_path=None):
 
 
 if __name__ == '__main__':
-    root_dir = '/Users/nils/Downloads/data-loading-exp'
+    root_dir = './results/data-loading-exp'
     batch_sizes = [32, 128, 256, 512, 1024]
     nums_workers = [1, 2, 4, 8, 32, 48, 64]
     sleeps = [None, 2]
