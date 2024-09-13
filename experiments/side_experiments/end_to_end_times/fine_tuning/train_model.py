@@ -4,7 +4,7 @@ import torch
 from torch import optim
 from torch.optim import lr_scheduler
 
-from global_utils.global_constants import TIME_DATA_LOADING
+from global_utils.constants import TIME_DATA_LOADING
 
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders, dataset_sizes, device):

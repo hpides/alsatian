@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 
 from experiments.side_experiments.plot_shared.file_parsing import get_raw_data
-from global_utils.constants import END_TO_END
-from global_utils.global_constants import MEASUREMENTS
+from global_utils.constants import END_TO_END, MEASUREMENTS
 from global_utils.model_names import *
 
 

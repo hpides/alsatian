@@ -8,8 +8,7 @@ from experiments.main_experiments.snapshots.synthetic.generate import TOP_LAYERS
 from experiments.side_experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
-    EXEC_STEP_MEASUREMENTS
-from global_utils.global_constants import MEASUREMENTS
+    EXEC_STEP_MEASUREMENTS, MEASUREMENTS
 from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L
 
 MOSIX = "mosix"
@@ -53,7 +52,8 @@ MODEL_NAME_MAPPING = {
 APPROACH_NAME_MAPPING = {
     BASELINE: "Base",
     SHIFT: "SucHalv",
-    MOSIX: "MOSIX"
+    MOSIX: "MOSIX",
+    "base": "Base",
 }
 
 
@@ -171,7 +171,7 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
     for file_id in file_ids:
         # find file
         files += extract_files_by_name(root_dir, [file_id])
-    assert len(files) >= 2
+    assert len(files) >= 1
 
     collected_metrics = []
     for file in files:

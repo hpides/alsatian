@@ -1,5 +1,4 @@
 import json
-from statistics import mean, median
 
 
 def aggregate_json_dicts(json_dicts, aggregation_func):

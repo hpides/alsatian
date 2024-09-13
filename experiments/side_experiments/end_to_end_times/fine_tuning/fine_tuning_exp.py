@@ -8,7 +8,7 @@ from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.dataset_transfroms import imagenet_data_transforms
 from custom.models.init_models import initialize_model
 from experiments.side_experiments.end_to_end_times.fine_tuning.train_model import standard_training
-from global_utils.global_constants import FULL_FINE_TUNING, FEATURE_EXTRACTION, VAL, TRAIN
+from global_utils.constants import FULL_FINE_TUNING, FEATURE_EXTRACTION, VAL
 from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_18, MOBILE_V2, RESNET_50, RESNET_152, VIT_B_16, VIT_L_16
 from global_utils.write_results import write_measurements_and_args_to_json_file
 

@@ -16,7 +16,7 @@ from model_search.execution.engine.baseline_execution_engine import BaselineExec
     inference, load_model_to_device
 from model_search.execution.planning.execution_plan import ExecutionStep, ScoreModelStep, ModifyCacheStep
 from model_search.execution.planning.mosix_planner import MosixExtractFeaturesStep
-from model_search.executionsteplogger import ExecutionStepLogger
+from model_search.execution_step_logger import ExecutionStepLogger
 from model_search.model_management.model_store import ModelStore
 from model_search.proxies.nn_proxy import linear_proxy
 

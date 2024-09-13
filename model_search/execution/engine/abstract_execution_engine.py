@@ -6,7 +6,7 @@ from experiments.main_experiments.model_search.benchmark_level import BenchmarkL
 from global_utils.benchmark_util import Benchmarker
 from model_search.caching_service import CachingService
 from model_search.execution.planning.execution_plan import ExecutionPlan, ExecutionStep
-from model_search.executionsteplogger import ExecutionStepLogger
+from model_search.execution_step_logger import ExecutionStepLogger
 
 
 def _init_benchmarker(benchmark_level: BenchmarkLevel):

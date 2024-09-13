@@ -28,4 +28,4 @@ __pycache__
 /experiments/side_experiments/bert_sentiment/imdb_dummy_data/
 /experiments/main_experiments/model_search/eval/synthetic_snapshots/results/des-gpu-imagenette-synthetic-snapshots.zip
 /experiments/main_experiments/model_search/eval/synthetic_snapshots/results/des-gpu-imagenette-synthetic-snapshots/
-/experiments/docker_setup/password.txt
+/setup/docker_setup/password.txt

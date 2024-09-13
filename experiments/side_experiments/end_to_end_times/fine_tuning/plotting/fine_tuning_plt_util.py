@@ -3,7 +3,7 @@ import statistics
 from experiments.side_experiments.plot_shared.data_transform import aggregate_measurements
 from experiments.side_experiments.plot_shared.file_parsing import get_raw_data
 from experiments.side_experiments.plot_shared.plotting_util import plot_stacked_bar_chart
-from global_utils.global_constants import *
+from global_utils.constants import TIME, VAL, MEASUREMENTS, VAL_DATA_LOAD, TRAIN_DATA_LOAD
 
 
 def aggregate_over_epochs(measurements):

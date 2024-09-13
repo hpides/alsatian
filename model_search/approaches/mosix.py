@@ -3,10 +3,9 @@ import os
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from experiments.main_experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.constants import GENERATE_MM_SNAP, SH_RANK_ITERATION_, RANK_ITERATION_DETAILS_, GEN_EXEC_PLAN, \
-    EXEC_STEP_MEASUREMENTS, SSD_CACHING_ACTIVE, MODEL_RANKING
+    EXEC_STEP_MEASUREMENTS, SSD_CACHING_ACTIVE, MODEL_RANKING, TRAIN, TEST
 from global_utils.deterministic import DETERMINISTIC_EXECUTION, check_deterministic_env_var_set, set_deterministic, TRUE
-from global_utils.global_constants import TRAIN, TEST
-from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
+from global_utils.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.approaches.shift import get_data_ranges, divide_snapshots, get_sorted_model_scores, _init_benchmarker
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass

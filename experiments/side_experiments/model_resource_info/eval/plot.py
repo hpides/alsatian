@@ -3,7 +3,7 @@ from statistics import mean
 import matplotlib.pyplot as plt
 
 from experiments.side_experiments.plot_shared.file_parsing import get_raw_data
-from global_utils.global_constants import MEASUREMENTS
+from global_utils.constants import MEASUREMENTS
 from global_utils.model_names import VISION_MODEL_CHOICES
 
 

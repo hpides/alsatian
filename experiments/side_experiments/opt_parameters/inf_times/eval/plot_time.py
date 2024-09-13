@@ -2,8 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from experiments.side_experiments.plot_shared.file_parsing import get_raw_data
-from global_utils.constants import INFERENCE
-from global_utils.global_constants import MEASUREMENTS
+from global_utils.constants import INFERENCE, MEASUREMENTS
 from global_utils.model_names import CONVOLUTION_MODELS, TRANSFORMER_MODELS
 
 

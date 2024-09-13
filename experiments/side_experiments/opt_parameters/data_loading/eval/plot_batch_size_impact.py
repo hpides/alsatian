@@ -2,8 +2,7 @@ import matplotlib.pyplot as plt
 
 from experiments.side_experiments.opt_parameters.data_loading.eval.plot_shared import get_file_id
 from experiments.side_experiments.plot_shared.file_parsing import get_raw_data
-from global_utils.constants import LOAD_DATA
-from global_utils.global_constants import MEASUREMENTS
+from global_utils.constants import LOAD_DATA, MEASUREMENTS
 
 
 def collect_batch_size_data(root_dir, num_workers, sleep, dataset_type, batch_sizes, last_batch=None):

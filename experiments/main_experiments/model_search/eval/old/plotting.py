@@ -6,8 +6,7 @@ from matplotlib import pyplot as plt
 from experiments.side_experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
-    EXEC_STEP_MEASUREMENTS
-from global_utils.global_constants import MEASUREMENTS
+    EXEC_STEP_MEASUREMENTS, MEASUREMENTS
 from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, MOBILE_V2, RESNET_50, RESNET_101, EFF_NET_V2_L, \
     EFF_NET_V2_S, RESNET_34
 

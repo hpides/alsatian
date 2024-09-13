@@ -5,8 +5,7 @@ from experiments.side_experiments.plot_shared.file_parsing import extract_files_
 from experiments.side_experiments.plot_shared.horizontal_normalized_bars import plot_horizontal_normalized_bar_chart
 from experiments.side_experiments.plot_shared.plotting_util import plot_stacked_bar_chart
 from global_utils.constants import STATE_DICT_SIZE, LOAD_DATA, DATA_TO_DEVICE, INFERENCE, MODEL_TO_DEVICE, \
-    CALC_PROXY_SCORE, STATE_TO_MODEL, LOAD_STATE_DICT
-from global_utils.global_constants import MEASUREMENTS
+    CALC_PROXY_SCORE, STATE_TO_MODEL, LOAD_STATE_DICT, MEASUREMENTS
 from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L
 
 MODEL_NAME_MAPPING = {

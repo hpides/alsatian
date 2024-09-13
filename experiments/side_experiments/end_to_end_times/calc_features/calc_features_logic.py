@@ -2,7 +2,7 @@ import time
 
 import torch
 
-from global_utils.global_constants import TIME_DATA_LOADING, TIME, VAL, TRAIN
+from global_utils.constants import TIME_DATA_LOADING, TIME, VAL,TRAIN
 
 
 def _calc_features(model, dataloaders, device, repetitions=5):
