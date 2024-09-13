@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 from custom.models.init_models import initialize_model
-from experiments.snapshots.synthetic.generate import generate_snapshots, RetrainDistribution
+from experiments.main_experiments.snapshots.synthetic.generate import generate_snapshots, RetrainDistribution
 from global_utils.json_operations import write_json_to_file, read_json_to_dict
 from global_utils.model_names import RESNET_18
 from global_utils.model_operations import state_dict_equal

@@ -1,2 +1,4 @@
-- no prep needed just download form
+- download from here
   - https://github.com/fastai/imagenette#imagewoof
+- no data prep needed
+- data also in our nextcloud

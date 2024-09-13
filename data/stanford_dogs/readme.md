@@ -1,3 +1,5 @@
-- download fom here 
-- http://vision.stanford.edu/aditya86/ImageNetDogs/
-- -run prepare script
+- download from here
+  - http://vision.stanford.edu/aditya86/ImageNetDogs/
+- prepare data for use (make sure to adjust files)
+  - [prepare_data.py](prepare_data.py)
+- prepared data also in our nextcloud

@@ -4,7 +4,7 @@ from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.baseline_execution_engine import BaselineExecutionEngine
 from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep, ScoreModelStep
 from model_search.execution.planning.shift_planner import ShiftExtractFeaturesStep
-from model_search.executionsteplogger import ExecutionStepLogger
+from model_search.execution_step_logger import ExecutionStepLogger
 
 
 class ShiftExecutionEngine(BaselineExecutionEngine):

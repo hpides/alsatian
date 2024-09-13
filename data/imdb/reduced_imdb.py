@@ -124,6 +124,6 @@ def _reduced_data(indices, texts, labels):
 
 if __name__ == '__main__':
     create_sub_dataset(
-        "/Users/nils/uni/programming/model-search-paper/experiments/bert_sentiment/imdb_dummy_data/train", 3)
+        "/experiments/side_experiments/bert_sentiment/imdb_dummy_data/train", 3)
 
     print("test")

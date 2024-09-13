@@ -2,8 +2,8 @@ import json
 from statistics import mean
 
 from experiments.micro_benchmarks.layer_io_vs_compute_bound.plot import plot
-from experiments.plot_shared.file_parsing import get_raw_data
-from global_utils.global_constants import MEASUREMENTS
+from experiments.side_experiments.plot_shared.file_parsing import get_raw_data
+from global_utils.constants import MEASUREMENTS
 from global_utils.model_names import VISION_MODEL_CHOICES
 
 

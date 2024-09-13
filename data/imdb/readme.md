@@ -11,3 +11,5 @@
   pages     = {142--150},
   url       = {http://www.aclweb.org/anthology/P11-1015}
 }
+- use [reduced_imdb.py](reduced_imdb.py) if you need a reduced version of the dataset
+- data also in our nextcloud

@@ -14,7 +14,7 @@ from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.engine.abstract_execution_engine import ExecutionEngine
 from model_search.execution.planning.execution_plan import ExecutionStep, BaselineExtractFeaturesStep, ScoreModelStep
-from model_search.executionsteplogger import ExecutionStepLogger
+from model_search.execution_step_logger import ExecutionStepLogger
 from model_search.model_management.model_store import match_keys
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
 from model_search.proxies.nn_proxy import linear_proxy

@@ -1,10 +1,9 @@
 import torch
 
-from experiments.model_search.benchmark_level import BenchmarkLevel
+from experiments.main_experiments.model_search.benchmark_level import BenchmarkLevel
 from global_utils.benchmark_util import Benchmarker
-from global_utils.constants import EXEC_STEP_MEASUREMENTS, GEN_EXEC_PLAN, MODEL_RANKING
-from global_utils.global_constants import TRAIN
-from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
+from global_utils.constants import EXEC_STEP_MEASUREMENTS, GEN_EXEC_PLAN, MODEL_RANKING, TRAIN
+from global_utils.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.approaches.shift import get_sorted_model_scores
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass

@@ -2,13 +2,11 @@ import os
 import unittest
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
+from global_utils.constants import TEST, TRAIN
 from global_utils.deterministic import DETERMINISTIC_EXECUTION, TRUE, check_deterministic_env_var_set, set_deterministic
-from global_utils.global_constants import TEST
-from global_utils.global_constants import TRAIN
+from global_utils.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.approaches import shift, mosix, baseline
-from model_search.approaches.dummy_snapshots import dummy_snap_and_mstore_four_models
 from model_search.execution.data_handling.data_information import DatasetClass
-from model_search.execution.planning.baseline_planner import TEST
 from model_search.execution.planning.execution_plan import CacheLocation
 from model_search.execution.planning.planner_config import PlannerConfig
 
