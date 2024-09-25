@@ -83,9 +83,12 @@ def plot_time_dist(root_dir, file_template, model_names, disk_speed, file_name_p
                                                                                                                    '')
                     data = rename_model_names(data)
 
+                    # plot_horizontal_normalized_bar_chart(data, save_path='plots',
+                    #                                      file_name=f'{file_name_prefix}normalized-{file_name}',
+                    #                                      ignore=ignore)
                     plot_horizontal_normalized_bar_chart(data, save_path='plots',
                                                          file_name=f'{file_name_prefix}normalized-{file_name}',
-                                                         ignore=ignore)
+                                                         ignore=ignore, legend=False)
                     plot_stacked_bar_chart(data, save_path='plots',
                                            file_name=f'{file_name_prefix}stacked-{file_name}')
 

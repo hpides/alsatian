@@ -51,8 +51,8 @@ MODEL_NAME_MAPPING = {
 
 APPROACH_NAME_MAPPING = {
     BASELINE: "Base",
-    SHIFT: "SucHalv",
-    MOSIX: "MOSIX",
+    SHIFT: "SHiFT",
+    MOSIX: "Alsatian",
     "base": "Base",
 }
 
