@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator
 
 
-def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=None, file_name=None):
+def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=None, file_name=None, legend=True):
     FONT_SIZE = 18
     plt.rcParams.update({
         'font.size': FONT_SIZE,  # General font size
@@ -50,8 +50,24 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
     ax.set_title(title)
 
     # Create a custom legend
-    handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
-    plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.38, 1.5), ncol=4)
+    if legend:
+        handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
+        plt.legend(handles, tasks, loc='upper center', bbox_to_anchor=(0.38, 1.5), ncol=4)
+    else:
+        # Create and save the legend as a separate image
+        fig_legend, ax_legend = plt.subplots(figsize=(8, 2))
+        handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
+        tasks = ["prep. model", "prep. data", "infer.", "p. scoring"]
+        ax_legend.legend(handles, tasks, loc='center', ncol=len(tasks))
+        ax_legend.axis('off')  # Hide the axes
+
+        if save_path and file_name:
+            legend_path = os.path.join(save_path, f'legend.png')
+            fig_legend.savefig(legend_path, format="png", bbox_inches='tight')
+            legend_path = os.path.join(save_path, f'legend.svg')
+            fig_legend.savefig(legend_path, bbox_inches='tight')
+
+        plt.close(fig_legend)
 
     plt.grid(axis='x')
 

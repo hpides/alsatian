@@ -288,8 +288,12 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
             for bar, model in zip(bars, models):
                 baseline_value = data[model]['baseline']
                 speedup = baseline_value / data[model][method]
-                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.2f}x', ha='center',
-                        va='bottom')
+                if speedup >= 10:
+                    ax.text(bar.get_x() + bar.get_width() / 2 + 0.09, bar.get_height(), f'{speedup:.1f}x', ha='center',
+                            va='bottom', rotation=0)
+                else:
+                    ax.text(bar.get_x() + bar.get_width() / 2 + 0.04, bar.get_height(), f'{speedup:.1f}x', ha='center',
+                            va='bottom', rotation=0)
 
     # Adding labels and title
     # ax.set_xlabel('Model Architectures')
