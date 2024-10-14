@@ -261,6 +261,21 @@ def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_l
     return model_measurements
 
 
+def has_first_decimal_zero(number):
+    # Convert the number to string and split at the decimal point
+    number_str = str(number)
+
+    # Check if there's a decimal part
+    if '.' in number_str:
+        decimal_part = number_str.split('.')[1]
+
+        # Check if the first digit in the decimal part is '0'
+        return decimal_part[0] == '0'
+
+    # If no decimal part exists, return False
+    return False
+
+
 def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                           plot_save_path):
     plt.rcParams.update({'font.size': 24})
@@ -310,8 +325,17 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
             for bar, model in zip(bars, models):
                 baseline_value = data[model]['baseline']
                 speedup = baseline_value / data[model][method]
-                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.2f}x', ha='center',
-                        va='bottom')
+                if speedup >= 10:
+                    if False and has_first_decimal_zero(speedup):
+                        ax.text(bar.get_x() + bar.get_width() / 2 + 0.04, bar.get_height(), f'{int(speedup)}x', ha='center',
+                        va='bottom', rotation=0)
+                    else:
+                        ax.text(bar.get_x() + bar.get_width() / 2 + 0.09, bar.get_height(), f'{speedup:.1f}x',
+                                ha='center',
+                                va='bottom', rotation=0)
+                else:
+                    ax.text(bar.get_x() + bar.get_width() / 2 + 0.04, bar.get_height(), f'{speedup:.1f}x', ha='center',
+                            va='bottom', rotation=0)
 
     # Adding labels and title
     # ax.set_xlabel('Model Architectures')

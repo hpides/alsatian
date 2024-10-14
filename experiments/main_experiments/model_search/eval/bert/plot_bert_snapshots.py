@@ -268,7 +268,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     times = [data[approach] for approach in original_approaches]
 
     # Create the bar plot
-    plt.figure(figsize=(7, 9))
+    fig, ax = plt.subplots(figsize=(7, 9))
     bars = plt.bar([APPROACH_NAME_MAPPING[x] for x in ordered_approaches], times, color=colors)
 
     # Add annotations for shift and mosix
@@ -276,7 +276,8 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
         if approach in ['shift', 'mosix']:
             baseline_value = data['baseline']
             speedup = baseline_value / data[original_approach]
-            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.2f}x', ha='center', va='bottom')
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.1f}x', ha='center',
+                        va='bottom', rotation=0)
 
     # plt.xlabel('Approach')
     plt.ylabel('Time in sec', labelpad=20)
