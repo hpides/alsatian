@@ -8,7 +8,7 @@ from experiments.main_experiments.model_search.eval.synthetic_snapshots.plot_syn
 from global_utils.model_names import VIT_L_32
 
 
-def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_path, file_name, config_names, x_label,
+def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_path, file_name, config_names, show_yaxis_text,
                                           title):
     plt.rcParams.update({'font.size': 24})
 
@@ -55,6 +55,7 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
     bar_width = 0.8
     indices = np.arange(len(approaches))
     plt.figure(figsize=(3, 4))
+    # fig, ax = plt.subplots()
     # Stack the bars
     bottom = np.zeros(len(approaches))
     bars = []
@@ -63,9 +64,13 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
         bar = plt.bar(indices, values[i], bar_width, bottom=bottom, label=category, color=colors[i])
         bars.append(bar)
         bottom += values[i]
-    # plt.xlabel(x_label)
-    plt.ylabel('time in seconds')
-    plt.xlabel('memory in GB', labelpad=20, x=0.1)
+    if show_yaxis_text:
+        plt.ylabel('Time in seconds')
+    plt.ylim(0, 1600)
+    plt.yticks([500, 1000, 1500])
+
+
+    plt.xlabel('Memory in GB', labelpad=20, x=0.1)
     # plt.title(title)
     plt.xticks(indices, approaches)
     if title in ["shift", "baseline"]:
@@ -80,9 +85,15 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
     ax_legend = fig_legend.add_subplot(111)
     ax_legend.legend(handles[::-1], labels[::-1], loc='center', ncol=2)
     ax_legend.axis('off')  # Hide the axes
+
+
+
+
     legend_file_path = os.path.join(file_path, f'limit-memory-legend.svg')
     fig_legend.savefig(legend_file_path, bbox_inches='tight', format='svg')
     plt.close(fig_legend)
+
+
 
     # Remove the legend from the original plot
     # legend.remove()
@@ -111,7 +122,11 @@ def plot_approaches_across_memory_config(root_dir, model_distribution, model_dis
                 collected_data.append(detailed_numbers)
             plot_file_name = f'approaches_across_memory_config-{approach}-{model}-{model_distribution}'
             stacked_bar_plot_three_configurations(collected_data[0], collected_data[1], collected_data[2], output_path,
-                                                  plot_file_name, list(cache_size_mapping.values()), "available memory",
+                                                  plot_file_name, list(cache_size_mapping.values()), True,
+                                                  approach)
+
+            stacked_bar_plot_three_configurations(collected_data[0], collected_data[1], collected_data[2], output_path,
+                                                  f'NO-Y-Label-{plot_file_name}', list(cache_size_mapping.values()), False,
                                                   approach)
 
 
