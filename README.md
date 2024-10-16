@@ -1,4 +1,4 @@
-<h1 align="center">Alsatian: Efficiently Searching Through Deep Learning Expert Models for Transfer Learning</h1>
+<h1 align="center">Alsatian: Optimizing Model Search for Deep Transfer Learning</h1>
 <p align="center">This repository contains the code to our <a href=""> paper<a/>.<p/>
 
 ## General Info
