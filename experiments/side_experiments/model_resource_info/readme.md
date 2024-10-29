@@ -4,7 +4,10 @@
 - We might extend this experiment in the future to analyze models not only on a block but on a layer granularity
 
 #### Results
+Find plotted results under [plots](eval%2Fplots). We analyze 
+- the **inference time** per block in plots with the prefix: `gpu_inf_times`
+- the number of **parameters per block** in plots with the prefix: `num_params` and `num_params_mb`
+- the **block output size** (assuming the model gets (224,224,3)-shaped inputs) in plots with the prefix: `output_size_mb`
 
-- the experiment was executed on the hardware as described in [readme.md](..%2F..%2Fexp_environment%2Freadme.md)
-  and is also documented in every single result file
-- the single result files can be found here: TODO insert path
+- the experiment environment is documented in every single result file
+- the single result files can be found here: TODO insert path once we can publish it
