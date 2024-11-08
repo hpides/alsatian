@@ -92,7 +92,7 @@ def get_split_index(split_index, model_name):
     return split_index
 
 
-def merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential, _index):
+def new_head_merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential, _index):
     base_model_one, head_one = split_model_in_two(base_model, _index)
     base_model_two, head_two = split_model_in_two(to_merge, _index)
 
@@ -119,7 +119,7 @@ def merge_n_models(models, models_indices):
     # IMPORTANT: Indices must be sorted
     merged_model = models[0]
     for i, si in enumerate(models_indices):
-        merged_model = merge_models(merged_model, models[i + 1], si)
+        merged_model = new_head_merge_models(merged_model, models[i + 1], si)
 
     return merged_model
 
