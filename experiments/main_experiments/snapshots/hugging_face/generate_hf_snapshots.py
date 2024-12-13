@@ -1,14 +1,34 @@
 import argparse
 import configparser
+import os
 
 import torch
 
 from custom.models.init_models import initialize_model
 from experiments.main_experiments.snapshots.synthetic.generate import generate_snapshot
+from global_utils.json_operations import read_json_to_dict, write_json_to_file
 from global_utils.model_names import RESNET_50
+from model_search.model_management.model_store import ModelStore, model_store_from_dict
 
 HF_MODEL_CHOICES = [RESNET_50]
 
+def build_model_store(save_path, model_snapshots):
+    model_store = ModelStore(save_path)
+    for snapshot in model_snapshots:
+        model_store.add_snapshot(snapshot)
+
+    return model_store
+
+
+def get_existing_model_store(model_store_save_path):
+    model_store_json_path = os.path.join(model_store_save_path, 'model_store.json')
+
+    model_store_dict = read_json_to_dict(model_store_json_path)
+    model_store = model_store_from_dict(model_store_dict)
+
+    model_snapshots = list(model_store.models.values())
+
+    return model_snapshots, model_store
 
 def generate_hf_snapshots(architecture_name: str, base_model_id, fine_tuned_model_ids, save_path: str,
                           hf_cache_dir: str,
@@ -54,9 +74,19 @@ if __name__ == '__main__':
     config.read(args.config_file)
     args = ExpArgs(config, args.config_section)
 
-    # parse snapshot_id_file
-    with open(args.snapshot_ids_file, "r") as file:
-        fine_tuned_model_ids = [line.strip() for line in file]
+    model_store_json_path = os.path.join(args.snapshot_save_path, 'model_store.json')
+    if os.path.exists(model_store_json_path):
+        # execute just to see if we get any errors
+        get_existing_model_store(args.snapshot_save_path)
+    else:
+        # parse snapshot_id_file
+        with open(args.snapshot_ids_file, "r") as file:
+            fine_tuned_model_ids = [line.strip() for line in file]
 
-    generate_hf_snapshots(args.model_name, args.base_model_id, fine_tuned_model_ids, args.snapshot_save_path,
-                          args.hf_caching_path, args.number_models)
+        snapshots = generate_hf_snapshots(args.model_name, args.base_model_id, fine_tuned_model_ids, args.snapshot_save_path,
+                              args.hf_caching_path, args.number_models)
+
+        model_store = build_model_store(args.snapshot_save_path, snapshots)
+        model_store_dict = model_store.to_dict()
+        write_json_to_file(model_store_dict, model_store_json_path)
+
