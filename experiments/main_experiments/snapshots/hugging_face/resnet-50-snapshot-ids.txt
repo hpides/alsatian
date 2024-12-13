@@ -1,0 +1,2 @@
+TahaDouaji/detr-doc-table-detection
+biglam/detr-resnet-50_fine_tuned_nls_chapbooks

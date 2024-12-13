@@ -13,8 +13,13 @@ ARCHITECTURE_ID = "architecture_id"
 SAVE_PATH = "save_path"
 
 
-def generate_snapshot_id(architecture_name, state_dict_hash):
-    return f'{architecture_name}-{state_dict_hash}-{random_short_id()}'
+def generate_snapshot_id(architecture_name, state_dict_hash, hf_id):
+    # if hugging face model identifier is present use that one as an id otherwise generate one
+    if hf_id is not None:
+        _id = hf_id
+    else:
+        _id = random_short_id()
+    return f'{architecture_name}-{state_dict_hash}-{hf_id}'
 
 
 class ModelSnapshot:

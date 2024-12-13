@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from transformers import AutoModelForObjectDetection
 
 from custom.models.custom_mobilenet import mobilenet_v2, MobileNet_V2_Weights
 from custom.models.custom_resnet import *
@@ -14,14 +15,23 @@ from global_utils.model_operations import transform_to_sequential, split_model_i
 
 
 def initialize_model(model_name, pretrained=False, new_num_classes=None, features_only=False, sequential_model=False,
-                     freeze_feature_extractor=False):
+                     freeze_feature_extractor=False, hf_identifier=None, hf_cache_dir=None):
     # init base model
     if model_name == RESNET_18:
         model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1) if pretrained else resnet18()
     elif model_name == RESNET_34:
         model = resnet34(weights=ResNet34_Weights.IMAGENET1K_V1) if pretrained else resnet34()
     elif model_name == RESNET_50:
-        model = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1) if pretrained else resnet50()
+        if hf_identifier is not None:
+            model = resnet50()
+            hf_model = AutoModelForObjectDetection.from_pretrained(hf_identifier, cache_dir=hf_cache_dir)
+            hf_mode_resnet50 = hf_model.model.backbone.conv_encoder.model
+            hf_model_sd = hf_mode_resnet50.state_dict()
+            missing_keys, unexpected_keys = model.load_state_dict(hf_model_sd, strict=False)
+            assert missing_keys == ['fc.weight', 'fc.bias'] # HF model is a backbone and naturally misses these layers
+            assert len(unexpected_keys) == 0 # there should be no unexpected keys
+        else:
+            model = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1) if pretrained else resnet50()
     elif model_name == RESNET_101:
         model = resnet101(weights=ResNet101_Weights.IMAGENET1K_V1) if pretrained else resnet101()
     elif model_name == RESNET_152:

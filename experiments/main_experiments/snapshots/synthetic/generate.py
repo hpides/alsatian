@@ -102,10 +102,10 @@ def generate_snapshots(architecture_name: str, num_models: int, distribution: Re
     return generated_snapshots
 
 
-def generate_snapshot(architecture_name, model, save_path):
+def generate_snapshot(architecture_name, model, save_path, hf_id=None):
     pre_trained_state = model.state_dict()
     sd_hash = state_dict_hash(pre_trained_state)
-    snapshot_id = generate_snapshot_id(architecture_name, sd_hash)
+    snapshot_id = generate_snapshot_id(architecture_name, sd_hash, hf_id=hf_id)
     state_dict_path = os.path.join(save_path, f'{snapshot_id}.pt')
     state_dict_path = os.path.abspath(state_dict_path)
     if not os.path.exists(state_dict_path):
