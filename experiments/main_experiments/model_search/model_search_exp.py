@@ -24,7 +24,8 @@ TRAINED_MODELS = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
 TRAINED_DISTRIBUTIONS = [RetrainDistribution.TWENTY_FIVE_PERCENT]
 
 
-def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False, hf_snapshots=False):
+def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False,
+                  hf_snapshots=False):
     if hf_snapshots:
         return get_existing_model_store(base_save_path)
     elif trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
@@ -79,6 +80,9 @@ def run_model_search(exp_args: ExpArgs):
                                                  exp_args.distribution, exp_args.base_snapshot_save_path,
                                                  trained_snapshots=exp_args.trained_snapshots,
                                                  hf_snapshots=exp_args.hf_snapshots)
+
+    assert len(model_snapshots) == exp_args.num_models
+    assert len(model_store.models) == exp_args.num_models
 
     layer_output_info = os.path.join(pathlib.Path(__file__).parent.resolve(),
                                      '../../side_experiments/model_resource_info/outputs/layer_output_infos.json')
