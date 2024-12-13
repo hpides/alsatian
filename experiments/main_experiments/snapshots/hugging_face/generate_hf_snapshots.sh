@@ -1,12 +1,14 @@
 #!/bin/sh
 
 # Assigning command line arguments to variables
-repository_url=github.com/slin96/model-search-paper.git
+repository_url=github.com/slin96/alsatian.git
 script_to_start=experiments/main_experiments/snapshots/hugging_face/generate_hf_snapshots.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=hf-models
 repo_name=model-search-paper
+config_file=experiments/main_experiments/snapshots/hugging_face/config.ini
+config_section=generate-resnets-50
 
 # Function to read the access token from file
 read_access_token() {
@@ -46,4 +48,4 @@ fi
 export PYTHONPATH=$PWD
 
 # Execute the specified Python script
-$python_dir $script_to_start --config_file $config_file --base_config_section $config_section
+$python_dir $script_to_start --config_file $config_file --config_section $config_section

@@ -80,7 +80,8 @@ if __name__ == '__main__':
         get_existing_model_store(args.snapshot_save_path)
     else:
         # parse snapshot_id_file
-        with open(args.snapshot_ids_file, "r") as file:
+        snapshot_id_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), args.snapshot_ids_file)
+        with open(snapshot_id_file_path, "r") as file:
             fine_tuned_model_ids = [line.strip() for line in file]
 
         snapshots = generate_hf_snapshots(args.model_name, args.base_model_id, fine_tuned_model_ids, args.snapshot_save_path,
