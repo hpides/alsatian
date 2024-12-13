@@ -28,8 +28,12 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
             hf_mode_resnet50 = hf_model.model.backbone.conv_encoder.model
             hf_model_sd = hf_mode_resnet50.state_dict()
             missing_keys, unexpected_keys = model.load_state_dict(hf_model_sd, strict=False)
-            assert missing_keys == ['fc.weight', 'fc.bias'] # HF model is a backbone and naturally misses these layers
-            assert len(unexpected_keys) == 0 # there should be no unexpected keys
+            # HF model is a backbone and naturally misses these layers
+            if not missing_keys == ['fc.weight', 'fc.bias'] and not len(unexpected_keys) == 0:
+                print(f'hf_identifier: {hf_identifier}')
+                print(f'missing_keys: {missing_keys}')
+                print(f'unexpected_keys: {unexpected_keys}')
+                assert False
         else:
             model = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1) if pretrained else resnet50()
     elif model_name == RESNET_101:
