@@ -64,6 +64,11 @@ class ExpArgs:
         self.ssd_caching_active = args.getboolean(section, 'ssd_caching_active')
         self.cache_size = args.getint(section, 'cache_size')
         self.trained_snapshots = args.getboolean(section, 'trained_snapshots')
+        # self.model_name = args[section].get('model_name', None)
+        if 'hf_snapshots' in args[section]:
+            self.hf_snapshots = args.getboolean(section, 'hf_snapshots')
+        else:
+            self.hf_snapshots = False
 
     def __str__(self):
         return str(self.__dict__)

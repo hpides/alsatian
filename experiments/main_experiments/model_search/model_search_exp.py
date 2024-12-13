@@ -9,6 +9,7 @@ from data.imdb import reduced_imdb
 from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
 from experiments.main_experiments.model_search.experiment_args import ExpArgs
 from experiments.main_experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
+from experiments.main_experiments.snapshots.hugging_face.generate_hf_snapshots import get_existing_model_store
 from experiments.main_experiments.snapshots.synthetic.generate import RetrainDistribution
 from experiments.main_experiments.snapshots.synthetic.generate_set import get_architecture_models
 from experiments.main_experiments.snapshots.trained.build_trained_model_store import get_trained_models_and_model_store
@@ -23,8 +24,10 @@ TRAINED_MODELS = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
 TRAINED_DISTRIBUTIONS = [RetrainDistribution.TWENTY_FIVE_PERCENT]
 
 
-def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False):
-    if trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
+def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False, hf_snapshots=False):
+    if hf_snapshots:
+        return get_existing_model_store(base_save_path)
+    elif trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
         return get_trained_models_and_model_store(snapshot_set_string, base_save_path)
     elif snapshot_set_string in VISION_MODEL_CHOICES + [BERT] and not trained_snapshots:
         return get_architecture_models(base_save_path, distribution, num_models, [snapshot_set_string])
@@ -74,7 +77,8 @@ def run_model_search(exp_args: ExpArgs):
 
     model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
                                                  exp_args.distribution, exp_args.base_snapshot_save_path,
-                                                 trained_snapshots=exp_args.trained_snapshots)
+                                                 trained_snapshots=exp_args.trained_snapshots,
+                                                 hf_snapshots=exp_args.hf_snapshots)
 
     layer_output_info = os.path.join(pathlib.Path(__file__).parent.resolve(),
                                      '../../side_experiments/model_resource_info/outputs/layer_output_infos.json')
