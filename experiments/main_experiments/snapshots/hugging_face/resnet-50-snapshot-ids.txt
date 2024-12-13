@@ -10,7 +10,6 @@ NKDE/detr-resnet-50_finetuned_cppe5
 MustangV/candy_detector_finetuned
 Jeasun/detr-resnet-50_finetuned_cppe5
 aliosama8399/detr-resnet-50_finetuned_cppe5
-tooltest/detr
 test123nananan/detr-resnet-50_finetuned_cppe5
 kariver/detr-resnet-50_sgd_finetuned_food-roboflow
 nickoloss/detr-resnet-50_finetuned_cppe5
@@ -418,3 +417,4 @@ HannesKuslap/detr
 ChingizA/detr
 AnnabelKaasik/detr
 AnettSand/detr
+tooltest/detr
