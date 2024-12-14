@@ -1201,3 +1201,5 @@ __pycache__
 /experiments/main_experiments/model_search/eval/limited_memory/results/limited-memory-exps/2024-06-27-13:20:28#debug-des-gpu-out-of-memory-64gb-distribution-FIFTY_PERCENT-approach-baseline-cache-CPU-snapshot-vit_l_32-cache_size-62000-models-35-level-STEPS_DETAILS.json
 /experiments/main_experiments/model_search/eval/limited_memory/results/limited-memory-exps/2024-06-27-13:32:53#debug-des-gpu-out-of-memory-64gb-distribution-FIFTY_PERCENT-approach-mosix-cache-CPU-snapshot-vit_l_32-cache_size-62000-models-35-level-STEPS_DETAILS.json
 /experiments/main_experiments/model_search/eval/limited_memory/results/limited-memory-exps.zip
+/experiments/main_experiments/model_search/eval/hf_snapshots/results/des-gpu-imagenette-huggingface-res50/
+/experiments/main_experiments/model_search/eval/hf_snapshots/results/des-gpu-imagenette-huggingface-res50.zip
