@@ -63,9 +63,11 @@ def list_of_layers(model: torch.nn.Sequential, include_seq=False, split_classes=
     children = list(model.children())
     for child in children:
         if split_classes and _in_class_list(child, split_classes):
-            result += list_of_layers(child, include_seq)
+            result += list_of_layers(child, include_seq, split_classes)
         elif isinstance(child, torch.nn.Sequential) or (include_seq and len(list(child.children())) > 0):
-            result += list_of_layers(child, include_seq)
+            result += list_of_layers(child, include_seq, split_classes)
+        elif isinstance(child, torch.nn.ModuleList):
+            result += list(child)
         else:
             result += [child]
     return result
