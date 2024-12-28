@@ -5,12 +5,14 @@ import os
 import torch
 
 from custom.models.init_models import initialize_model
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import initialize_hf_model
 from experiments.main_experiments.snapshots.synthetic.generate import generate_snapshot
 from global_utils.json_operations import read_json_to_dict, write_json_to_file
 from global_utils.model_names import RESNET_50
 from model_search.model_management.model_store import ModelStore, model_store_from_dict
 
 HF_MODEL_CHOICES = [RESNET_50]
+
 
 def build_model_store(save_path, model_snapshots):
     model_store = ModelStore(save_path)
@@ -30,8 +32,8 @@ def get_existing_model_store(model_store_save_path):
 
     return model_snapshots, model_store
 
-def generate_hf_snapshots(architecture_name: str, base_model_id, fine_tuned_model_ids, save_path: str,
-                          hf_cache_dir: str,
+
+def generate_hf_snapshots(base_model_id, fine_tuned_model_ids, save_path: str, hf_cache_dir: str,
                           num_models: int = -1) -> [torch.nn.Module]:
     generated_snapshots = []
 
@@ -40,9 +42,8 @@ def generate_hf_snapshots(architecture_name: str, base_model_id, fine_tuned_mode
         hf_model_ids = hf_model_ids[:num_models]
 
     for hf_model_id in hf_model_ids:
-        model = initialize_model(
-            architecture_name, features_only=True, hf_identifier=hf_model_id, hf_cache_dir=hf_cache_dir)
-        new_snapshot = generate_snapshot(architecture_name, model, save_path, hf_id=hf_model_id.replace("/","___"))
+        model, architecture_name = initialize_hf_model(base_model_id, hf_model_id, hf_cache_dir)
+        new_snapshot = generate_snapshot(architecture_name, model, save_path, hf_id=hf_model_id.replace("/", "___"))
         generated_snapshots.append(new_snapshot)
 
     return generated_snapshots
@@ -65,6 +66,9 @@ class ExpArgs:
 
 
 if __name__ == '__main__':
+    # TODO run this for every model we are interested in
+    # TODO check that everything is written to the correct directories
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', required=True)
     parser.add_argument('--config_section', required=True)
@@ -84,10 +88,10 @@ if __name__ == '__main__':
         with open(snapshot_id_file_path, "r") as file:
             fine_tuned_model_ids = [line.strip() for line in file]
 
-        snapshots = generate_hf_snapshots(args.model_name, args.base_model_id, fine_tuned_model_ids, args.snapshot_save_path,
-                              args.hf_caching_path, args.number_models)
+        snapshots = generate_hf_snapshots(args.base_model_id, fine_tuned_model_ids,
+                                          args.snapshot_save_path,
+                                          args.hf_caching_path, args.number_models)
 
         model_store = build_model_store(args.snapshot_save_path, snapshots)
         model_store_dict = model_store.to_dict()
         write_json_to_file(model_store_dict, model_store_json_path)
-

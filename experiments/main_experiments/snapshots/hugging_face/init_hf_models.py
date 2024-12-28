@@ -51,41 +51,19 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
         split_index = SPLIT_INDEXES[model_name][0]
         first, _ = split_model_in_two(model, split_index)
         model = first
-        return model
     elif hf_base_model_id in MICROSOFT_RESNETS:
         hf_model = AutoModelForImageClassification.from_pretrained(hf_model_id, cache_dir=hf_cache_dir)
         seq_model = transform_to_sequential(hf_model, split_classes=[ResNetModel, ResNetEncoder])
         first, second = split_model_in_two(seq_model, 7)
-        return first
+        model = first
+        model_name = hf_base_model_id
     elif hf_base_model_id == "google/vit-base-patch16-224-in21k":
-        model = get_sequential_vit_model(model_id=hf_model_id)
-        return model
+        model_name, model = get_sequential_vit_model(model_id=hf_model_id)
+        model_name = hf_base_model_id
     elif hf_base_model_id in DINO_V2_MODELS:
         model = get_sequential_dinov2_model(model_id=hf_model_id)
-        return model
+        model_name = hf_base_model_id
+    else:
+        raise NotImplementedError
 
-
-if __name__ == '__main__':
-    hf_base_class = AutoModelForObjectDetection
-    custom_model_init = resnet50
-
-    # model = initialize_hf_model("facebook/detr-resnet-50", "facebook/detr-resnet-50", None)
-    # model = initialize_hf_model("microsoft/conditional-detr-resnet-50", "microsoft/conditional-detr-resnet-50", None)
-    # model = initialize_hf_model("facebook/detr-resnet-50-dc5", "facebook/detr-resnet-50-dc5", None)
-    model = initialize_hf_model("microsoft/table-transformer-structure-recognition",
-                                "microsoft/table-transformer-structure-recognition", None)
-    model = initialize_hf_model("google/vit-base-patch16-224-in21k", "google/vit-base-patch16-224-in21k", None)
-    # model = AutoModelForImageClassification.from_pretrained("microsoft/resnet-152", cache_dir=None)
-    # seq_model = transform_to_sequential(model, split_classes=[ResNetModel, ResNetEncoder])
-    #
-    # dummy_input = torch.randn(1, 3, 224, 224)
-    #
-    # model_out = model(dummy_input)
-    # seq_model_out = seq_model(dummy_input)
-    #
-    # print(model_out)
-    # print(seq_model_out)
-    #
-    # print(torch.equal(model_out.logits, seq_model_out))
-
-    print("test")
+    return model_name, model
