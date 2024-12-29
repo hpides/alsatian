@@ -6,12 +6,17 @@ from custom.models.custom_resnet import *
 from custom.models.efficientnet import efficientnet_v2_s, efficientnet_v2_l, EfficientNet_V2_L_Weights, \
     EfficientNet_V2_S_Weights
 from custom.models.sequential_bert import get_sequential_bert_model
+from custom.models.sequential_hf_dinov2 import get_sequential_dinov2_model
+from custom.models.sequential_hf_vit import get_sequential_vit_model
 from custom.models.split_indices import SPLIT_INDEXES
 from custom.models.vision_transformer import Encoder, vit_b_16, vit_b_32, vit_l_16, vit_l_32, ViT_L_32_Weights, \
     ViT_L_16_Weights, ViT_B_32_Weights, ViT_B_16_Weights
-from experiments.main_experiments.snapshots.hugging_face.init_hf_models import initialize_hf_model
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import initialize_hf_model, MICROSOFT_RESNETS, \
+    get_sequential_microsoft_resnet, GOOGLE_VIT_BASE_PATCH16_224_IN21K, DINO_V2_MODELS
 from global_utils.model_names import *
 from global_utils.model_operations import transform_to_sequential, split_model_in_two
+
+FEATURE_ONLY_MODELS = DINO_V2_MODELS + [GOOGLE_VIT_BASE_PATCH16_224_IN21K] + MICROSOFT_RESNETS
 
 
 def initialize_model(model_name, pretrained=False, new_num_classes=None, features_only=False, sequential_model=False,
@@ -52,6 +57,12 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
                 weights=EfficientNet_V2_L_Weights.IMAGENET1K_V1) if pretrained else efficientnet_v2_l()
         elif model_name == BERT and features_only:
             model = get_sequential_bert_model(pretrained=pretrained)
+        elif model_name in MICROSOFT_RESNETS and features_only:
+            model = get_sequential_microsoft_resnet(model_name)
+        elif model_name == GOOGLE_VIT_BASE_PATCH16_224_IN21K and features_only:
+            model = get_sequential_vit_model(model_name)
+        elif model_name in DINO_V2_MODELS and features_only:
+            model = get_sequential_dinov2_model(model_name)
         else:
             raise ValueError(f"Unknown model: {model_name}")
 
@@ -110,7 +121,7 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
 
             model = transform_to_sequential(model, split_classes=split_cls)
 
-        if features_only:
+        if features_only and model_name not in FEATURE_ONLY_MODELS:
             split_index = SPLIT_INDEXES[model_name][0]
             first, _ = split_model_in_two(model, split_index)
             model = first

@@ -1,0 +1,7 @@
+RobertZ2011/resnet-18-birb
+fullstuck/transformers_resnet18_cifar100
+hilmansw/resnet18-catdog-classifier
+kgoli/resnet-18-finetuned-fraud
+hilmansw/resnet18-food-classifier
+embunna/resnet-18-resnet-18
+Raihan004/Action_agent_small_34_class

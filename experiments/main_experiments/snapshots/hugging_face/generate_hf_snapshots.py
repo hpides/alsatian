@@ -4,7 +4,6 @@ import os
 
 import torch
 
-from custom.models.init_models import initialize_model
 from experiments.main_experiments.snapshots.hugging_face.init_hf_models import initialize_hf_model
 from experiments.main_experiments.snapshots.synthetic.generate import generate_snapshot
 from global_utils.json_operations import read_json_to_dict, write_json_to_file
@@ -42,7 +41,7 @@ def generate_hf_snapshots(base_model_id, fine_tuned_model_ids, save_path: str, h
         hf_model_ids = hf_model_ids[:num_models]
 
     for hf_model_id in hf_model_ids:
-        model, architecture_name = initialize_hf_model(base_model_id, hf_model_id, hf_cache_dir)
+        architecture_name, model = initialize_hf_model(base_model_id, hf_model_id, hf_cache_dir)
         new_snapshot = generate_snapshot(architecture_name, model, save_path, hf_id=hf_model_id.replace("/", "___"))
         generated_snapshots.append(new_snapshot)
 
@@ -95,3 +94,5 @@ if __name__ == '__main__':
         model_store = build_model_store(args.snapshot_save_path, snapshots)
         model_store_dict = model_store.to_dict()
         write_json_to_file(model_store_dict, model_store_json_path)
+
+    print("test")
