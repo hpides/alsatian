@@ -105,10 +105,10 @@ if __name__ == "__main__":
     # run once to for detailed numbers
     eval_space = {
         # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
-        APPROACHES: ["baseline", "shift", "mosix"],
+        APPROACHES: ["mosix", "baseline", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_50],
-        NUMS_MODELS: [50],
+        NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
         # alternatively we can also extend the experiment
