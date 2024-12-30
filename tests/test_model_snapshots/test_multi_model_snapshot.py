@@ -49,6 +49,18 @@ class TestTensorCachingService(unittest.TestCase):
                                      self.layer_state_4_4, self.layer_state_4_5, self.layer_state_4_6]
         self.snapshot4 = RichModelSnapshot("test_arch4", "sd_path4", "sd_hash4", 'test_arch4-sd_path4', self.model_4_layer_states)
 
+        self.layer_state_5_1 = LayerState("", "", "sd_hash_5.1", "arch_hash_1")
+        self.layer_state_5_2 = LayerState("", "", "sd_hash_5.2", "arch_hash_1")
+        self.layer_state_5_3 = LayerState("", "", "sd_hash_5.3", "arch_hash_1")
+        self.layer_state_5_4 = LayerState("", "", "sd_hash_5.4", "arch_hash_1")
+        self.layer_state_5_5 = LayerState("", "", "sd_hash_5.5", "arch_hash_1")
+        self.layer_state_5_6 = LayerState("", "", "sd_hash_5.6", "arch_hash_1")
+        self.model_5_layer_states = [self.layer_state_5_1, self.layer_state_5_2, self.layer_state_5_3,
+                                     self.layer_state_5_4, self.layer_state_5_5, self.layer_state_5_6]
+
+        self.snapshot5 = RichModelSnapshot("test_arch5", "sd_path5", "sd_hash5", 'test_arch5-sd_path5',
+                                           self.model_5_layer_states)
+
     def tearDown(self):
         pass
 
@@ -199,6 +211,30 @@ class TestTensorCachingService(unittest.TestCase):
         layer_states = self.model_3_layer_states
         self._check_tail(current_node, layer_count, 2, layer_states, snapshot_ids)
 
+    def _check_for_snapshots_1_5(self, mm_snapshot):
+        current_node = mm_snapshot.root
+        self.assertEqual(mm_snapshot.root.snapshot_ids,
+                         ["test_arch1-sd_path1", "test_arch5-sd_path5"])
+        # test only one child
+        self.assertEqual(len(current_node.edges), 2)
+        layer_count = 0
+        self.assertEqual(current_node.edges[0].child.layer_state, self.model_1_layer_states[layer_count])
+        self.assertEqual(current_node.edges[1].child.layer_state, self.model_5_layer_states[layer_count])
+        child_nodes = [edge.child for edge in current_node.edges]
+
+        # check tail for model 1
+        current_node = child_nodes[0]
+        snapshot_ids = ["test_arch1-sd_path1"]
+        layer_states = self.model_1_layer_states
+        self._check_tail(current_node, 1, 6, layer_states, snapshot_ids)
+
+        # check tail for model 5
+        current_node = child_nodes[1]
+        snapshot_ids = ["test_arch5-sd_path5"]
+        layer_states = self.model_5_layer_states
+        self._check_tail(current_node, 1, 6, layer_states, snapshot_ids)
+
+
     def test_add_snapshot_to_two_model_mm_same_split_point(self):
         # add the first model
         mm_snapshot = MultiModelSnapshot()
@@ -281,3 +317,10 @@ class TestTensorCachingService(unittest.TestCase):
         mm_snapshot.add_snapshot(self.snapshot4)
         mm_snapshot.prune_snapshot(self.snapshot4.id)
         self._check_for_snapshots_1_2_3(mm_snapshot)
+
+    def test_two_different_models(self):
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        mm_snapshot.add_snapshot(self.snapshot5)
+        self._check_for_snapshots_1_5(mm_snapshot)
+
