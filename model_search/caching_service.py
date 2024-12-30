@@ -70,31 +70,44 @@ class CachingService:
         else:
             raise KeyError(f'{_id} does not exist in any cache')
 
-    def cache_on_location(self, _id, data, location: CacheLocation):
+    def cache_on_location(self, _id, data, location: CacheLocation, allow_identical_overwrite=False):
         if location == CacheLocation.GPU:
-            self.cache_on_gpu(_id, data)
+            self.cache_on_gpu(_id, data, allow_identical_overwrite)
         elif location == CacheLocation.CPU:
-            self.cache_on_cpu(_id, data)
+            self.cache_on_cpu(_id, data, allow_identical_overwrite)
         elif location == CacheLocation.SSD:
-            self.cache_persistent(_id, data)
+            self.cache_persistent(_id, data, allow_identical_overwrite=allow_identical_overwrite)
 
-    def cache_on_gpu(self, _id, data):
-        self._check_id_not_exists(_id)
-        if data.is_cuda:
-            self._gpu_cache[_id] = data
-        else:
-            self._gpu_cache[_id] = data.to(CUDA)
+    def cache_on_gpu(self, _id, data, allow_identical_overwrite=False):
+        if not data.is_cuda:
+            data = data.to(CUDA)
 
-    def cache_on_cpu(self, _id, data):
-        self._check_id_not_exists(_id)
+        self._check_exists_or_overwrite(_id, allow_identical_overwrite, data)
+
+        self._gpu_cache[_id] = data
+
+    def cache_on_cpu(self, _id, data, allow_identical_overwrite=False):
         if self._is_cuda(data):
             if isinstance(data, list) or isinstance(data, tuple):
                 data = [x.to(CPU) for x in data]
-                self._cpu_cache[_id] = data
             else:
-                self._cpu_cache[_id] = data.to(CPU)
-        else:
-            self._cpu_cache[_id] = data
+                data = data.to(CPU)
+
+        self._check_exists_or_overwrite(_id, allow_identical_overwrite, data)
+
+        self._cpu_cache[_id] = data
+
+    def _check_exists_or_overwrite(self, _id, allow_identical_overwrite, data):
+        if self.id_exists(_id):
+            if not allow_identical_overwrite:
+                raise KeyError(f'{_id} already cached')
+            else:
+                saved_data = self.get_item(_id)
+                if not torch.equal(data, saved_data):
+                    print(f"currently cached data: {saved_data}")
+                    print(f"new data: {data}")
+                    raise KeyError(
+                        f'new data supposed to save to {_id} would override non-identical cached with same id')
 
     def _is_cuda(self, data):
         if isinstance(data, torch.Tensor):
@@ -106,14 +119,17 @@ class CachingService:
         else:
             raise NotImplementedError
 
-    def cache_persistent(self, _id, data, is_guaranteed_cpu_data=False):
-        self._check_id_not_exists(_id)
+    def cache_persistent(self, _id, data, is_guaranteed_cpu_data=False, allow_identical_overwrite=False):
         if isinstance(data, list) or isinstance(data, tuple):
             data = [x.to(CPU) for x in data]
         elif (not is_guaranteed_cpu_data) and data.is_cuda:
             data = data.to(CPU)
+
+        self._check_exists_or_overwrite(_id, allow_identical_overwrite, data)
+
         path = self._get_path(_id)
         torch.save(data, path)
+
         self._persistent_cache[_id] = path
 
     def _get_path(self, _id):
@@ -165,10 +181,6 @@ class CachingService:
             return True
         else:
             return False
-
-    def _check_id_not_exists(self, _id):
-        if self.id_exists(_id):
-            raise KeyError(f'{_id} already cached')
 
     def all_ids_with_prefix(self, prefix):
         result = []

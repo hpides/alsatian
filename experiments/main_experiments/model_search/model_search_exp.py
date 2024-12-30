@@ -84,9 +84,13 @@ def run_model_search(exp_args: ExpArgs):
     assert len(model_snapshots) == exp_args.num_models
     assert len(model_store.models) == exp_args.num_models
 
+    # TODO fix this, either generate info for missing models on the fly or introduce proper argument to deactivate
     layer_output_info = os.path.join(pathlib.Path(__file__).parent.resolve(),
                                      '../../side_experiments/model_resource_info/outputs/layer_output_infos.json')
-    model_store.add_output_sizes_to_rich_snapshots(layer_output_info)
+    if exp_args.cache_size < 100000000:
+        model_store.add_output_sizes_to_rich_snapshots(layer_output_info)
+    else:
+        model_store.add_output_sizes_to_rich_snapshots(layer_output_info, default_size=200000)
 
     # after generating the snapshots make sure they are not in the caches
     clear_caches_and_check_io_limit()

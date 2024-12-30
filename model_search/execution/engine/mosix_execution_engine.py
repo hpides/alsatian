@@ -87,8 +87,9 @@ class MosixExecutionEngine(BaselineExecutionEngine):
 
             if exec_step.extract_labels:
                 labels_cache_id = f'{exec_step.label_write_cache_config.id_prefix}-{i}'
-                self.caching_service.cache_on_location(labels_cache_id, labels,
-                                                       exec_step.label_write_cache_config.location)
+                self.caching_service.cache_on_location(
+                    labels_cache_id, labels, exec_step.label_write_cache_config.location,
+                    allow_identical_overwrite=True)
 
             self.logger.append_value(BATCH_MEASURES, batch_measures)
 

@@ -48,7 +48,7 @@ class CacheServiceDataset(Dataset):
             for pre in self.label_prefixes:
                 self._label_ids += self.caching_service.all_ids_with_prefix(pre)
 
-            assert len(self._data_ids) == len(self._label_ids)
+            assert len(self._data_ids) == len(self._label_ids), f"found {len(self._data_ids)} data ids, but {len(self._label_ids)} label ids"
 
     def translate_to_actual_data(self, data):
         # currently when loading data that is already in (GPU) memory we only return the id as a string for that item

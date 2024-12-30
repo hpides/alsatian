@@ -126,15 +126,18 @@ class ModelStore:
         self.models[rich_model_snapshot.id] = rich_model_snapshot
         self._index_layers(rich_model_snapshot)
 
-    def add_output_sizes_to_rich_snapshots(self, info_json):
+    def add_output_sizes_to_rich_snapshots(self, info_json, default_size=None):
         with open(info_json, 'r') as file:
             output_info = json.load(file)
 
             for model_snap in self.models.values():
                 for layer_state in model_snap.layer_states:
-                    output_size = output_info[model_snap.architecture_id][layer_state.architecture_hash]
-                    layer_state.add_output_size(output_size)
-
+                    if (model_snap.architecture_id in output_info
+                            and layer_state.architecture_hash in output_info[model_snap.architecture_id]):
+                        output_size = output_info[model_snap.architecture_id][layer_state.architecture_hash]
+                        layer_state.add_output_size(output_size)
+                    else:
+                        layer_state.add_output_size(default_size)
     def _index_layers(self, rich_snapshot: RichModelSnapshot):
         for layer_state in rich_snapshot.layer_states:
             self.layers[layer_state.id] = layer_state

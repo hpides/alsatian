@@ -251,6 +251,8 @@ class MosixExecutionPlanner:
         # its output should be cached during its execution to be reused by future steps
         output_node_id = exec_unit[-1].child.layer_state.id
 
+        extract_labels = (extract_labels or self._is_root_node(input_node_id))
+
         data_info = self._create_dataset_info(dataset_type, extract_labels)
 
         step = MosixExtractFeaturesStep(
@@ -273,7 +275,7 @@ class MosixExecutionPlanner:
 
     def _create_dataset_info(self, dataset_type, extract_labels):
         if extract_labels:
-            data_info = DatasetInformation(
+                data_info = DatasetInformation(
                 self.config.dataset_class,
                 self.config.dataset_paths[dataset_type],
                 self.config.num_workers,
@@ -287,3 +289,6 @@ class MosixExecutionPlanner:
                 self.config.batch_size,
                 dataset_type)
         return data_info
+
+    def _is_root_node(self, input_node_id):
+        return 'root' in input_node_id

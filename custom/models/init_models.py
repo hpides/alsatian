@@ -11,12 +11,15 @@ from custom.models.sequential_hf_vit import get_sequential_vit_model
 from custom.models.split_indices import SPLIT_INDEXES
 from custom.models.vision_transformer import Encoder, vit_b_16, vit_b_32, vit_l_16, vit_l_32, ViT_L_32_Weights, \
     ViT_L_16_Weights, ViT_B_32_Weights, ViT_B_16_Weights
+from experiments.dummy_experiments.dummy_models import TwoBlockModel, get_sequential_two_block_model
 from experiments.main_experiments.snapshots.hugging_face.init_hf_models import initialize_hf_model, MICROSOFT_RESNETS, \
     get_sequential_microsoft_resnet, GOOGLE_VIT_BASE_PATCH16_224_IN21K, DINO_V2_MODELS
 from global_utils.model_names import *
 from global_utils.model_operations import transform_to_sequential, split_model_in_two
 
-FEATURE_ONLY_MODELS = DINO_V2_MODELS + [GOOGLE_VIT_BASE_PATCH16_224_IN21K] + MICROSOFT_RESNETS
+DUMMY_TWO_BLOCK_MODEL = "dummy_two_block_model"
+
+FEATURE_ONLY_MODELS = DINO_V2_MODELS + [GOOGLE_VIT_BASE_PATCH16_224_IN21K] + MICROSOFT_RESNETS + [DUMMY_TWO_BLOCK_MODEL]
 
 
 def initialize_model(model_name, pretrained=False, new_num_classes=None, features_only=False, sequential_model=False,
@@ -63,6 +66,8 @@ def initialize_model(model_name, pretrained=False, new_num_classes=None, feature
             model = get_sequential_vit_model(model_name)
         elif model_name in DINO_V2_MODELS and features_only:
             model = get_sequential_dinov2_model(model_name)
+        elif model_name == DUMMY_TWO_BLOCK_MODEL:
+            model = get_sequential_two_block_model()
         else:
             raise ValueError(f"Unknown model: {model_name}")
 
