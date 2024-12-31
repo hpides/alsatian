@@ -126,6 +126,12 @@ class ModelStore:
         self.models[rich_model_snapshot.id] = rich_model_snapshot
         self._index_layers(rich_model_snapshot)
 
+    def merge_model_store(self, model_store):
+        rich_snapshots = list(model_store.models.values())
+        for snapshot in rich_snapshots:
+            self.add_snapshot(snapshot)
+
+
     def add_output_sizes_to_rich_snapshots(self, info_json, default_size=None):
         with open(info_json, 'r') as file:
             output_info = json.load(file)

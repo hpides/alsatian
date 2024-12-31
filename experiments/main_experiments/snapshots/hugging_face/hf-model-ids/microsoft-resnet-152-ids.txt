@@ -1,0 +1,8 @@
+yvs1997/MLR
+eligapris/v-mdd-2000-150
+vuongnhathien/Resnet152-30VN
+vuongnhathien/Resnet152-5e-5
+jhoppanne/Dogs-Breed-Image-Classification-V2
+louislu9911/resnet-152-finetuned-cassava-leaf-disease
+jhoppanne/SkinCancerClassifier_Plain-V0
+Emilio407/prostate-mri-T2w-v03

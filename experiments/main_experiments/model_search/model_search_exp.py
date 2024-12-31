@@ -15,19 +15,40 @@ from experiments.main_experiments.snapshots.synthetic.generate_set import get_ar
 from experiments.main_experiments.snapshots.trained.build_trained_model_store import get_trained_models_and_model_store
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import TRAIN, TEST, END_TO_END, DETAILED_TIMES
+from global_utils.file_names import parsable_as_list, to_path_list
 from global_utils.model_names import VISION_MODEL_CHOICES, RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32, BERT
 from model_search.approaches import baseline, mosix, shift
 from model_search.execution.data_handling.data_information import DatasetClass
 from model_search.execution.planning.planner_config import PlannerConfig
+from model_search.model_management.model_store import ModelStore
 
 TRAINED_MODELS = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
 TRAINED_DISTRIBUTIONS = [RetrainDistribution.TWENTY_FIVE_PERCENT]
 
 
+def _get_combined_path(path):
+    directory, filename = os.path.split(path)
+    new_path = os.path.join(directory, "combined-modelstore")
+    return new_path
+
+
+def get_combined_snapshots(save_paths):
+    combined_model_store = ModelStore(_get_combined_path(save_paths[0]))
+    for save_path in save_paths:
+        _, model_store = get_existing_model_store(save_path)
+        combined_model_store.merge_model_store(model_store)
+
+    return list(combined_model_store.models.values()), combined_model_store
+
+
 def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False,
                   hf_snapshots=False):
     if hf_snapshots:
-        return get_existing_model_store(base_save_path)
+        if parsable_as_list(base_save_path):
+            save_paths = to_path_list(base_save_path)
+            return get_combined_snapshots(save_paths)
+        else:
+            return get_existing_model_store(base_save_path)
     elif trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
         return get_trained_models_and_model_store(snapshot_set_string, base_save_path)
     elif snapshot_set_string in VISION_MODEL_CHOICES + [BERT] and not trained_snapshots:
