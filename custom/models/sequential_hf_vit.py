@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from transformers import AutoModel
 
+
 # Simplified/Sequential version of Huggingface transformers/models/vit/modeling_vit
 
 class ViTEmbeddings(nn.Module):
@@ -47,8 +48,8 @@ class ViTPooler(nn.Module):
         return pooled_output
 
 
-def get_sequential_vit_model(model_id="google/vit-base-patch16-224-in21k"):
-    original_model = AutoModel.from_pretrained(model_id)
+def get_sequential_vit_model(model_id="google/vit-base-patch16-224-in21k", hf_caching_dir=None):
+    original_model = AutoModel.from_pretrained(model_id, cache_dir=hf_caching_dir)
 
     seq_model = torch.nn.Sequential()
     seq_model.append(ViTEmbeddings(original_model))
@@ -77,4 +78,3 @@ if __name__ == '__main__':
         print(outputs)
         outputs = seq_hf_model(dummy_image)
         print(outputs)
-

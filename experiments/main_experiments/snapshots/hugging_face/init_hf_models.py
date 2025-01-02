@@ -8,6 +8,8 @@ from custom.models.split_indices import SPLIT_INDEXES
 from global_utils.model_names import RESNET_50, RESNET_101, RESNET_18
 from global_utils.model_operations import transform_to_sequential, split_model_in_two
 
+SENSE_TIME_DEFORMABLE_DETR = "SenseTime/deformable-detr"
+
 GOOGLE_VIT_BASE_PATCH16_224_IN21K = "google/vit-base-patch16-224-in21k"
 
 FACEBOOK_DINOV2_BASE = "facebook/dinov2-base"
@@ -30,7 +32,7 @@ CONDITIONAL_DETR_RESNET_50 = "microsoft/conditional-detr-resnet-50"
 
 FACEBOOK_DETR_RESNET_50 = "facebook/detr-resnet-50"
 
-RESNET_50_MODELS = [FACEBOOK_DETR_RESNET_50, CONDITIONAL_DETR_RESNET_50, FACEBOOK_DETR_RESNET_50_DC5]
+RESNET_50_MODELS = [FACEBOOK_DETR_RESNET_50, CONDITIONAL_DETR_RESNET_50, FACEBOOK_DETR_RESNET_50_DC5, SENSE_TIME_DEFORMABLE_DETR]
 MICROSOFT_RESNETS = [MICROSOFT_RESNET_152, MICROSOFT_RESNET_18]
 MICROSOFT_TABLE_TRANSFORMERS = [MICROSOFT_TABLE_TRANSFORMER_DETECTION,
                                 MICROSOFT_TABLE_STRUCTURE_RECOGNITION]
@@ -67,6 +69,7 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
             print(f'hf_identifier: {hf_model_id}')
             print(f'missing_keys: {missing_keys}')
             print(f'unexpected_keys: {unexpected_keys}')
+            print(f"HF MODEL ID: {hf_model_id}")
             assert False
 
         model = transform_to_sequential(model)
@@ -77,10 +80,10 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
         model = get_sequential_microsoft_resnet(hf_model_id, hf_cache_dir)
         model_name = hf_base_model_id
     elif hf_base_model_id == GOOGLE_VIT_BASE_PATCH16_224_IN21K:
-        model_name, model = get_sequential_vit_model(model_id=hf_model_id)
+        model = get_sequential_vit_model(model_id=hf_model_id, hf_caching_dir=hf_cache_dir)
         model_name = hf_base_model_id
     elif hf_base_model_id in DINO_V2_MODELS:
-        model = get_sequential_dinov2_model(model_id=hf_model_id)
+        model = get_sequential_dinov2_model(model_id=hf_model_id, hf_caching_dir=hf_cache_dir)
         model_name = hf_base_model_id
     else:
         raise NotImplementedError

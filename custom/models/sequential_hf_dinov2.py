@@ -45,8 +45,8 @@ class DinoPooler(nn.Module):
         return pooled_output
 
 
-def get_sequential_dinov2_model(model_id):
-    original_model = AutoModel.from_pretrained(model_id)
+def get_sequential_dinov2_model(model_id, hf_caching_dir=None):
+    original_model = AutoModel.from_pretrained(model_id, cache_dir=hf_caching_dir)
 
     seq_model = torch.nn.Sequential()
     seq_model.append(DinoEmbeddings(original_model))

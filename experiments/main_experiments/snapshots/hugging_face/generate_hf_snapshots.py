@@ -21,8 +21,8 @@ def build_model_store(save_path, model_snapshots):
     return model_store
 
 
-def get_existing_model_store(model_store_save_path):
-    model_store_json_path = os.path.join(model_store_save_path, 'model_store.json')
+def get_existing_model_store(model_store_save_path, json_file_name='model_store.json'):
+    model_store_json_path = os.path.join(model_store_save_path, json_file_name)
 
     model_store_dict = read_json_to_dict(model_store_json_path)
     model_store = model_store_from_dict(model_store_dict)
