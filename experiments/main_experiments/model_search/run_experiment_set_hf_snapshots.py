@@ -33,12 +33,12 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
     for train_items, test_items in eval_space[DATA_ITEMS]:
         base_exp_args.num_train_items = train_items
         base_exp_args.num_test_items = test_items
-        for approach in eval_space[APPROACHES]:
-            base_exp_args.approach = approach
-            for cache_location in eval_space[DEFAULT_CACHE_LOCATIONS]:
-                base_exp_args.default_cache_location = _str_to_cache_location(cache_location)
-                for snapshot_set in eval_space[SNAPSHOT_SET_STRINGS]:
-                    base_exp_args.snapshot_set_string = snapshot_set
+        for snapshot_set in eval_space[SNAPSHOT_SET_STRINGS]:
+            base_exp_args.snapshot_set_string = snapshot_set
+            for approach in eval_space[APPROACHES]:
+                base_exp_args.approach = approach
+                for cache_location in eval_space[DEFAULT_CACHE_LOCATIONS]:
+                    base_exp_args.default_cache_location = _str_to_cache_location(cache_location)
                     for num_models in eval_space[NUMS_MODELS]:
                         base_exp_args.num_models = num_models
                         for bench_level in eval_space[BENCHMARK_LEVELS]:
