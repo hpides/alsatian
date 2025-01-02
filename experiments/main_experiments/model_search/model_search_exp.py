@@ -44,11 +44,12 @@ def get_combined_snapshots(save_paths):
 def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False,
                   hf_snapshots=False):
     if hf_snapshots:
-        if parsable_as_list(base_save_path):
-            save_paths = to_path_list(base_save_path)
+        if parsable_as_list(snapshot_set_string):
+            save_paths = [os.path.join(base_save_path, snapshot_string.replace("/","-")) for snapshot_string in snapshot_set_string]
             return get_combined_snapshots(save_paths)
         else:
-            return get_existing_model_store(base_save_path)
+            snapshot_save_path = os.path.join(base_save_path, snapshot_set_string.replace("/", "-"))
+            return get_existing_model_store(snapshot_save_path)
     elif trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
         return get_trained_models_and_model_store(snapshot_set_string, base_save_path)
     elif snapshot_set_string in VISION_MODEL_CHOICES + [BERT] and not trained_snapshots:
@@ -102,8 +103,9 @@ def run_model_search(exp_args: ExpArgs):
                                                  trained_snapshots=exp_args.trained_snapshots,
                                                  hf_snapshots=exp_args.hf_snapshots)
 
-    assert len(model_snapshots) == exp_args.num_models
-    assert len(model_store.models) == exp_args.num_models
+    if exp_args.num_models > 0:
+        assert len(model_snapshots) == exp_args.num_models
+        assert len(model_store.models) == exp_args.num_models
 
     # TODO fix this, either generate info for missing models on the fly or introduce proper argument to deactivate
     layer_output_info = os.path.join(pathlib.Path(__file__).parent.resolve(),

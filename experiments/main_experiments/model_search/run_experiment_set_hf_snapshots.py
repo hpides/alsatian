@@ -11,8 +11,8 @@ from experiments.main_experiments.model_search.experiment_args import ExpArgs, _
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp import run_model_search
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import ALL_HF_MODELS
 from global_utils.deterministic import TRUE
-from global_utils.model_names import RESNET_50
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 DATA_ITEMS = "data_itmes"
@@ -33,8 +33,6 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
     for train_items, test_items in eval_space[DATA_ITEMS]:
         base_exp_args.num_train_items = train_items
         base_exp_args.num_test_items = test_items
-        # for distribution in eval_space[DISTRIBUTIONS]:
-        #     base_exp_args.distribution = _str_to_distribution(distribution)
         for approach in eval_space[APPROACHES]:
             base_exp_args.approach = approach
             for cache_location in eval_space[DEFAULT_CACHE_LOCATIONS]:
@@ -46,13 +44,9 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
                         for bench_level in eval_space[BENCHMARK_LEVELS]:
                             base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
 
-                            # file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
-                            #            f"-cache-{cache_location}-snapshot-{snapshot_set}"
-                            #            f"-models-{num_models}-items-{train_items + test_items}-level-{bench_level}")
-
-                            file_id = (f"{base_file_id}-approach-{approach}"
-                                       f"-cache-{cache_location}-snapshot-{snapshot_set}"
-                                       f"-models-{num_models}-items-{train_items + test_items}-level-{bench_level}")
+                            file_id = (f"{base_file_id}#approach#{approach}"
+                                       f"#cache#{cache_location}#snapshot#{snapshot_set.replace('/','-')}"
+                                       f"#models#{num_models}#items#{train_items + test_items}#level#{bench_level}")
 
                             print("RUN:", file_id)
 
@@ -105,9 +99,9 @@ if __name__ == "__main__":
     # run once to for detailed numbers
     eval_space = {
         # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
-        APPROACHES: ["mosix", "baseline", "shift"],
+        APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_50],
+        SNAPSHOT_SET_STRINGS: ALL_HF_MODELS,
         NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]

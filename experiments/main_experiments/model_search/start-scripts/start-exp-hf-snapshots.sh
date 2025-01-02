@@ -8,7 +8,7 @@ python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=hf-models
 repo_name=model-search-paper
 config_file=experiments/main_experiments/model_search/config.ini
-config_section=des-gpu-imagenette-huggingface-res50
+config_section=des-gpu-imagenette-huggingface-single-architecture-search
 
 
 # Function to read the access token from file
