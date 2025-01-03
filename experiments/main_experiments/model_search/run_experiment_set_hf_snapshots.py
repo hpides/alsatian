@@ -100,7 +100,7 @@ if __name__ == "__main__":
     # run once to for detailed numbers
     eval_space = {
         # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
-        APPROACHES: ["baseline", "shift", "mosix"],
+        APPROACHES: ["shift", "mosix", "baseline"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [f"{MICROSOFT_RESNET_18},{MICROSOFT_RESNET_152}"],
         # SNAPSHOT_SET_STRINGS: ALL_HF_MODELS,
