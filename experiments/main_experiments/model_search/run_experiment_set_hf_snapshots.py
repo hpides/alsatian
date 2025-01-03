@@ -102,8 +102,8 @@ if __name__ == "__main__":
         # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
         APPROACHES: ["shift", "mosix", "baseline" ],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [f"{MICROSOFT_RESNET_18},{MICROSOFT_RESNET_152}"],
-        # SNAPSHOT_SET_STRINGS: ALL_HF_MODELS,
+        SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)], # this line to use all snapshots combined
+        # SNAPSHOT_SET_STRINGS: ALL_HF_MODELS, # this line for separate search per model
         NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
