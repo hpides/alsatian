@@ -45,7 +45,8 @@ def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path,
                   hf_snapshots=False):
     if hf_snapshots:
         if parsable_as_list(snapshot_set_string):
-            save_paths = [os.path.join(base_save_path, snapshot_string.replace("/","-")) for snapshot_string in snapshot_set_string]
+            snapshot_set_strings = snapshot_set_string.split(",")
+            save_paths = [os.path.join(base_save_path, snapshot_string.replace("/","-")) for snapshot_string in snapshot_set_strings]
             return get_combined_snapshots(save_paths)
         else:
             snapshot_save_path = os.path.join(base_save_path, snapshot_set_string.replace("/", "-"))
