@@ -45,7 +45,7 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
                         for bench_level in eval_space[BENCHMARK_LEVELS]:
                             base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
 
-                            if snapshot_set.contains(","):
+                            if "," in snapshot_set:
                                 # prevent that the file-name is too long
                                 file_id = (f"{base_file_id}#approach#{approach}"
                                            f"#cache#{cache_location}#snapshot#combined"
