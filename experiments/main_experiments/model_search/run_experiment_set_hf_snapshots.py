@@ -11,9 +11,9 @@ from experiments.main_experiments.model_search.experiment_args import ExpArgs, _
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp import run_model_search
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
-from experiments.main_experiments.snapshots.hugging_face.init_hf_models import ALL_HF_MODELS, MICROSOFT_RESNET_18, \
-    MICROSOFT_RESNET_152
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import ALL_HF_MODELS
 from global_utils.deterministic import TRUE
+from global_utils.model_names import RESNET_152, RESNET_18
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 DATA_ITEMS = "data_itmes"
@@ -45,9 +45,15 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
                         for bench_level in eval_space[BENCHMARK_LEVELS]:
                             base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
 
-                            file_id = (f"{base_file_id}#approach#{approach}"
-                                       f"#cache#{cache_location}#snapshot#{snapshot_set.replace('/','-')}"
-                                       f"#models#{num_models}#items#{train_items + test_items}#level#{bench_level}")
+                            if snapshot_set.contains(","):
+                                # prevent that the file-name is too long
+                                file_id = (f"{base_file_id}#approach#{approach}"
+                                           f"#cache#{cache_location}#snapshot#combined"
+                                           f"#models#{num_models}#items#{train_items + test_items}#level#{bench_level}")
+                            else:
+                                file_id = (f"{base_file_id}#approach#{approach}"
+                                           f"#cache#{cache_location}#snapshot#{snapshot_set.replace('/', '-')}"
+                                           f"#models#{num_models}#items#{train_items + test_items}#level#{bench_level}")
 
                             print("RUN:", file_id)
 
@@ -102,7 +108,8 @@ if __name__ == "__main__":
         # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
         APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)], # this line to use all snapshots combined
+        SNAPSHOT_SET_STRINGS: [",".join([RESNET_18, RESNET_152])],  # this line to use all snapshots combined
+        # SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
         # SNAPSHOT_SET_STRINGS: ALL_HF_MODELS, # this line for separate search per model
         NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
