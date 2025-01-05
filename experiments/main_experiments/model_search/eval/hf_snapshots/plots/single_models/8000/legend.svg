@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2024-12-17T14:43:08.343224</dc:date>
+    <dc:date>2025-01-04T10:57:08.883172</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -30,16 +30,16 @@ z
   </g>
   <g id="legend_1">
    <g id="patch_2">
-    <path d="M 45.232424 77.57858 
-L 93.232424 77.57858 
-L 93.232424 60.77858 
-L 45.232424 60.77858 
+    <path d="M 186.84689 74.324408 
+L 206.84689 74.324408 
+L 206.84689 67.324408 
+L 186.84689 67.324408 
 z
 " style="fill: #bae4bc"/>
    </g>
    <g id="text_1">
     <!-- Base -->
-    <g transform="translate(112.432424 77.57858) scale(0.24 -0.24)">
+    <g transform="translate(214.84689 74.324408) scale(0.1 -0.1)">
      <defs>
       <path id="LinBiolinumT-42" d="M 1216 3590 
 C 1216 3801 1280 3884 1798 3884 
@@ -150,16 +150,16 @@ z
     </g>
    </g>
    <g id="patch_3">
-    <path d="M 206.961918 77.57858 
-L 254.961918 77.57858 
-L 254.961918 60.77858 
-L 206.961918 60.77858 
+    <path d="M 254.234164 74.324408 
+L 274.234164 74.324408 
+L 274.234164 67.324408 
+L 254.234164 67.324408 
 z
 " style="fill: #43a2ca"/>
    </g>
    <g id="text_2">
     <!-- SHiFT -->
-    <g transform="translate(274.161918 77.57858) scale(0.24 -0.24)">
+    <g transform="translate(282.234164 74.324408) scale(0.1 -0.1)">
      <defs>
       <path id="LinBiolinumT-53" d="M 1549 250 
 C 1190 250 730 564 531 942 
@@ -303,16 +303,16 @@ z
     </g>
    </g>
    <g id="patch_4">
-    <path d="M 382.798499 77.57858 
-L 430.798499 77.57858 
-L 430.798499 60.77858 
-L 382.798499 60.77858 
+    <path d="M 327.499374 74.324408 
+L 347.499374 74.324408 
+L 347.499374 67.324408 
+L 327.499374 67.324408 
 z
 " style="fill: #0868ac"/>
    </g>
    <g id="text_3">
     <!-- Alsatian -->
-    <g transform="translate(449.998499 77.57858) scale(0.24 -0.24)">
+    <g transform="translate(355.499374 74.324408) scale(0.1 -0.1)">
      <defs>
       <path id="LinBiolinumT-41" d="M 2605 1754 
 C 2394 1754 2131 1754 1939 1754 
