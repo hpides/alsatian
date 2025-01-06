@@ -554,7 +554,7 @@ if __name__ == '__main__':
         root_dir = os.path.abspath('./results/des-gpu-imagenette-huggingface-combined-architecture-search')
         plot_save_path = os.path.abspath(f'./plots/combined_models/{data_items}/')
         os.makedirs(plot_save_path, exist_ok=True)
-        # plot_end_to_end_times(root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path,
-        #                       4)
+        plot_end_to_end_times(root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path,
+                              4)
         plot_end_to_end_times_with_error(root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path,
                               4)
