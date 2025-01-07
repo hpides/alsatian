@@ -112,7 +112,8 @@ def run_model_search(exp_args: ExpArgs):
             base_model_id = snapshot_string
             fine_tuned_model_ids_file = os.path.join("./../snapshots/hugging_face/hf-model-ids",
                                                      f"{snapshot_string.replace('/', '-')}.txt")
-            fine_tuned_model_ids_file = os.path.join(os.path.abspath(__file__), fine_tuned_model_ids_file)
+            current_file_path = os.path.abspath(__file__)
+            fine_tuned_model_ids_file = os.path.join(os.path.dirname(current_file_path), fine_tuned_model_ids_file)
             hf_snapshots = generate_simple_hf_snapshot_objects(
                 base_model_id, fine_tuned_model_ids_file, exp_args.hf_caching_path)
             model_snapshots.extend(hf_snapshots)
