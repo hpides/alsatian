@@ -7,8 +7,9 @@ from custom.data_loaders.cache_service_dataset import CacheServiceDataset
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.models.init_models import initialize_model
 from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import initialize_hf_model
 from global_utils.constants import LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, MODEL_TO_DEVICE, CUDA, INPUT, LABEL, \
-    LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, CALC_PROXY_SCORE
+    LOAD_DATA, DATA_TO_DEVICE, INFERENCE, BATCH_MEASURES, CALC_PROXY_SCORE, LOAD_HF_MODEL
 from global_utils.deterministic import check_deterministic_env_var_set
 from model_search.caching_service import CachingService
 from model_search.execution.data_handling.data_information import DatasetClass
@@ -17,6 +18,7 @@ from model_search.execution.planning.execution_plan import ExecutionStep, Baseli
 from model_search.execution_step_logger import ExecutionStepLogger
 from model_search.model_management.model_store import match_keys
 from model_search.model_snapshots.base_snapshot import ModelSnapshot
+from model_search.model_snapshots.hf_snapshot import HFModelSnapshot
 from model_search.proxies.nn_proxy import linear_proxy
 
 
@@ -72,13 +74,23 @@ class BaselineExecutionEngine(ExecutionEngine):
         return model
 
     def init_model(self, snapshot: ModelSnapshot):
-        # load the snapshot from storage
-        state_dict = self.load_snapshot(snapshot)
-        # initialize model
-        model = self.initialize_model(snapshot)
-        # load state to model
-        measurement, _ = self.bench.micro_benchmark_cpu(load_state_dict_in_model, model, state_dict)
-        self.logger.log_value(STATE_TO_MODEL, measurement)
+        if isinstance(snapshot, HFModelSnapshot):
+            # load model with logic provided by hugging face
+            hf_snapshot: HFModelSnapshot = snapshot
+            measurement, (_, model) = self.bench.micro_benchmark_cpu(
+                method=initialize_hf_model, hf_base_model_id=hf_snapshot.base_model_id,
+                hf_model_id=hf_snapshot.model_id, hf_cache_dir=hf_snapshot.hf_caching_path)
+            self.logger.log_value(LOAD_HF_MODEL, measurement)
+
+        else:
+            # load the snapshot from storage
+            state_dict = self.load_snapshot(snapshot)
+            # initialize model
+            model = self.initialize_model(snapshot)
+            # load state to model
+            measurement, _ = self.bench.micro_benchmark_cpu(load_state_dict_in_model, model, state_dict)
+            self.logger.log_value(STATE_TO_MODEL, measurement)
+
         # load model to device, measure cpu time
         measurement, _ = self.bench.micro_benchmark_cpu(load_model_to_device, model, CUDA)
         self.logger.log_value(MODEL_TO_DEVICE, measurement)

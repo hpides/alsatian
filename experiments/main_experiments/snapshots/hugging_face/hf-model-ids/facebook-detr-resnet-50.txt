@@ -233,14 +233,14 @@ ruinmin/furniture_use_data_finetuning
 Hantr/Francesco_use_data_finetuning
 se0kcess/cppe5_use_data_finetuning
 SkowKyubu/detr-resnet-50_finetuned_cppe5
-cd/daniel-detr-resnet-50_finetuned_cppe5
+cd-daniel/detr-resnet-50_finetuned_cppe5
 daksh5656/detr-resnet-50_finetuned_cppe5
 joe611/chickens-150-epoch-1000-images
 Yoon310/furniture_use_data_finetuning
 miriaiml/detr-resnet-50_finetuned_cppe5
 James332/cppe5_use_data_finetuning
 hefeng0/detr-resnet-50_finetuned_cppe5
-han/byeol-use_data_finetuning
+han-byeol/use_data_finetuning
 nsugianto/detr-resnet50_finetuned_detrresnet50_lsdocelementdetv1type7_v2_s2_1940s
 joe611/chickens-composite-8044444-150-epochs-wo-transform-metrics-test
 MyeongGyun/furniture-ngpea_use_data_finetuning
