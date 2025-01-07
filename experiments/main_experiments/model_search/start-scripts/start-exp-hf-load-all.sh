@@ -2,7 +2,7 @@
 
 # Assigning command line arguments to variables
 repository_url=github.com/slin96/alsatian.git
-script_to_start=experiments/main_experiments/model_search/run_experiment_set_hf_snapshots.py
+script_to_start=experiments/main_experiments/model_search/run_experiment_set_hf_snapshots_load_full.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=load-full-hf-models
