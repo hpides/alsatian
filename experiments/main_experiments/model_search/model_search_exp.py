@@ -47,7 +47,8 @@ def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path,
     if hf_snapshots:
         if parsable_as_list(snapshot_set_string):
             snapshot_set_strings = snapshot_set_string.split(",")
-            save_paths = [os.path.join(base_save_path, snapshot_string.replace("/","-")) for snapshot_string in snapshot_set_strings]
+            save_paths = [os.path.join(base_save_path, snapshot_string.replace("/", "-")) for snapshot_string in
+                          snapshot_set_strings]
             return get_combined_snapshots(save_paths)
         else:
             snapshot_save_path = os.path.join(base_save_path, snapshot_set_string.replace("/", "-"))
@@ -109,12 +110,14 @@ def run_model_search(exp_args: ExpArgs):
         model_snapshots = []
         for snapshot_string in snapshot_set_strings:
             base_model_id = snapshot_string
-            fine_tuned_model_ids_file=os.path.join("./../snapshots/hugging_face/hf-model-ids",f"{snapshot_string.replace('/', '-')}.txt")
+            fine_tuned_model_ids_file = os.path.join("./../snapshots/hugging_face/hf-model-ids",
+                                                     f"{snapshot_string.replace('/', '-')}.txt")
+            fine_tuned_model_ids_file = os.path.join(os.path.abspath(__file__), fine_tuned_model_ids_file)
             hf_snapshots = generate_simple_hf_snapshot_objects(
                 base_model_id, fine_tuned_model_ids_file, exp_args.hf_caching_path)
             model_snapshots.extend(hf_snapshots)
 
-    elif exp_args.approach ==  "mosix":
+    elif exp_args.approach == "mosix":
         model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
                                                      exp_args.distribution, exp_args.base_snapshot_save_path,
                                                      trained_snapshots=exp_args.trained_snapshots,
@@ -124,7 +127,7 @@ def run_model_search(exp_args: ExpArgs):
 
     if exp_args.num_models > 0:
         assert len(model_snapshots) == exp_args.num_models
-        if exp_args.approach ==  "mosix":
+        if exp_args.approach == "mosix":
             assert len(model_store.models) == exp_args.num_models
 
     if exp_args.approach == "mosix":
