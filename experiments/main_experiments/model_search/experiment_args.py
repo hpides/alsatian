@@ -65,13 +65,17 @@ class ExpArgs:
         self.cache_size = args.getint(section, 'cache_size')
         self.trained_snapshots = args.getboolean(section, 'trained_snapshots')
         # self.model_name = args[section].get('model_name', None)
-        if 'hf_snapshots' in args[section]:
-            self.hf_snapshots = args.getboolean(section, 'hf_snapshots')
-        else:
-            self.hf_snapshots = False
+        self.hf_snapshots = self._get_optional_field('hf_snapshots', args, section)
+        self.load_full = self._get_optional_field('load_full', args, section)
+        self.hf_caching_path =args[section]['hf_caching_path']
 
     def __str__(self):
         return str(self.__dict__)
 
     def get_dict(self):
         return self.__dict__
+
+    def _get_optional_field(self, field_name, args, section):
+        if field_name in args[section]:
+            return args.getboolean(section, field_name)
+        return False

@@ -9,7 +9,8 @@ from data.imdb import reduced_imdb
 from data.imdb.reduced_imdb import get_imbdb_bert_base_uncased_datasets
 from experiments.main_experiments.model_search.experiment_args import ExpArgs
 from experiments.main_experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
-from experiments.main_experiments.snapshots.hugging_face.generate_hf_snapshots import get_existing_model_store
+from experiments.main_experiments.snapshots.hugging_face.generate_hf_snapshots import get_existing_model_store, \
+    generate_simple_hf_snapshot_objects
 from experiments.main_experiments.snapshots.synthetic.generate import RetrainDistribution
 from experiments.main_experiments.snapshots.synthetic.generate_set import get_architecture_models
 from experiments.main_experiments.snapshots.trained.build_trained_model_store import get_trained_models_and_model_store
@@ -99,22 +100,41 @@ def run_model_search(exp_args: ExpArgs):
     len_train_data = len(train_data)
     len_test_data = len(test_data)
 
-    model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
-                                                 exp_args.distribution, exp_args.base_snapshot_save_path,
-                                                 trained_snapshots=exp_args.trained_snapshots,
-                                                 hf_snapshots=exp_args.hf_snapshots)
+    if exp_args.load_full and exp_args.approach == "baseline" or exp_args.approach == "shift":
+        if parsable_as_list(exp_args.snapshot_set_string):
+            snapshot_set_strings = exp_args.snapshot_set_string.split(",")
+        else:
+            snapshot_set_strings = [exp_args.snapshot_set_string]
+
+        model_snapshots = []
+        for snapshot_string in snapshot_set_strings:
+            base_model_id = snapshot_string
+            fine_tuned_model_ids_file=os.path.join("./../snapshots/hugging_face/hf-model-ids",f"{snapshot_string.replace('/', '-')}.txt")
+            hf_snapshots = generate_simple_hf_snapshot_objects(
+                base_model_id, fine_tuned_model_ids_file, exp_args.hf_caching_path)
+            model_snapshots.extend(hf_snapshots)
+
+    elif exp_args.approach ==  "mosix":
+        model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
+                                                     exp_args.distribution, exp_args.base_snapshot_save_path,
+                                                     trained_snapshots=exp_args.trained_snapshots,
+                                                     hf_snapshots=exp_args.hf_snapshots)
+    else:
+        raise NotImplementedError
 
     if exp_args.num_models > 0:
         assert len(model_snapshots) == exp_args.num_models
-        assert len(model_store.models) == exp_args.num_models
+        if exp_args.approach ==  "mosix":
+            assert len(model_store.models) == exp_args.num_models
 
-    # TODO fix this, either generate info for missing models on the fly or introduce proper argument to deactivate
-    layer_output_info = os.path.join(pathlib.Path(__file__).parent.resolve(),
-                                     '../../side_experiments/model_resource_info/outputs/layer_output_infos.json')
-    if exp_args.cache_size < 100000000:
-        model_store.add_output_sizes_to_rich_snapshots(layer_output_info)
-    else:
-        model_store.add_output_sizes_to_rich_snapshots(layer_output_info, default_size=200000)
+    if exp_args.approach == "mosix":
+        # TODO fix this, either generate info for missing models on the fly or introduce proper argument to deactivate
+        layer_output_info = os.path.join(pathlib.Path(__file__).parent.resolve(),
+                                         '../../side_experiments/model_resource_info/outputs/layer_output_infos.json')
+        if exp_args.cache_size < 100000000:
+            model_store.add_output_sizes_to_rich_snapshots(layer_output_info)
+        else:
+            model_store.add_output_sizes_to_rich_snapshots(layer_output_info, default_size=200000)
 
     # after generating the snapshots make sure they are not in the caches
     clear_caches_and_check_io_limit()

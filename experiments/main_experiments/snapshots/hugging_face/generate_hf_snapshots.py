@@ -9,8 +9,23 @@ from experiments.main_experiments.snapshots.synthetic.generate import generate_s
 from global_utils.json_operations import read_json_to_dict, write_json_to_file
 from global_utils.model_names import RESNET_50
 from model_search.model_management.model_store import ModelStore, model_store_from_dict
+from model_search.model_snapshots.hf_snapshot import HFModelSnapshot
 
 HF_MODEL_CHOICES = [RESNET_50]
+
+
+def generate_simple_hf_snapshot_objects(base_model_id: str, fine_tuned_model_ids_file: str, hf_cache_dir: str) -> [
+    HFModelSnapshot]:
+    fine_tuned_model_ids = get_snapshot_ids(fine_tuned_model_ids_file)
+
+    model_ids = [base_model_id] + fine_tuned_model_ids
+
+    snapshots = []
+    for fine_tuned_model_id in model_ids:
+        snapshot = HFModelSnapshot(base_model_id, fine_tuned_model_id, hf_cache_dir)
+        snapshots.append(snapshot)
+
+    return snapshots
 
 
 def build_model_store(save_path, model_snapshots):
@@ -64,6 +79,12 @@ class ExpArgs:
         return self.__dict__
 
 
+def get_snapshot_ids(snapshot_id_file_path):
+    with open(snapshot_id_file_path, "r") as file:
+        fine_tuned_model_ids = [line.strip() for line in file]
+        return fine_tuned_model_ids
+
+
 if __name__ == '__main__':
     # TODO run this for every model we are interested in
     # TODO check that everything is written to the correct directories
@@ -84,8 +105,7 @@ if __name__ == '__main__':
     else:
         # parse snapshot_id_file
         snapshot_id_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), args.snapshot_ids_file)
-        with open(snapshot_id_file_path, "r") as file:
-            fine_tuned_model_ids = [line.strip() for line in file]
+        fine_tuned_model_ids = get_snapshot_ids(snapshot_id_file_path)
 
         snapshots = generate_hf_snapshots(args.base_model_id, fine_tuned_model_ids,
                                           args.snapshot_save_path,
