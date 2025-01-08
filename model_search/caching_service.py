@@ -168,7 +168,7 @@ class CachingService:
     def _delete_file(self, file_path):
         if os.path.exists(file_path):
             os.remove(file_path)
-            print(f"File '{file_path}' deleted successfully.")
+            # print(f"File '{file_path}' deleted successfully.")
         else:
             print(f"File '{file_path}' does not exist.")
 
