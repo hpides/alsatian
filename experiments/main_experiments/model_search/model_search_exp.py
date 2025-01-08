@@ -11,6 +11,8 @@ from experiments.main_experiments.model_search.experiment_args import ExpArgs
 from experiments.main_experiments.prevent_caching.watch_utils import clear_caches_and_check_io_limit
 from experiments.main_experiments.snapshots.hugging_face.generate_hf_snapshots import get_existing_model_store, \
     generate_simple_hf_snapshot_objects
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import FACEBOOK_DETR_RESNET_50, \
+    GOOGLE_VIT_BASE_PATCH16_224_IN21K
 from experiments.main_experiments.snapshots.synthetic.generate import RetrainDistribution
 from experiments.main_experiments.snapshots.synthetic.generate_set import get_architecture_models
 from experiments.main_experiments.snapshots.trained.build_trained_model_store import get_trained_models_and_model_store
@@ -116,6 +118,13 @@ def run_model_search(exp_args: ExpArgs):
             fine_tuned_model_ids_file = os.path.join(os.path.dirname(current_file_path), fine_tuned_model_ids_file)
             hf_snapshots = generate_simple_hf_snapshot_objects(
                 base_model_id, fine_tuned_model_ids_file, exp_args.hf_caching_path)
+
+            if snapshot_string == FACEBOOK_DETR_RESNET_50:
+                hf_snapshots = hf_snapshots[:232]
+            elif snapshot_string == GOOGLE_VIT_BASE_PATCH16_224_IN21K:
+                hf_snapshots = hf_snapshots[:100]
+
+
             model_snapshots.extend(hf_snapshots)
 
     elif exp_args.approach == "mosix":

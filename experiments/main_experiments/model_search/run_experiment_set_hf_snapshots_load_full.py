@@ -108,17 +108,16 @@ if __name__ == "__main__":
         APPROACHES: ["baseline", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         # SNAPSHOT_SET_STRINGS: [",".join([FACEBOOK_DETR_RESNET_101])],  # this line to use all snapshots combined
-        # SNAPSHOT_SET_STRINGS: [SENSE_TIME_DEFORMABLE_DETR, CONDITIONAL_DETR_RESNET_50, FACEBOOK_DETR_RESNET_50_DC5,
-        #                        FACEBOOK_DETR_RESNET_101, MICROSOFT_TABLE_TRANSFORMER_DETECTION,
-        #                        MICROSOFT_TABLE_STRUCTURE_RECOGNITION, FACEBOOK_DETR_RESNET_50],# this line for separate search per model
-        SNAPSHOT_SET_STRINGS: [FACEBOOK_DETR_RESNET_50],
+        SNAPSHOT_SET_STRINGS: [FACEBOOK_DETR_RESNET_50, SENSE_TIME_DEFORMABLE_DETR, CONDITIONAL_DETR_RESNET_50, FACEBOOK_DETR_RESNET_50_DC5,
+                               FACEBOOK_DETR_RESNET_101, MICROSOFT_TABLE_TRANSFORMER_DETECTION,
+                               MICROSOFT_TABLE_STRUCTURE_RECOGNITION],# this line for separate search per model
         NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
         # alternatively we can also extend the experiment
         # DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
     }
-    run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+    # run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
 
     # run multiple times for median values
     eval_space[BENCHMARK_LEVELS] = ["EXECUTION_STEPS"]
