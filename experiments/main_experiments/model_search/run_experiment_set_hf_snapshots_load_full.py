@@ -108,9 +108,10 @@ if __name__ == "__main__":
         APPROACHES: ["baseline", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         # SNAPSHOT_SET_STRINGS: [",".join([FACEBOOK_DETR_RESNET_101])],  # this line to use all snapshots combined
-        SNAPSHOT_SET_STRINGS: [SENSE_TIME_DEFORMABLE_DETR, CONDITIONAL_DETR_RESNET_50, FACEBOOK_DETR_RESNET_50_DC5,
-                               FACEBOOK_DETR_RESNET_101, MICROSOFT_TABLE_TRANSFORMER_DETECTION,
-                               MICROSOFT_TABLE_STRUCTURE_RECOGNITION, FACEBOOK_DETR_RESNET_50],# this line for separate search per model
+        # SNAPSHOT_SET_STRINGS: [SENSE_TIME_DEFORMABLE_DETR, CONDITIONAL_DETR_RESNET_50, FACEBOOK_DETR_RESNET_50_DC5,
+        #                        FACEBOOK_DETR_RESNET_101, MICROSOFT_TABLE_TRANSFORMER_DETECTION,
+        #                        MICROSOFT_TABLE_STRUCTURE_RECOGNITION, FACEBOOK_DETR_RESNET_50],# this line for separate search per model
+        SNAPSHOT_SET_STRINGS: [FACEBOOK_DETR_RESNET_50],
         NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
