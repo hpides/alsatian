@@ -107,7 +107,7 @@ if __name__ == "__main__":
         # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
         APPROACHES: ["baseline", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [",".join([ALL_HF_MODELS])],  # this line to use all snapshots combined
+        SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
         # SNAPSHOT_SET_STRINGS: [FACEBOOK_DETR_RESNET_50, SENSE_TIME_DEFORMABLE_DETR, CONDITIONAL_DETR_RESNET_50, FACEBOOK_DETR_RESNET_50_DC5,
         #                        FACEBOOK_DETR_RESNET_101, MICROSOFT_TABLE_TRANSFORMER_DETECTION,
         #                        MICROSOFT_TABLE_STRUCTURE_RECOGNITION],# this line for separate search per model
