@@ -289,7 +289,7 @@ def has_first_decimal_zero(number):
 
 def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data_items, measure_type,
                           plot_save_path, plot_width):
-    plt.rcParams.update({'font.size': 24})
+    plt.rcParams.update({'font.size': 46})
 
     plt.rcParams.update({'text.usetex': True
                             , 'pgf.rcfonts': False
@@ -303,82 +303,45 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
                                                   \fi"""
                          })
 
-    colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
 
     # Extracting the data
     data = end_to_end_plot_times(
         data_root_dir, file_template, models, approaches, data_items, measure_type)
-    models = list(data.keys())
-    methods = list(next(iter(data.values())).keys())
-    # Number of models and methods
-    n_models = len(models)
-    n_methods = len(methods)
-    # Creating a bar plot
-    bar_width = 0.3
-    index = np.arange(n_models)
-    # Create a figure and an axis
-    fig, ax = plt.subplots()
-    # Plot each method
-    # Create a figure and an axis with a larger width
-    fig, ax = plt.subplots(figsize=(plot_width, 4))
+    data = data["combined"]
 
-    max_method_value = 0
-    for i, method in enumerate(methods):
-        method_values = [data[model][method] / 60 for model in models] # transfer to minutes
-        max_method_value = max(max_method_value, max(method_values))
-        print(max_method_value)
-        bars = ax.bar(index + i * bar_width, method_values, bar_width, label=APPROACH_NAME_MAPPING[method],
-                      color=colors[i])
+    # Change the names of the approaches to 'base', 'shift', 'mosix'
+    ordered_approaches = ['base', 'shift', 'mosix']
+    # Map the original approach names to the new ones
+    original_approaches = ['baseline', 'shift', 'mosix']
+    times = [data[approach] /60 for approach in original_approaches]
 
-        # Add annotations for shift and mosix
-        if method in ['shift', 'mosix']:
-            for bar, model in zip(bars, models):
-                baseline_value = data[model]['baseline']
-                speedup = baseline_value / data[model][method]
-                if speedup >= 10:
-                    if False and has_first_decimal_zero(speedup):
-                        ax.text(bar.get_x() + bar.get_width() / 2 + 0.04, bar.get_height(), f'{int(speedup)}x',
-                                ha='center',
-                                va='bottom', rotation=0)
-                    else:
-                        ax.text(bar.get_x() + bar.get_width() / 2 + 0.09, bar.get_height(), f'{speedup:.1f}x',
-                                ha='center',
-                                va='bottom', rotation=0)
-                else:
-                    ax.text(bar.get_x() + bar.get_width() / 2 + 0.04, bar.get_height(), f'{speedup:.1f}x', ha='center',
-                            va='bottom', rotation=0)
+    # Create the bar plot
+    fig, ax = plt.subplots(figsize=(7, 9))
+    bars = plt.bar([APPROACH_NAME_MAPPING[x] for x in ordered_approaches], times, color=colors)
 
-    # Adding labels and title
-    # ax.set_xlabel('Model Architectures')
-    ax.set_ylabel('Time in minutes')
-    ax.set_xticks(index + bar_width * (n_methods - 1) / 2)
-    ax.set_xticklabels([MODEL_NAME_MAPPING[model.replace("-","/",1)] for model in models], rotation=15, ha='right')  # Rotate x-axis labels
-    # ax.set_xticklabels([model for model in models], rotation=15, ha='right')  # Rotate x-axis labels
-    ax.tick_params(axis='x')
-    if int(max_method_value) < 1000:
-        y_ticks = list(range(0, int(max_method_value) + 200, 200))
-    else:
-        y_ticks = list(range(0, int(max_method_value) + 500, 500))
-    ax.set_yticks(y_ticks)
-    # Remove the legend from the actual plot
+    # Add annotations for shift and mosix
+    for bar, approach, original_approach in zip(bars, ordered_approaches, original_approaches):
+        if approach in ['shift', 'mosix']:
+            baseline_value = data['baseline']
+            speedup = baseline_value / data[original_approach]
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.1f}x', ha='center',
+                    va='bottom', rotation=0)
+
+    if data['baseline'] < data['shift']:
+        plt.ylim(0, 90)
+
+    plt.ylabel('Time in minutes', labelpad=20)
+
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
     # Save the plot without legend
     plt.tight_layout()
     plot_file_name = f'end_to_end-{measure_type}'
     plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.svg'))
     plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.png'))
 
-    # Extract the legend
-    fig_legend = plt.figure(figsize=(8, 2))
-    legend = fig_legend.legend(*ax.get_legend_handles_labels(), loc='center', ncol=3, frameon=False)
-    fig_legend.tight_layout()
-
-    # Save the legend separately
-    legend_file_name = 'legend'
-    fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.svg'))
-    fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.png'))
-
-    plt.close(fig_legend)
     plt.close(fig)
 
 
