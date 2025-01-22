@@ -317,7 +317,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
     times = [data[approach] /60 for approach in original_approaches]
 
     # Create the bar plot
-    fig, ax = plt.subplots(figsize=(7, 9))
+    fig, ax = plt.subplots(figsize=(7, 6))
     bars = plt.bar([APPROACH_NAME_MAPPING[x] for x in ordered_approaches], times, color=colors)
 
     # Add annotations for shift and mosix
@@ -333,7 +333,9 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
 
     plt.ylabel('Time in minutes', labelpad=20)
 
-    plt.xticks(rotation=45)
+    # plt.xticks(rotation=45)
+    plt.gca().set_xticklabels([])
+
     plt.tight_layout()
 
     # Save the plot without legend
@@ -480,6 +482,7 @@ def plot_end_to_end_times_with_error(
     ax.set_xticks(index + bar_width * (n_methods - 1) / 2)
     ax.set_xticklabels([MODEL_NAME_MAPPING[model.replace("-", "/", 1)] for model in models], rotation=15, ha='right')
     ax.tick_params(axis='x')
+
 
     if max_method_value > 100:
         y_ticks = list(range(0, int(max_method_value / 60) + 5, 50))
