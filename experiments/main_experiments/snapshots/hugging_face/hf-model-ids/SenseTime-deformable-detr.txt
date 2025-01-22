@@ -1,0 +1,8 @@
+yunusskeete/deformable-detr-resnet-50_finetuned_cppe5
+qubvel-hf/sensetime-deformable-detr-finetuned-10k-cppe5-reproduce
+qubvel-hf/sensetime-deformable-detr-finetuned-10k-cppe5-auto-pad
+qubvel-hf/sensetime-deformable-detr-finetuned-10k-cppe5-manual-pad
+furion-123/deformable_detr_finetuned_rsna_2018
+qubvel-hf/sensetime-deformable-detr-finetuned-10k-cppe5
+qubvel-hf/sensetime-deformable-detr-finetuned-10k-cppe5-more-augs
+RoblabWhGe/rescuedet-deformable-detr

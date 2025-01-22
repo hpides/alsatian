@@ -268,7 +268,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     times = [data[approach] for approach in original_approaches]
 
     # Create the bar plot
-    fig, ax = plt.subplots(figsize=(7, 9))
+    fig, ax = plt.subplots(figsize=(7, 6))
     bars = plt.bar([APPROACH_NAME_MAPPING[x] for x in ordered_approaches], times, color=colors)
 
     # Add annotations for shift and mosix
@@ -283,7 +283,8 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     plt.ylabel('Time in sec', labelpad=20)
 
     # Rotate the x-ticks by 45 degrees
-    plt.xticks(rotation=45)
+    # plt.xticks(rotation=45)
+    plt.gca().set_xticklabels([])
 
     # Add a legend
     # plt.legend(title='Approach')

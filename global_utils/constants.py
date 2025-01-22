@@ -24,6 +24,7 @@ STATE_TO_MODEL = 'load_state_to_model'
 INIT_MODEL = 'init_model'
 
 LOAD_STATE_DICT = 'load_state_dict'
+LOAD_HF_MODEL = 'load_hf_model'
 LOAD_STATE_DICT_SIMULATED = 'load_state_dict_simulated'
 STATE_DICT_SIZE = 'state_dict_size'
 PARTIAL_STATE_DICT_SIZE = 'partial_state_dict_size'

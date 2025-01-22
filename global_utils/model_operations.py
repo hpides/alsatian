@@ -63,9 +63,11 @@ def list_of_layers(model: torch.nn.Sequential, include_seq=False, split_classes=
     children = list(model.children())
     for child in children:
         if split_classes and _in_class_list(child, split_classes):
-            result += list_of_layers(child, include_seq)
+            result += list_of_layers(child, include_seq, split_classes)
         elif isinstance(child, torch.nn.Sequential) or (include_seq and len(list(child.children())) > 0):
-            result += list_of_layers(child, include_seq)
+            result += list_of_layers(child, include_seq, split_classes)
+        elif isinstance(child, torch.nn.ModuleList):
+            result += list(child)
         else:
             result += [child]
     return result
@@ -92,7 +94,7 @@ def get_split_index(split_index, model_name):
     return split_index
 
 
-def merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential, _index):
+def new_head_merge_models(base_model: torch.nn.Sequential, to_merge: torch.nn.Sequential, _index):
     base_model_one, head_one = split_model_in_two(base_model, _index)
     base_model_two, head_two = split_model_in_two(to_merge, _index)
 
@@ -119,7 +121,7 @@ def merge_n_models(models, models_indices):
     # IMPORTANT: Indices must be sorted
     merged_model = models[0]
     for i, si in enumerate(models_indices):
-        merged_model = merge_models(merged_model, models[i + 1], si)
+        merged_model = new_head_merge_models(merged_model, models[i + 1], si)
 
     return merged_model
 

@@ -3,6 +3,8 @@ import random
 import shutil
 from typing import Any, Callable, Optional, Tuple
 
+import numpy as np
+import torch
 from torchvision.datasets import ImageFolder
 from torchvision.datasets.folder import default_loader
 
@@ -37,6 +39,12 @@ class CustomImageFolder(ImageFolder):
 
         if check_deterministic_env_var_set():
             random.seed(42)
+
+        # in some cases we load the same data twice but only cache labels only once
+        # to not mess up the mapping of data and labels, set seeds to preserve loading order
+        np.random.seed(42)
+        torch.manual_seed(42)
+        random.seed(42)
 
         random.shuffle(self.samples)
         self.all_samples = self.samples
@@ -74,7 +82,7 @@ class CustomImageFolder(ImageFolder):
 
 
 def create_sub_dataset(dataset_path: str, size: int):
-    random.seed(42) # to guarantee same split for same input dataset
+    random.seed(42)  # to guarantee same split for same input dataset
     image_folder = CustomImageFolder(dataset_path)
     new_dataset_base_path = dataset_path + f'-{size}'
     if not os.path.exists(new_dataset_base_path):

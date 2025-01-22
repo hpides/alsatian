@@ -17,7 +17,8 @@ class TestTensorCachingService(unittest.TestCase):
         self.model_1_layer_states = [self.layer_state_1_1, self.layer_state_1_2, self.layer_state_1_3,
                                      self.layer_state_1_4, self.layer_state_1_5, self.layer_state_1_6]
 
-        self.snapshot1 = RichModelSnapshot("test_arch1", "sd_path1", "sd_hash1", 'test_arch1-sd_path1', self.model_1_layer_states)
+        self.snapshot1 = RichModelSnapshot("test_arch1", "sd_path1", "sd_hash1", 'test_arch1-sd_path1',
+                                           self.model_1_layer_states)
 
         self.layer_state_2_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
         self.layer_state_2_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
@@ -27,7 +28,8 @@ class TestTensorCachingService(unittest.TestCase):
         self.layer_state_2_6 = LayerState("", "", "sd_hash_2.6", "arch_hash_1")
         self.model_2_layer_states = [self.layer_state_2_1, self.layer_state_2_2, self.layer_state_2_3,
                                      self.layer_state_2_4, self.layer_state_2_5, self.layer_state_2_6]
-        self.snapshot2 = RichModelSnapshot("test_arch2", "sd_path2", "sd_hash2", 'test_arch2-sd_path2', self.model_2_layer_states)
+        self.snapshot2 = RichModelSnapshot("test_arch2", "sd_path2", "sd_hash2", 'test_arch2-sd_path2',
+                                           self.model_2_layer_states)
 
         self.layer_state_3_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
         self.layer_state_3_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
@@ -37,7 +39,8 @@ class TestTensorCachingService(unittest.TestCase):
         self.layer_state_3_6 = LayerState("", "", "sd_hash_3.6", "arch_hash_1")
         self.model_3_layer_states = [self.layer_state_3_1, self.layer_state_3_2, self.layer_state_3_3,
                                      self.layer_state_3_4, self.layer_state_3_5, self.layer_state_3_6]
-        self.snapshot3 = RichModelSnapshot("test_arch3", "sd_path3", "sd_hash3", 'test_arch3-sd_path3', self.model_3_layer_states)
+        self.snapshot3 = RichModelSnapshot("test_arch3", "sd_path3", "sd_hash3", 'test_arch3-sd_path3',
+                                           self.model_3_layer_states)
 
         self.layer_state_4_1 = LayerState("", "", "sd_hash_1.1", "arch_hash_1")
         self.layer_state_4_2 = LayerState("", "", "sd_hash_1.2", "arch_hash_1")
@@ -47,7 +50,20 @@ class TestTensorCachingService(unittest.TestCase):
         self.layer_state_4_6 = LayerState("", "", "sd_hash_4.6", "arch_hash_1")
         self.model_4_layer_states = [self.layer_state_4_1, self.layer_state_4_2, self.layer_state_4_3,
                                      self.layer_state_4_4, self.layer_state_4_5, self.layer_state_4_6]
-        self.snapshot4 = RichModelSnapshot("test_arch4", "sd_path4", "sd_hash4", 'test_arch4-sd_path4', self.model_4_layer_states)
+        self.snapshot4 = RichModelSnapshot("test_arch4", "sd_path4", "sd_hash4", 'test_arch4-sd_path4',
+                                           self.model_4_layer_states)
+
+        self.layer_state_5_1 = LayerState("", "", "sd_hash_5.1", "arch_hash_5")
+        self.layer_state_5_2 = LayerState("", "", "sd_hash_5.2", "arch_hash_5")
+        self.layer_state_5_3 = LayerState("", "", "sd_hash_5.3", "arch_hash_5")
+        self.layer_state_5_4 = LayerState("", "", "sd_hash_5.4", "arch_hash_5")
+        self.layer_state_5_5 = LayerState("", "", "sd_hash_5.5", "arch_hash_5")
+        self.layer_state_5_6 = LayerState("", "", "sd_hash_5.6", "arch_hash_5")
+        self.model_5_layer_states = [self.layer_state_5_1, self.layer_state_5_2, self.layer_state_5_3,
+                                     self.layer_state_5_4, self.layer_state_5_5, self.layer_state_5_6]
+
+        self.snapshot5 = RichModelSnapshot("test_arch5", "sd_path5", "sd_hash5", 'test_arch5-sd_path5',
+                                           self.model_5_layer_states)
 
     def tearDown(self):
         pass
@@ -119,7 +135,8 @@ class TestTensorCachingService(unittest.TestCase):
         mm_snapshot = MultiModelSnapshot()
         mm_snapshot.add_snapshot(self.snapshot1)
         # add the second model
-        snapshot = RichModelSnapshot("test_arch2", "sd_path2", "sd_hash2", "test_arch2-sd_path2", self.model_1_layer_states)
+        snapshot = RichModelSnapshot("test_arch2", "sd_path2", "sd_hash2", "test_arch2-sd_path2",
+                                     self.model_1_layer_states)
         mm_snapshot.add_snapshot(snapshot)
 
         current_node = mm_snapshot.root
@@ -142,7 +159,6 @@ class TestTensorCachingService(unittest.TestCase):
         self._check_tail(current_node, 0, 7, layer_states, snapshot_ids)
         mm_snapshot.prune_snapshots(["test_arch1-sd_path1"])
         self._check_tail(current_node, 0, 7, layer_states, ["test_arch2-sd_path2"])
-
 
     def test_add_snapshot_to_two_model_mm_different_split_point(self):
         # add the first model
@@ -198,6 +214,69 @@ class TestTensorCachingService(unittest.TestCase):
         snapshot_ids = ["test_arch3-sd_path3"]
         layer_states = self.model_3_layer_states
         self._check_tail(current_node, layer_count, 2, layer_states, snapshot_ids)
+
+    def _check_for_snapshots_1_5(self, mm_snapshot):
+        current_node = mm_snapshot.root
+        self.assertEqual(mm_snapshot.root.snapshot_ids,
+                         ["test_arch1-sd_path1", "test_arch5-sd_path5"])
+        # test only one child
+        self.assertEqual(len(current_node.edges), 2)
+        layer_count = 0
+        self.assertEqual(current_node.edges[0].child.layer_state, self.model_1_layer_states[layer_count])
+        self.assertEqual(current_node.edges[1].child.layer_state, self.model_5_layer_states[layer_count])
+        child_nodes = [edge.child for edge in current_node.edges]
+
+        # check tail for model 1
+        current_node = child_nodes[0]
+        snapshot_ids = ["test_arch1-sd_path1"]
+        layer_states = self.model_1_layer_states
+        self._check_tail(current_node, 1, 6, layer_states, snapshot_ids)
+
+        # check tail for model 5
+        current_node = child_nodes[1]
+        snapshot_ids = ["test_arch5-sd_path5"]
+        layer_states = self.model_5_layer_states
+        self._check_tail(current_node, 1, 6, layer_states, snapshot_ids)
+
+    def _check_for_snapshots_1_2_5(self, mm_snapshot):
+        current_node = mm_snapshot.root
+        self.assertEqual(mm_snapshot.root.snapshot_ids,
+                         ["test_arch1-sd_path1", "test_arch2-sd_path2", "test_arch5-sd_path5"])
+        # test only one child
+        self.assertEqual(len(current_node.edges), 2)
+        layer_count = 0
+        self.assertEqual(current_node.edges[0].child.layer_state, self.model_1_layer_states[layer_count])
+        self.assertEqual(current_node.edges[1].child.layer_state, self.model_5_layer_states[layer_count])
+        child_nodes = [edge.child for edge in current_node.edges]
+
+        # check tail for model 5
+        current_node = child_nodes[1]
+        snapshot_ids = ["test_arch5-sd_path5"]
+        layer_states = self.model_5_layer_states
+        self._check_tail(current_node, 1, 6, layer_states, snapshot_ids)
+
+        # check subtree with models 1 and 2
+        current_node = child_nodes[0]
+        layer_count = 1
+        for i in range(layer_count, layer_count + 2):
+            # test only one child
+            self.assertEqual(len(current_node.edges), 1)
+            # test if referenced node has correct hashes
+            self.assertEqual(current_node.edges[0].child.layer_state, self.model_1_layer_states[i])
+            current_node = current_node.edges[0].child
+            layer_count += 1
+
+        child_nodes = [edge.child for edge in current_node.edges]
+        layer_count += 1
+        current_node = child_nodes[0]
+        snapshot_ids = ["test_arch1-sd_path1"]
+        layer_states = self.model_1_layer_states
+        self._check_tail(current_node, layer_count, 3, layer_states, snapshot_ids)
+        current_node = child_nodes[1]
+        snapshot_ids = ["test_arch2-sd_path2"]
+        layer_states = self.model_2_layer_states
+        self._check_tail(current_node, layer_count, 3, layer_states, snapshot_ids)
+
 
     def test_add_snapshot_to_two_model_mm_same_split_point(self):
         # add the first model
@@ -281,3 +360,43 @@ class TestTensorCachingService(unittest.TestCase):
         mm_snapshot.add_snapshot(self.snapshot4)
         mm_snapshot.prune_snapshot(self.snapshot4.id)
         self._check_for_snapshots_1_2_3(mm_snapshot)
+
+    def test_two_different_models(self):
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        mm_snapshot.add_snapshot(self.snapshot5)
+        self._check_for_snapshots_1_5(mm_snapshot)
+
+    def test_two_different_one_similar_models(self):
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        mm_snapshot.add_snapshot(self.snapshot2)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+        mm_snapshot.add_snapshot(self.snapshot5)
+        self._check_for_snapshots_1_2_5(mm_snapshot)
+
+    def test_add_1_2_5_prune_5(self):
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        mm_snapshot.add_snapshot(self.snapshot2)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+        mm_snapshot.add_snapshot(self.snapshot5)
+        self._check_for_snapshots_1_2_5(mm_snapshot)
+
+        mm_snapshot.prune_snapshot(self.snapshot5.id)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+    def test_add_1_2_5_prune_2(self):
+        mm_snapshot = MultiModelSnapshot()
+        mm_snapshot.add_snapshot(self.snapshot1)
+        mm_snapshot.add_snapshot(self.snapshot2)
+        self._check_for_snapshot_1_and_2(mm_snapshot)
+
+        mm_snapshot.add_snapshot(self.snapshot5)
+        self._check_for_snapshots_1_2_5(mm_snapshot)
+
+        mm_snapshot.prune_snapshot(self.snapshot2.id)
+        self._check_for_snapshots_1_5(mm_snapshot)
+

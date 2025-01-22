@@ -1,0 +1,16 @@
+hwm21/detr-resnet-50-hardhat-finetuned
+hwm21/020924-detr-segment-detect-debug
+hwm21/230824-detr-segment-detect-unmasked
+sergiopaniego/detr-resnet-50-dc5-fashionpedia-finetuned
+Kelex83/finetuned-detr-resnet-50-dc5-fashionpedia
+Mgeong/detr-resnet-50-dc5-fashionpedia-finetuned
+jaxnwagner/detr-resnet-50-dc5-fashionpedia-finetuned-jw
+MalyO2/detr-resnet-50-dc5-baloon-finetuned
+jonathansuru/detr-resnet-50-dc5-ano
+mthandazo/detr-resnet-50-hardhat-finetuned
+osmanh/detr-resnet_finetuned
+hwm21/020924-detr-segment-detect-100-object-queries-debug
+sina99/detr-resnet-50-dc5-fashionpedia-finetuned
+anirban22/detr-resnet-50-finetuned-license-plate
+turalchik/detr-resnet-50-dc5-fashionpedia-finetuned
+MalyO2/working

@@ -5,6 +5,8 @@ from torchinfo import summary
 from transformers.modeling_attn_mask_utils import _prepare_4d_attention_mask_for_sdpa
 
 
+# Simplified/Sequential version of Huggingface bert model
+
 def get_extended_attention_mask(attention_mask, input_shape):
     dtype = torch.float32
 
