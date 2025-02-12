@@ -13,8 +13,8 @@
 - for steps (1) and (2) we use the [comparison_experiments.py](comparison_experiments.py) script
 - for step (3) we use the [similarity_analysis.py](similarity_analysis.py) script
 - because of their size we do not add the comparison files or the similarity reports to our repo
-  - comparison files can be downloaded here
-  - similarity reports can be downloaded here
+  - comparison files can be downloaded here: https://nextcloud.hpi.de/f/22515579
+  - similarity reports can be downloaded here: https://nextcloud.hpi.de/f/22515582
 
 
 
