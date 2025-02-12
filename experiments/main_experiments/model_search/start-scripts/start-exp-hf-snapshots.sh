@@ -5,8 +5,8 @@ repository_url=github.com/slin96/alsatian.git
 script_to_start=experiments/main_experiments/model_search/run_experiment_set_hf_snapshots.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
-branch=hf-models
-repo_name=model-search-paper
+branch=docker-hub-test
+repo_name=alsatian
 config_file=experiments/main_experiments/model_search/config.ini
 config_section=des-gpu-imagenette-huggingface-single-architecture-search
 
