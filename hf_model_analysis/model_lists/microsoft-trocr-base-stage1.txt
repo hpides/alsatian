@@ -1,0 +1,13 @@
+yoon1000/TrOCR_0208
+Ransaka/trocr-IAM
+yoon1000/TrOCR_0208-1
+yoon1000/TrOCR_0208-2
+Thien0103/enhanced-trocr-100epochs-with-directions
+yoon1000/TrOCR_0216_All_data
+yoon1000/TrOCR_0219_All_data
+Abhay1212/content
+gandharvathite/content
+ChronoStellar/TrOCR_IndonesianLPR
+andrianangg/checkpoint
+Sprakbanken/norhand-hcr-beta1
+yoon1000/TrOCR_0216

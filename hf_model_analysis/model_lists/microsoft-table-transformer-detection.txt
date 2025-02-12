@@ -1,0 +1,11 @@
+AmineAllo/table-transformer-misty-meadow-38
+AmineAllo/table-transformer-fiery-silence-39
+AmineAllo/table-transformer-soft-morning-35
+AmineAllo/table-transformer-dainty-pond-32
+AmineAllo/stoic-snow-1
+AmineAllo/margin-element-detector-fm-stilted-surf-9
+AmineAllo/margin-element-detector-fm-resilient-puddle-10
+AmineAllo/table-transformer-effortless-wildflower-30
+nsugianto/detr-resnet50_finetuned_mstabletrnsdet_lsdocelementdetv1type6_v2_s1
+apkonsta/table-transformer-detection-ifrs
+nsugianto/detr-resnet50_finetuned_mstabletrnsdet_lsdocelementdetv1type6_plusb5

@@ -1,0 +1,9 @@
+kariver/detr-resnet-101_adafactor_finetuned_food-roboflow
+kariver/detr-resnet-101_sgd_finetuned_food-roboflow
+kariver/detr-resnet-101_adamw_torch_finetuned_food-roboflow
+larixlarix/detr-resnet-101_finetuned_cppe5
+Khanmhmdi/detr-resnet-50_finetuned_fss1000
+kariver/detr-resnet-101_finetuned_food-roboflow
+kariver/detr-resnet-101_rmsprop_finetuned_food-roboflow
+kariver/detr-resnet-101_adagrad_finetuned_food-roboflow
+Rodr16020/detr_handwriten_cursive_text_detection

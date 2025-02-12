@@ -1,0 +1,9 @@
+groderg/DinoVdeauTest-large-2024_09_24-batch-size32_freeze
+mnauf/eval-trueface-dinov2-large-5-epochs-nov_19-baseline
+lombardata/DinoVdeau-large-2024_09_05-batch-size32_epochs150_freeze
+lombardata/DinoVdeau-large-2024_04_03-with_data_aug_batch-size32_epochs150_freeze
+groderg/Joseph-large-2024_09_16-batch-size32_epochs150_freeze
+groderg/DinoVdeau-large-2024_10_25-prova_batch-size8_freeze_monolabel
+groderg/Aina-large-2024_10_23-batch-size32_freeze_monolabel
+robertsw/aesthetics_v2
+matthieulel/dinov2-large-finetuned-galaxy10-decals

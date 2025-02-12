@@ -1,0 +1,4 @@
+Zawarudoooo/trocr-large-printed-cmc7_tesseract_MICR_ocr
+rocassis/trocr-large-printed-cmc7-ocr
+triki07/trocr-large-printed-cmc7_tesseract_MICR_ocr
+DunnBC22/trocr-large-printed-cmc7_tesseract_MICR_ocr

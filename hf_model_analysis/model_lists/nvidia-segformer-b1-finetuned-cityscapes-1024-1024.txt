@@ -1,0 +1,7 @@
+peldrak/segformer-b1-cityscapes-512-512-finetuned-coastTrain
+selvaa/segformer-b1-finetuned-cityscapes-1024-1024-straighter-only
+selvaa/segformer-b1-finetuned-cityscapes-1024-1024-latestt
+selvaa/segformer-b1-finetuned-cityscapes-1024-1024-straighter-only-test
+selvaa/segformer-b1-finetuned-cityscapes-1024-1024-with-after-demo-ds
+selvaa/segformer-b1-finetuned-cityscapes-1024-1024-full-ds
+peldrak/segformer-b1-cityscapes-1024-1024-finetuned-coastTrain

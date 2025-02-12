@@ -1634,3 +1634,7 @@ __pycache__
 /experiments/main_experiments/model_search/eval/hf_snapshots/results/des-gpu-imagenette-huggingface-combined-architecture-search/2025-01-06-11:03:45#des-gpu-imagenette-huggingface-all-hf-architecture-search#approach#shift#cache#CPU#snapshot#combined#models#-1#items#8000#level#EXECUTION_STEPS.json
 /experiments/main_experiments/model_search/eval/hf_snapshots/results/des-gpu-imagenette-huggingface-combined-architecture-search/2025-01-06-11:48:50#des-gpu-imagenette-huggingface-all-hf-architecture-search#approach#mosix#cache#CPU#snapshot#combined#models#-1#items#8000#level#EXECUTION_STEPS.json
 /experiments/main_experiments/model_search/eval/hf_snapshots/results/des-gpu-imagenette-huggingface-combined-architecture-search/2025-01-06-13:02:16#des-gpu-imagenette-huggingface-all-hf-architecture-search#approach#baseline#cache#CPU#snapshot#combined#models#-1#items#2000#level#EXECUTION_STEPS.json
+/hf_model_analysis/comparison_files.zip
+/hf_model_analysis/similarity_reports.zip
+/hf_model_analysis/similarity_reports/
+/hf_model_analysis/comparison_files/

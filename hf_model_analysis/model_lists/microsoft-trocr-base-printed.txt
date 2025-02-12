@@ -1,0 +1,7 @@
+anuashok/ocr-captcha-v3
+dragonstar/image-text-captcha-v2
+chanelcolgate/trocr-base-printed_captcha_ocr
+PQAshwin/trocr-base-printed_license_plates_ocr_timestamp
+anuashok/ocr-captcha-v2
+anuashok/ocr-captcha-v1
+mariovigliar/trocr-base-printed_license_plates_ocr
