@@ -1,0 +1,17 @@
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_t4_4batch
+peldrak/segformer-b1-ade-512-512-finetuned-coastTrain
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_t4_4batch_augx3
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_p100_4batch_fp_try_8_1
+mouadenna/segformer_b1_finetuned_segment_pv_p100_16batch
+mouadenna/segformer-b1-finetuned-segments-pv
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_p100_4batch_try_7_31
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_p100_4batch_try1
+mouadenna/segformer_b1_finetuned_segment_pv_p100_4batch
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_p100_4batch_try
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_p100_4batch_fp
+mouadenna/segformer_b1_finetuned_segment_pv_p100_32batch
+mouadenna/segformer-b1-finetuned-segments-pv_v1_3x_normalized_p100_4batch
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_p100
+mouadenna/segformer-b1-finetuned-segments-pv_v1_x3_normalized_p100_4batch
+mouadenna/segformer-b1-finetuned-segments-pv_v1_normalized_p100_4batch

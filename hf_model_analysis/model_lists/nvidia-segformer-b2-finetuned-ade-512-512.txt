@@ -1,0 +1,6 @@
+mouadenna/segformer-b2-finetuned-segments-pv_v1_x3_normalized_p100_4batch
+peldrak/segformer-b2-ade-512-512-finetuned-coastTrain
+mouadenna/segformer-b2-finetuned-segments-pv_v1_normalized_p100_4batch
+naufalso/segformer-b2-carla-car-body-segmentation
+mouadenna/segformer-b2-finetuned-segments-pv_v1_normalized_p100_4batch_fp
+mouadenna/segformer_b2_finetuned_segment_pv_p100_4batch

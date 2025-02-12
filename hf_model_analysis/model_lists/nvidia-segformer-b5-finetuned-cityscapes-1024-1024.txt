@@ -1,0 +1,4 @@
+peldrak/segformer-b5-cityscapes-finetuned-grCoastline
+peldrak/segformer-b5-cityscapes-finetuned-coastTrain
+peldrak/segformer-b5-cityscapes-512-512-finetuned-coastTrain
+AndreaLeylavergne/segformer_B0_B5

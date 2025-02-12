@@ -1,0 +1,7 @@
+bdpc/resnet101_rvl-cdip
+varcoder/resnet-101-CivilEng11k_3Classes-new
+varcoder/resnet-101-CivilEng11k_3Classes
+jhoppanne/Dogs-Breed-Image-Classification-V1
+louislu9911/resnet-101-finetuned-cassava-leaf-disease
+varcoder/resnet-101-finetuned-CivilEng11k-newDS
+bdpc/resnet101-base_tobacco
