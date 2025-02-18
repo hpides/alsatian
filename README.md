@@ -1,6 +1,6 @@
 <h1 align="center">Alsatian: Optimizing Model Search for Deep Transfer Learning</h1>
-<p align="center">This repository contains the code to our SIGMOD 2025 <a href=""> paper<a/>. For an overview of our (additional) 
-experiments look into the experiments folder of this repo.<p/>
+<p align="center">This repository contains the code to our SIGMOD 2025 <a href=""> paper<a/>.
+  For an overview of our (additional) experiments look into the experiments folder of this repo.<p/>
 
 ## General Info
 
