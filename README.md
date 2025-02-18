@@ -29,29 +29,14 @@ experiments look into the experiments folder of this repo.<p/>
 
 If you use _Alsatian_ or reference our findings, please cite us.
  
-- TODO insert bibtex
-
-[//]: # (- [//]: # &#40;```bibtex&#41;)
-
-[//]: # (@article{KEY,)
-
-[//]: # (  author    = {},)
-
-[//]: # (  title     = {},)
-
-[//]: # (  journal   = {},)
-
-[//]: # (  volume    = {},)
-
-[//]: # (  number    = {},)
-
-[//]: # (  year      = {},)
-
-[//]: # (  pages     = {},)
-
-[//]: # (  doi       = {})
-
-[//]: # (})
-
-[//]: # (```)
-
+```bibtex
+@inproceedings{strassenburg_alsatian_2025,
+  author = {Strassenburg, Nils and Glavic, Boris and Rabl, Tilmann},
+  title = {Alsatian: Optimizing Model Search for Deep Transfer Learning},
+  booktitle = {SIGMOD},
+  year = {2025},
+  istoappear = true,
+  venueshort = {{SIGMOD}},
+  keywords = {Sys4ML, Machine Learning}
+}
+```
