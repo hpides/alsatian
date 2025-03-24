@@ -5,6 +5,7 @@ import numpy as np
 
 from experiments.main_experiments.model_search.eval.synthetic_snapshots.plot_synthetic_snapshots import \
     extract_times_of_interest, SUM_OVER_STEPS_DETAILED_NUMS_AGG, regroup_and_rename_times
+from experiments.plot_util import HPI_RED, HPI_ORANGE, HPI_LIGHT_ORANGE, PURPLE
 from global_utils.model_names import VIT_L_32
 
 
@@ -26,6 +27,7 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
 
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac', '#b30086']
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
+    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
 
     # Maintain the order of the keys as they appear in the JSON inputs
     categories = (list(config_1.keys()) +
@@ -89,8 +91,8 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
 
 
 
-    legend_file_path = os.path.join(file_path, f'limit-memory-legend.svg')
-    fig_legend.savefig(legend_file_path, bbox_inches='tight', format='svg')
+    legend_file_path = os.path.join(file_path, f'limit-memory-legend.pdf')
+    fig_legend.savefig(legend_file_path, bbox_inches='tight', format='pdf')
     plt.close(fig_legend)
 
 
@@ -99,7 +101,7 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
     # legend.remove()
 
     plt.tight_layout()
-    plt.savefig(os.path.join(file_path, f'{file_name}.svg'))
+    plt.savefig(os.path.join(file_path, f'{file_name}.pdf'))
     plt.savefig(os.path.join(file_path, f'{file_name}.png'))
 
 

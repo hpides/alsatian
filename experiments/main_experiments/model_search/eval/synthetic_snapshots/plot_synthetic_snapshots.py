@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from experiments.main_experiments.snapshots.synthetic.generate import TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT
+from experiments.plot_util import HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED
 from experiments.side_experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
@@ -294,6 +295,8 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
 
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
+    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED]
+
 
     # Extracting the data
     data = end_to_end_plot_times(
@@ -326,7 +329,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
                 baseline_value = data[model]['baseline']
                 speedup = baseline_value / data[model][method]
                 if speedup >= 10:
-                    if False and has_first_decimal_zero(speedup):
+                    if f'{speedup:.1f}' == '10.0':
                         ax.text(bar.get_x() + bar.get_width() / 2 + 0.04, bar.get_height(), f'{int(speedup)}x', ha='center',
                         va='bottom', rotation=0)
                     else:
@@ -353,6 +356,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     plt.tight_layout()
     plot_file_name = f'end_to_end-{distribution}-{measure_type}'
     plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.svg'))
+    plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.pdf'))
     plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.png'))
 
     # Extract the legend
@@ -363,6 +367,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     # Save the legend separately
     legend_file_name = 'legend'
     fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.svg'))
+    fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.pdf'))
     fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.png'))
 
     plt.close(fig_legend)

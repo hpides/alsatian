@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2024-09-25T17:17:44.219559</dc:date>
+    <dc:date>2025-03-14T15:15:06.019059</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -49,7 +49,7 @@ L 64.8 33.6
 L 64.8 16.8 
 L 16.8 16.8 
 z
-" style="fill: #0868ac"/>
+" style="fill: #7516b5"/>
     </g>
     <g id="text_1">
      <!-- proxy score -->
@@ -230,7 +230,7 @@ L 64.8 68.042841
 L 64.8 51.242841 
 L 16.8 51.242841 
 z
-" style="fill: #43a2ca"/>
+" style="fill: #b1083a"/>
     </g>
     <g id="text_2">
      <!-- inference -->
@@ -338,7 +338,7 @@ L 64.8 102.485682
 L 64.8 85.685682 
 L 16.8 85.685682 
 z
-" style="fill: #7bccc4"/>
+" style="fill: #de6207"/>
     </g>
     <g id="text_3">
      <!-- prepare model -->
@@ -482,7 +482,7 @@ L 64.8 136.928522
 L 64.8 120.128522 
 L 16.8 120.128522 
 z
-" style="fill: #bae4bc"/>
+" style="fill: #f7a900"/>
     </g>
     <g id="text_4">
      <!-- prepare data -->

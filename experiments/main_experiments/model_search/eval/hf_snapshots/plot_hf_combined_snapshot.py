@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from experiments.main_experiments.snapshots.hugging_face.init_hf_models import *
+from experiments.plot_util import HPI_RED, HPI_ORANGE, HPI_LIGHT_ORANGE
 from experiments.side_experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
@@ -303,7 +304,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
                                                   \fi"""
                          })
 
-    colors = ['#bae4bc', '#43a2ca', '#0868ac']
+    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED]
 
     # Extracting the data
     data = end_to_end_plot_times(
@@ -314,7 +315,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
     ordered_approaches = ['base', 'shift', 'mosix']
     # Map the original approach names to the new ones
     original_approaches = ['baseline', 'shift', 'mosix']
-    times = [data[approach] /60 for approach in original_approaches]
+    times = [data[approach] / 60 for approach in original_approaches]
 
     # Create the bar plot
     fig, ax = plt.subplots(figsize=(7, 6))
@@ -341,7 +342,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
     # Save the plot without legend
     plt.tight_layout()
     plot_file_name = f'end_to_end-{measure_type}'
-    plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.svg'))
+    plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.pdf'))
     plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.png'))
 
     plt.close(fig)
@@ -408,11 +409,12 @@ def plot_end_to_end_times_error(data_root_dir, file_template, models, approaches
         # Save the plot as SVG and PNG
         plt.tight_layout()
         plot_file_name = f'percentile-end_to_end-{distribution}-{measure_type}'
-        plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.svg'))
+        plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.pdf'))
         plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
 
+
 def plot_end_to_end_times_with_error(
-    root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path, plot_width
+        root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path, plot_width
 ):
     plt.rcParams.update({'font.size': 24})
     plt.rcParams.update({'text.usetex': True, 'pgf.rcfonts': False,
@@ -424,7 +426,7 @@ def plot_end_to_end_times_with_error(
                           \else
                               \RequirePackage[tt=false, type1=true]{libertine}
                           \fi"""
-                        })
+                         })
 
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
 
@@ -483,7 +485,6 @@ def plot_end_to_end_times_with_error(
     ax.set_xticklabels([MODEL_NAME_MAPPING[model.replace("-", "/", 1)] for model in models], rotation=15, ha='right')
     ax.tick_params(axis='x')
 
-
     if max_method_value > 100:
         y_ticks = list(range(0, int(max_method_value / 60) + 5, 50))
     else:
@@ -492,7 +493,7 @@ def plot_end_to_end_times_with_error(
 
     plt.tight_layout()
     plot_file_name = f'end_to_end_error-{measure_type}'
-    plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.svg'))
+    plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.pdf'))
     plt.savefig(os.path.join(plot_save_path, f'{data_items}-{plot_file_name}.png'))
 
     # Extract legend
@@ -501,7 +502,7 @@ def plot_end_to_end_times_with_error(
     fig_legend.tight_layout()
 
     legend_file_name = 'legend'
-    fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.svg'))
+    fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.pdf'))
     fig_legend.savefig(os.path.join(plot_save_path, f'{legend_file_name}.png'))
 
     plt.close(fig_legend)
@@ -522,5 +523,6 @@ if __name__ == '__main__':
         os.makedirs(plot_save_path, exist_ok=True)
         plot_end_to_end_times(root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path,
                               4)
-        plot_end_to_end_times_with_error(root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path,
-                              4)
+        plot_end_to_end_times_with_error(root_dir, file_template, models, approaches, data_items, measure_type,
+                                         plot_save_path,
+                                         4)

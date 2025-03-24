@@ -3,6 +3,8 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator
 
+from experiments.plot_util import HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE
+
 
 def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=None, file_name=None, legend=True):
     FONT_SIZE = 18
@@ -27,6 +29,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
 
     fig, ax = plt.subplots(figsize=(8, num_models / 2))
 
+    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
 
     # Plotting stacked horizontal bars for each model
@@ -45,7 +48,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
     ax.xaxis.set_major_locator(FixedLocator(range(0, 101, 20)))
     ax.set_xticklabels([f"{i}%" for i in range(0, 101, 20)])
     ax.set_xlim(0, 100)  # Set x-axis limit to ensure it ends at 100%
-    ax.set_xlabel('Time distribution in percent')
+    ax.set_xlabel('Time distribution')
     # ax.set_ylabel('Model', fontsize='large')
     ax.set_title(title)
 
@@ -57,8 +60,9 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
         # Create and save the legend as a separate image
         fig_legend, ax_legend = plt.subplots(figsize=(8, 2))
         handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
-        tasks = ["prep. model", "prep. data", "infer.", "p. scoring"]
-        ax_legend.legend(handles, tasks, loc='center', ncol=len(tasks))
+        # tasks = ["prep. model", "prep. data", "infer.", "p. scoring"]
+        tasks = ["prepare model", "prepare data", "inference", "proxy scoring"]
+        ax_legend.legend(handles, tasks, loc='center', ncol=len(tasks), frameon=False)
         ax_legend.axis('off')  # Hide the axes
 
         if save_path and file_name:
@@ -66,6 +70,9 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
             fig_legend.savefig(legend_path, format="png", bbox_inches='tight')
             legend_path = os.path.join(save_path, f'legend.svg')
             fig_legend.savefig(legend_path, bbox_inches='tight')
+            legend_path = os.path.join(save_path, f'legend.pdf')
+            fig_legend.savefig(legend_path, bbox_inches='tight')
+
 
         plt.close(fig_legend)
 
@@ -73,8 +80,8 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
 
     if save_path:
         # Use bbox_inches='tight' to ensure the legend is not cut off
-        path = os.path.join(save_path, f'{file_name}.svg')
-        plt.savefig(path, format="svg", bbox_inches='tight')
+        path = os.path.join(save_path, f'{file_name}.pdf')
+        plt.savefig(path, format="pdf", bbox_inches='tight')
         path = os.path.join(save_path, f'{file_name}.png')
         plt.savefig(path, format="png", bbox_inches='tight')
 

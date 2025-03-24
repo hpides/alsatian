@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 
 from experiments.main_experiments.model_search.eval.synthetic_snapshots.plot_synthetic_snapshots import \
     MODEL_NAME_MAPPING, APPROACH_NAME_MAPPING
+from experiments.plot_util import HPI_RED, HPI_ORANGE, HPI_LIGHT_ORANGE
 from experiments.side_experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from global_utils.constants import GEN_EXEC_PLAN, GET_COMPOSED_MODEL, MODEL_TO_DEVICE, LOAD_DATA, DATA_TO_DEVICE, \
     CALC_PROXY_SCORE, LOAD_STATE_DICT, INIT_MODEL, STATE_TO_MODEL, INFERENCE, END_TO_END, DETAILED_TIMES, \
@@ -256,8 +257,10 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
                                                       \fi"""
                          })
 
-    colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
+    # colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
+    # colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED]
+
     # Extracting the data
     data = end_to_end_plot_times(
         data_root_dir, file_template, models, approaches, distribution, data_items, measure_type)
@@ -308,7 +311,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
         y_ticks = list(range(0, int(max_method_value) + 500, 500))
     ax.set_yticks(y_ticks)
     # Move the legend outside of the plot and prevent overlap
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5   , 1.35), ncol=3, columnspacing=0.5)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5   , 1.35), ncol=3, columnspacing=0.5, frameon=False)
 
     # Adjust the layout to make more space above the plot
     plt.subplots_adjust(top=0.75)  # Increase this value to add more space
@@ -316,6 +319,7 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
     plt.tight_layout()
     plot_file_name = f'trained-{data_items}-end_to_end-{distribution}-{measure_type}'
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.svg'))
+    plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.pdf'))
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
 
 
@@ -355,6 +359,7 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
     plt.tight_layout()
     plot_file_name = f'sh_iterations-{distribution}-{caching_location}-{num_models}-{measure_type}-{model}'
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.svg'))
+    plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.pdf'))
     plt.savefig(os.path.join(plot_save_path, f'{plot_file_name}.png'))
 
 
