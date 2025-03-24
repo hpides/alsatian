@@ -1,5 +1,5 @@
 <h1 align="center">Alsatian: Optimizing Model Search for Deep Transfer Learning</h1>
-<p align="center">This repository contains the code to our SIGMOD 2025 <a href=""> paper<a/>.
+<p align="center">This repository contains the code to our SIGMOD 2025 paper.
   For an overview of our (additional) experiments look into the experiments folder of this repo.<p/>
 
 ## General Info
@@ -35,8 +35,12 @@ If you use _Alsatian_ or reference our findings, please cite us.
   title = {Alsatian: Optimizing Model Search for Deep Transfer Learning},
   booktitle = {SIGMOD},
   year = {2025},
-  istoappear = true,
+  volume = {3},
+  number = {3 (SIGMOD)},
+  article = {127},
+  month = {6},
+  doi = {10.1145/3725264},
   venueshort = {{SIGMOD}},
-  keywords = {Sys4ML, Machine Learning}
+  keywords = {Sys4ML, Machine Learning, Transfer Learning, Model Search}
 }
 ```
