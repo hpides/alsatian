@@ -197,9 +197,6 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
 def regroup_and_rename_times(times):
     grouped_times = {}
 
-    grouped_times['prepare data'] = times[LOAD_DATA]
-    grouped_times['prepare data'] += times[DATA_TO_DEVICE]
-
     grouped_times['prepare model'] = 0
     if LOAD_STATE_DICT in times:
         grouped_times['prepare model'] += times[LOAD_STATE_DICT]
@@ -211,6 +208,9 @@ def regroup_and_rename_times(times):
         grouped_times['prepare model'] += times[MODEL_TO_DEVICE]
     if GET_COMPOSED_MODEL in times:
         grouped_times['prepare model'] += times[GET_COMPOSED_MODEL]
+
+    grouped_times['prepare data'] = times[LOAD_DATA]
+    grouped_times['prepare data'] += times[DATA_TO_DEVICE]
 
     grouped_times[INFERENCE] = times[INFERENCE]
 
@@ -327,8 +327,9 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, dist
                 speedup = baseline_value / data[model][method]
                 if speedup >= 10:
                     if False and has_first_decimal_zero(speedup):
-                        ax.text(bar.get_x() + bar.get_width() / 2 + 0.04, bar.get_height(), f'{int(speedup)}x', ha='center',
-                        va='bottom', rotation=0)
+                        ax.text(bar.get_x() + bar.get_width() / 2 + 0.04, bar.get_height(), f'{int(speedup)}x',
+                                ha='center',
+                                va='bottom', rotation=0)
                     else:
                         ax.text(bar.get_x() + bar.get_width() / 2 + 0.09, bar.get_height(), f'{speedup:.1f}x',
                                 ha='center',
