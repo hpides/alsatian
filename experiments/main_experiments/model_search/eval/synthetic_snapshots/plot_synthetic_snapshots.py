@@ -198,9 +198,6 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
 def regroup_and_rename_times(times):
     grouped_times = {}
 
-    grouped_times['prepare data'] = times[LOAD_DATA]
-    grouped_times['prepare data'] += times[DATA_TO_DEVICE]
-
     grouped_times['prepare model'] = 0
     if LOAD_STATE_DICT in times:
         grouped_times['prepare model'] += times[LOAD_STATE_DICT]
@@ -212,6 +209,9 @@ def regroup_and_rename_times(times):
         grouped_times['prepare model'] += times[MODEL_TO_DEVICE]
     if GET_COMPOSED_MODEL in times:
         grouped_times['prepare model'] += times[GET_COMPOSED_MODEL]
+
+    grouped_times['prepare data'] = times[LOAD_DATA]
+    grouped_times['prepare data'] += times[DATA_TO_DEVICE]
 
     grouped_times[INFERENCE] = times[INFERENCE]
 

@@ -32,8 +32,8 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
                          })
 
     # colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac', '#b30086']
-    # colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
-    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
+    colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
+    # colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
 
     # Maintain the order of the keys as they appear in the JSON inputs
     categories = (list(config_1.keys()) +

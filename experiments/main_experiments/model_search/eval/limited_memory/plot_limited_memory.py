@@ -27,7 +27,7 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
 
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac', '#b30086']
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
-    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
+    # colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
 
     # Maintain the order of the keys as they appear in the JSON inputs
     categories = (list(config_1.keys()) +
@@ -102,6 +102,7 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
 
     plt.tight_layout()
     plt.savefig(os.path.join(file_path, f'{file_name}.pdf'))
+    plt.savefig(os.path.join(file_path, f'{file_name}.svg'))
     plt.savefig(os.path.join(file_path, f'{file_name}.png'))
 
 
