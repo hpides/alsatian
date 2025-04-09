@@ -4,11 +4,58 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from experiments.main_experiments.model_search.eval.synthetic_snapshots.plot_synthetic_snapshots import \
-    extract_times_of_interest, SUM_OVER_STEPS_DETAILED_NUMS_AGG, regroup_and_rename_times, APPROACH_NAME_MAPPING, \
-    BASELINE, SHIFT, MOSIX
+    extract_times_of_interest, SUM_OVER_STEPS_DETAILED_NUMS_AGG, regroup_and_rename_times, BASELINE, SHIFT, MOSIX
 from experiments.plot_util import HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE
 from global_utils.model_names import RESNET_152, VIT_L_32
 
+
+def stacked_bar_plot_three_configurations_given_axis(config_1, config_2, config_3, approaches, axis, y_label=False):
+    APPROACH_NAME_MAPPING = {
+        BASELINE: "B",
+        SHIFT: "S",
+        MOSIX: "A",
+    }
+    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
+
+    # Maintain the order of the keys as they appear in the JSON inputs
+    categories = (list(config_1.keys()) +
+                  [key for key in config_2.keys() if key not in config_1] +
+                  [key for key in config_3.keys() if key not in config_1 and key not in config_2])
+
+    if "exec planning" in categories:
+        categories.remove("exec planning")
+
+    # Data preparation
+    baseline_values = [config_1.get(category, 0) for category in categories]
+    shift_values = [config_2.get(category, 0) for category in categories]
+    mosix_values = [config_3.get(category, 0) for category in categories]
+
+    # Combine the values
+    values = [baseline_values, shift_values, mosix_values]
+    # Transpose the values for stacking
+    values = np.array(values).T
+    # Plotting
+    bar_width = 0.8
+    indices = np.arange(len(approaches))
+
+    # Stack the bars
+    bottom = np.zeros(len(approaches))
+    bars = []
+    for i, category in enumerate(categories):
+        print(i)
+        bar = axis.bar(indices, values[i], bar_width, bottom=bottom, label=category, color=colors[i])
+        bars.append(bar)
+        bottom += values[i]
+    # Check if all approach names exist in the mapping
+    if all(x in APPROACH_NAME_MAPPING for x in approaches):
+        axis.set_xticks(indices)
+        axis.set_xticklabels([APPROACH_NAME_MAPPING[x] for x in approaches])
+    else:
+        axis.set_xticks(indices)
+        axis.set_xticklabels(approaches)
+
+    if y_label:
+        axis.set_ylabel("Time in seconds")
 
 def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_path, file_name, approaches):
     APPROACH_NAME_MAPPING = {
@@ -124,6 +171,19 @@ def plot_approaches_across_memory_config(root_dir, model, items, device, model_d
                                           plot_file_name, approaches)
 
 
+def plot_approaches_across_memory_config_given_axis(root_dir, model, items, device, model_dist, approaches, axis, y_label=False):
+    collected_data = []
+    for approach in approaches:
+        file_id = f'des-gpu-imagenette-synthetic-distribution-{model_dist}-approach-{approach}-cache-{device}-snapshot-{model}-models-35-items-{items}-level-STEPS_DETAILS'
+        detailed_numbers = extract_times_of_interest(root_dir, [file_id], approach, "STEPS_DETAILS")[0][
+            SUM_OVER_STEPS_DETAILED_NUMS_AGG]
+        detailed_numbers = regroup_and_rename_times(detailed_numbers)
+        collected_data.append(detailed_numbers)
+    plot_file_name = f'time_breakdown-{model}-{model_dist}-{items}'
+    stacked_bar_plot_three_configurations_given_axis(collected_data[0], collected_data[1], collected_data[2],
+                                                     approaches, axis, y_label)
+
+
 def plot_fixed_approach_changed_config(root_dir, model, items, device, distributions, output_path, approach):
     collected_data = []
     for model_dist in distributions:
@@ -135,6 +195,17 @@ def plot_fixed_approach_changed_config(root_dir, model, items, device, distribut
     plot_file_name = f'time_breakdown-distributions-{model}-{approach}-{items}'
     stacked_bar_plot_three_configurations(collected_data[0], collected_data[1], collected_data[2], output_path,
                                           plot_file_name, ["50", "25", "top"])
+
+def plot_fixed_approach_changed_config_given_axis(root_dir, model, items, device, distributions, approach, axis):
+    collected_data = []
+    for model_dist in distributions:
+        file_id = f'des-gpu-imagenette-synthetic-distribution-{model_dist}-approach-{approach}-cache-{device}-snapshot-{model}-models-35-items-{items}-level-STEPS_DETAILS'
+        detailed_numbers = extract_times_of_interest(root_dir, [file_id], approach, "STEPS_DETAILS")[0][
+            SUM_OVER_STEPS_DETAILED_NUMS_AGG]
+        detailed_numbers = regroup_and_rename_times(detailed_numbers)
+        collected_data.append(detailed_numbers)
+    stacked_bar_plot_three_configurations_given_axis(collected_data[0], collected_data[1], collected_data[2],
+                                                     ["50", "25", "top"], axis)
 
 
 if __name__ == '__main__':

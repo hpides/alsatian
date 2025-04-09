@@ -5,6 +5,37 @@ from matplotlib.ticker import FixedLocator
 
 from experiments.plot_util import HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE
 
+def plot_horizontal_normalized_bar_chart_with_given_axis(data, ax, ignore=[], title=""):
+    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
+
+    data = normalize_to_percent(data)
+
+    models = list(data.keys())
+    first_key = list(data.keys())[0]
+    tasks = list(data[first_key].keys())
+    for ign in ignore:
+        tasks.remove(ign)
+    num_models = len(models)
+
+    # Plotting stacked horizontal bars for each model
+    for i, (model, task_times) in enumerate(data.items()):
+
+        for ign in ignore:
+            del task_times[ign]
+
+        left = 0
+        for j, (task, time) in enumerate(task_times.items()):
+            ax.barh(i, time, color=colors[j], label=task if i == 0 else None, left=left)
+            left += time
+
+    ax.set_yticks(range(num_models))
+    ax.set_yticklabels(models)
+    ax.xaxis.set_major_locator(FixedLocator(range(0, 101, 20)))
+    ax.set_xticklabels([f"{i}%" for i in range(0, 101, 20)])
+    ax.set_xlim(0, 100)  # Set x-axis limit to ensure it ends at 100%
+    ax.set_xlabel('Time distribution')
+    # ax.set_ylabel('Model', fontsize='large')
+    ax.set_title(title)
 
 def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=None, file_name=None, legend=True):
     FONT_SIZE = 18
@@ -105,8 +136,12 @@ if __name__ == '__main__':
         "Model A": {"Task 1": 25, "Task 2": 25, "Task 3": 25, "Task 4": 25},
         "Model B": {"Task 1": 10, "Task 2": 10, "Task 3": 10, "Task 4": 10},
         "Model C": {"Task 1": 10, "Task 2": 10, "Task 3": 10, "Task 4": 10},
+    }
+    plot_horizontal_normalized_bar_chart(data, save_path='/Users/nils/uni/programming/model-search-paper/experiments/main_experiments/bottlenecks/model_rank/eval/', file_name='dummy-1')
+
+    data = {
         "Model D": {"Task 1": 10, "Task 2": 10, "Task 3": 10, "Task 4": 10},
         "Model E": {"Task 1": 10, "Task 2": 10, "Task 3": 10, "Task 4": 10},
         "Model F": {"Task 1": 12, "Task 2": 18, "Task 3": 22, "Task 4": 10}
     }
-    plot_horizontal_normalized_bar_chart(data, save_path='/', file_name='dummy')
+    plot_horizontal_normalized_bar_chart(data, save_path='/Users/nils/uni/programming/model-search-paper/experiments/main_experiments/bottlenecks/model_rank/eval/', file_name='dummy-2')

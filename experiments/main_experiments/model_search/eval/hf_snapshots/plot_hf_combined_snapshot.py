@@ -347,6 +347,40 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
 
     plt.close(fig)
 
+def plot_end_to_end_times_given_axis(data_root_dir, file_template, models, approaches, data_items, measure_type, axis):
+
+    colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED]
+
+    # Extracting the data
+    data = end_to_end_plot_times(
+        data_root_dir, file_template, models, approaches, data_items, measure_type)
+    data = data["combined"]
+
+    # Change the names of the approaches to 'base', 'shift', 'mosix'
+    ordered_approaches = ['base', 'shift', 'mosix']
+    # Map the original approach names to the new ones
+    original_approaches = ['baseline', 'shift', 'mosix']
+    times = [data[approach] / 60 for approach in original_approaches]
+
+    bars = axis.bar([APPROACH_NAME_MAPPING[x] for x in ordered_approaches], times, color=colors)
+
+    # Add annotations for shift and mosix
+    for bar, approach, original_approach in zip(bars, ordered_approaches, original_approaches):
+        if approach in ['shift', 'mosix']:
+            baseline_value = data['baseline']
+            speedup = baseline_value / data[original_approach]
+            axis.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'{speedup:.1f}x', ha='center',
+                    va='bottom', rotation=0)
+
+    if data['baseline'] < data['shift']:
+        plt.ylim(0, 90)
+
+    axis.set_ylabel('Time in minutes', labelpad=20)
+
+    # plt.xticks(rotation=45)
+    # plt.gca().set_xticklabels([])
+
+
 
 def plot_end_to_end_times_error(data_root_dir, file_template, models, approaches, distribution, data_items,
                                 measure_type,

@@ -69,19 +69,7 @@ def plot_time_dist(root_dir, file_template, model_names, disk_speed, file_name_p
         for split in [str(x) for x in [None, -1, -3, 25, 50, 75]]:
             for num_items in [3 * 32, 1024, 9 * 1024]:
                 if split == 'None' or dataset_type == 'imagenette_preprocessed_ssd.':
-                    data = {}
-                    for model_name in model_names:
-                        # example_config = ['resnet152', '100', '50', 'imagenette']
-                        config = [model_name, num_items, split, dataset_type]
-                        file_id = file_template.format(*config)
-
-                        data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
-
-                    # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
-                    ignore = []
-                    file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'.replace('.',
-                                                                                                                   '')
-                    data = rename_model_names(data)
+                    data, file_name, ignore = get_bottleneck_data(dataset_type, disk_speed, model_names, num_items, split, file_template, root_dir)
 
                     # plot_horizontal_normalized_bar_chart(data, save_path='plots',
                     #                                      file_name=f'{file_name_prefix}normalized-{file_name}',
@@ -91,6 +79,22 @@ def plot_time_dist(root_dir, file_template, model_names, disk_speed, file_name_p
                                                          ignore=ignore, legend=False)
                     plot_stacked_bar_chart(data, save_path='plots',
                                            file_name=f'{file_name_prefix}stacked-{file_name}')
+
+
+def get_bottleneck_data(dataset_type, disk_speed, model_names, num_items, split, file_template, root_dir):
+    data = {}
+    for model_name in model_names:
+        # example_config = ['resnet152', '100', '50', 'imagenette']
+        config = [model_name, num_items, split, dataset_type]
+        file_id = file_template.format(*config)
+
+        data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
+    # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
+    ignore = []
+    file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'.replace('.',
+                                                                                                   '')
+    data = rename_model_names(data)
+    return data, file_name, ignore
 
 
 if __name__ == '__main__':
