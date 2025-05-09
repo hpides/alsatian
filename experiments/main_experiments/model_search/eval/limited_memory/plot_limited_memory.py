@@ -144,13 +144,15 @@ def stacked_bar_plot_three_configurations_given_axis(config_1, config_2, config_
     axis.set_ylim(0, 1600)
     axis.set_yticks([500, 1000, 1500])
 
-    if x_label:
+    if x_label is True:
         axis.set_xlabel('Memory in GB', labelpad=20, x=0.1)
-    # plt.title(title)
+    elif x_label is not None:
+        axis.set_xlabel(x_label)
+    plt.title(title)
     axis.set_xticks(indices, approaches)
-    if title in ["shift", "baseline"]:
-        y_ticks = list(range(0, 2000, 500))
-        plt.yticks(y_ticks)
+    # if title in ["shift", "baseline"]:
+    #     y_ticks = list(range(0, 2000, 500))
+    #     plt.yticks(y_ticks)
     # Reverse the order of handles and labels for the legend
     # handles, labels = axis.gca().get_legend_handles_labels()
     # legend = plt.legend(handles[::-1], labels[::-1], ncol=3)
@@ -182,7 +184,7 @@ def plot_approaches_across_memory_config(root_dir, model_distribution, model_dis
                                                   f'NO-Y-Label-{plot_file_name}', list(cache_size_mapping.values()), False,
                                                   approach)
 
-def plot_approaches_across_memory_config_given_axis(root_dir, model_distribution, model_dist, output_path, approach, axis, x_label=False):
+def plot_approaches_across_memory_config_given_axis(root_dir, model_distribution, model_dist, output_path, approach, axis, x_label=False, title=False):
     model = VIT_L_32
     data_items = 8000
     device = "CPU"
@@ -196,7 +198,8 @@ def plot_approaches_across_memory_config_given_axis(root_dir, model_distribution
     plot_file_name = f'approaches_across_memory_config-{approach}-{model}-{model_distribution}'
     stacked_bar_plot_three_configurations_given_axis(collected_data[0], collected_data[1], collected_data[2], output_path,
                                           plot_file_name, list(cache_size_mapping.values()), True,
-                                          approach, axis, x_label)
+                                          title,  axis, x_label)
+
 
 
 

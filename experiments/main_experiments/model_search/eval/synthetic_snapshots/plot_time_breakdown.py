@@ -9,11 +9,16 @@ from experiments.plot_util import HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE
 from global_utils.model_names import RESNET_152, VIT_L_32
 
 
-def stacked_bar_plot_three_configurations_given_axis(config_1, config_2, config_3, approaches, axis, y_label=False):
+def stacked_bar_plot_three_configurations_given_axis(config_1, config_2, config_3, approaches, axis, y_label=False, x_label=False, title=""):
     APPROACH_NAME_MAPPING = {
-        BASELINE: "B",
-        SHIFT: "S",
-        MOSIX: "A",
+        BASELINE: "Base",
+        SHIFT: "SHiFT",
+        MOSIX: "Alsatian",
+    }
+    RETRAIN_DIST_MAPPING = {
+        "50": "Top-50%",
+        "25": "Top-25%",
+        "top": "Top-few"
     }
     colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
 
@@ -50,18 +55,29 @@ def stacked_bar_plot_three_configurations_given_axis(config_1, config_2, config_
     if all(x in APPROACH_NAME_MAPPING for x in approaches):
         axis.set_xticks(indices)
         axis.set_xticklabels([APPROACH_NAME_MAPPING[x] for x in approaches])
+    elif all(x in RETRAIN_DIST_MAPPING for x in approaches):
+        axis.set_xticks(indices)
+        axis.set_xticklabels([RETRAIN_DIST_MAPPING[x] for x in approaches])
     else:
         axis.set_xticks(indices)
         axis.set_xticklabels(approaches)
 
+    axis.tick_params(axis='x', labelrotation=45)
+
     if y_label:
         axis.set_ylabel("Time in seconds")
 
+    if x_label:
+        axis.set_xlabel(x_label)
+
+    axis.set_title(title)
+
+
 def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_path, file_name, approaches):
     APPROACH_NAME_MAPPING = {
-        BASELINE: "B",
-        SHIFT: "S",
-        MOSIX: "A",
+        BASELINE: "Base",
+        SHIFT: "SHiFT",
+        MOSIX: "Alsatian",
     }
 
     plt.rcParams.update({'font.size': 24})
@@ -171,7 +187,8 @@ def plot_approaches_across_memory_config(root_dir, model, items, device, model_d
                                           plot_file_name, approaches)
 
 
-def plot_approaches_across_memory_config_given_axis(root_dir, model, items, device, model_dist, approaches, axis, y_label=False):
+def plot_approaches_across_memory_config_given_axis(root_dir, model, items, device, model_dist, approaches, axis,
+                                                    y_label=False, x_label="", title=""):
     collected_data = []
     for approach in approaches:
         file_id = f'des-gpu-imagenette-synthetic-distribution-{model_dist}-approach-{approach}-cache-{device}-snapshot-{model}-models-35-items-{items}-level-STEPS_DETAILS'
@@ -181,7 +198,7 @@ def plot_approaches_across_memory_config_given_axis(root_dir, model, items, devi
         collected_data.append(detailed_numbers)
     plot_file_name = f'time_breakdown-{model}-{model_dist}-{items}'
     stacked_bar_plot_three_configurations_given_axis(collected_data[0], collected_data[1], collected_data[2],
-                                                     approaches, axis, y_label)
+                                                     approaches, axis, y_label, x_label, title)
 
 
 def plot_fixed_approach_changed_config(root_dir, model, items, device, distributions, output_path, approach):
@@ -196,7 +213,9 @@ def plot_fixed_approach_changed_config(root_dir, model, items, device, distribut
     stacked_bar_plot_three_configurations(collected_data[0], collected_data[1], collected_data[2], output_path,
                                           plot_file_name, ["50", "25", "top"])
 
-def plot_fixed_approach_changed_config_given_axis(root_dir, model, items, device, distributions, approach, axis):
+
+def plot_fixed_approach_changed_config_given_axis(root_dir, model, items, device, distributions, approach, axis,
+                                                  x_label=False, title=""):
     collected_data = []
     for model_dist in distributions:
         file_id = f'des-gpu-imagenette-synthetic-distribution-{model_dist}-approach-{approach}-cache-{device}-snapshot-{model}-models-35-items-{items}-level-STEPS_DETAILS'
@@ -205,7 +224,7 @@ def plot_fixed_approach_changed_config_given_axis(root_dir, model, items, device
         detailed_numbers = regroup_and_rename_times(detailed_numbers)
         collected_data.append(detailed_numbers)
     stacked_bar_plot_three_configurations_given_axis(collected_data[0], collected_data[1], collected_data[2],
-                                                     ["50", "25", "top"], axis)
+                                                     ["50", "25", "top"], axis, False, x_label, title)
 
 
 if __name__ == '__main__':

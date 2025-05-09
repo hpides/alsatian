@@ -347,7 +347,8 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
 
     plt.close(fig)
 
-def plot_end_to_end_times_given_axis(data_root_dir, file_template, models, approaches, data_items, measure_type, axis):
+def plot_end_to_end_times_given_axis(data_root_dir, file_template, models, approaches, data_items, measure_type, axis,
+                                     y_lim, title):
 
     colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED]
 
@@ -375,10 +376,13 @@ def plot_end_to_end_times_given_axis(data_root_dir, file_template, models, appro
     if data['baseline'] < data['shift']:
         plt.ylim(0, 90)
 
-    axis.set_ylabel('Time in minutes', labelpad=20)
+    axis.set_ylabel('Time in min', labelpad=20)
 
-    # plt.xticks(rotation=45)
-    # plt.gca().set_xticklabels([])
+    axis.tick_params(axis='x', labelrotation=45)
+
+    axis.set_ylim(bottom=0, top=y_lim)
+
+    axis.set_title(title)
 
 
 
