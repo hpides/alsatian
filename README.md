@@ -35,7 +35,6 @@ If you use _Alsatian_ or reference our findings, please cite us.
   title = {Alsatian: Optimizing Model Search for Deep Transfer Learning},
   booktitle = {SIGMOD},
   year = {2025},
-  istoappear = true,
   venueshort = {{SIGMOD}},
   keywords = {Sys4ML, Machine Learning}
 }
