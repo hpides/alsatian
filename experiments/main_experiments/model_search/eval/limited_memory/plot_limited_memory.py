@@ -106,7 +106,7 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
     plt.savefig(os.path.join(file_path, f'{file_name}.png'))
 
 def stacked_bar_plot_three_configurations_given_axis(config_1, config_2, config_3, file_path, file_name, config_names, show_yaxis_text,
-                                          title, axis, x_label=False):
+                                          title, axis, x_label=False, y_label=False):
     colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
 
     # Maintain the order of the keys as they appear in the JSON inputs
@@ -146,8 +146,13 @@ def stacked_bar_plot_three_configurations_given_axis(config_1, config_2, config_
 
     if x_label is True:
         axis.set_xlabel('Memory in GB', labelpad=20, x=0.1)
+
     elif x_label is not None:
         axis.set_xlabel(x_label)
+
+    if y_label is not None:
+        axis.set_ylabel(y_label)
+
     plt.title(title)
     axis.set_xticks(indices, approaches)
     # if title in ["shift", "baseline"]:
@@ -184,7 +189,7 @@ def plot_approaches_across_memory_config(root_dir, model_distribution, model_dis
                                                   f'NO-Y-Label-{plot_file_name}', list(cache_size_mapping.values()), False,
                                                   approach)
 
-def plot_approaches_across_memory_config_given_axis(root_dir, model_distribution, model_dist, output_path, approach, axis, x_label=False, title=False):
+def plot_approaches_across_memory_config_given_axis(root_dir, model_distribution, model_dist, output_path, approach, axis, x_label=False, y_label=False, title=False):
     model = VIT_L_32
     data_items = 8000
     device = "CPU"
@@ -198,7 +203,7 @@ def plot_approaches_across_memory_config_given_axis(root_dir, model_distribution
     plot_file_name = f'approaches_across_memory_config-{approach}-{model}-{model_distribution}'
     stacked_bar_plot_three_configurations_given_axis(collected_data[0], collected_data[1], collected_data[2], output_path,
                                           plot_file_name, list(cache_size_mapping.values()), True,
-                                          title,  axis, x_label)
+                                          title,  axis, x_label, y_label)
 
 
 

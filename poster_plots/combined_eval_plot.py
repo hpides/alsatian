@@ -28,7 +28,7 @@ def plot_combined_horizontal_bar_chart_with_side_plot(save_path=None, file_name=
 
     colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, HPI_RED, PURPLE]
 
-    fig = plt.figure(figsize=(90, 19))
+    fig = plt.figure(figsize=(90, 17))
     spacing = 0.04
     gs = gridspec.GridSpec(2, 11, width_ratios=[3, spacing, 1, 1, 1, spacing, 1, 1, 1, spacing, 2]
                            # , hspace=0.
@@ -121,6 +121,7 @@ def plot_combined_horizontal_bar_chart_with_side_plot(save_path=None, file_name=
     plot_limited_memory.plot_approaches_across_memory_config_given_axis(root_dir, model_distribution, model_dist,
                                                                         output_path, approach,
                                                                         lim_mem_axis_left, x_label="",
+                                                                        y_label="Time in seconds",
                                                                         title="ViT-L-32, Base")
 
     lim_mem_axis_middle = fig.add_subplot(gs[:, 7])
@@ -128,13 +129,14 @@ def plot_combined_horizontal_bar_chart_with_side_plot(save_path=None, file_name=
     plot_limited_memory.plot_approaches_across_memory_config_given_axis(root_dir, model_distribution, model_dist,
                                                                         output_path, approach,
                                                                         lim_mem_axis_middle, x_label="Memory in GB",
+                                                                        y_label="",
                                                                         title="ViT-L-32, SHiFT")
 
     lim_mem_axis_right = fig.add_subplot(gs[:, 8])
     approach = 'mosix'
     plot_limited_memory.plot_approaches_across_memory_config_given_axis(root_dir, model_distribution, model_dist,
                                                                         output_path, approach,
-                                                                        lim_mem_axis_right, x_label="",
+                                                                        lim_mem_axis_right, x_label="",y_label="",
                                                                         title="ViT-L-32, Alsatian")
     # hugging face model plots
     hf_axis_top = fig.add_subplot(gs[0, 10])
