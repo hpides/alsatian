@@ -40,7 +40,7 @@ def plot_horizontal_normalized_bar_chart_with_given_axis(data, ax, ignore=[], ti
     #         x_label += ", ~100 items"
     #     elif 9000 < items < 10000:
     #         x_label += ", ~10,000 items"
-    ax.set_xlabel(x_label)
+    ax.set_xlabel(x_label, labelpad=20)  # Adjust labelpad as needed
     # ax.set_ylabel('Model', fontsize='large')
     ax.set_title(title)
 
@@ -90,7 +90,7 @@ def plot_horizontal_normalized_bar_chart(data, ignore=[], title="", save_path=No
     ax.xaxis.set_major_locator(FixedLocator(range(0, 101, 20)))
     ax.set_xticklabels([f"{i}%" for i in range(0, 101, 20)])
     ax.set_xlim(0, 100)  # Set x-axis limit to ensure it ends at 100%
-    ax.set_xlabel('Time distribution')
+    ax.set_xlabel('Time distribution', labelpad=10)  # Adjust labelpad as needed
     # ax.set_ylabel('Model', fontsize='large')
     ax.set_title(title)
 

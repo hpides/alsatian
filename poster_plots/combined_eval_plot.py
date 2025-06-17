@@ -35,48 +35,11 @@ def plot_combined_horizontal_bar_chart_with_side_plot(save_path=None, file_name=
                            )
 
     # Legend
-    # Manually calculate horizontal center of the 6th column
-    # The 6th column index in the layout is 6 (0-based)
-    # Total width = sum of width_ratios
-    # total_width = sum([3, spacing, 1, 1, 1, spacing, 1, 1, 1, spacing, 1])
-    # center_of_col6 = sum([3, spacing, 1, 1, 1, spacing, 1 / 2]) / total_width  # halfway into column 6
-    #
-    # tasks = ["Prepare model", "Prepare data", "Inference", "Proxy scoring"]
-    # handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
-    # legend = fig.legend(handles, tasks, loc='upper left', bbox_to_anchor=(0, 1.02), ncol=4)
-    # bbox = legend.get_window_extent()  # Returns in display (pixel) coordinates
-    # # Convert to figure coordinates (0–1)
-    # bbox_fig = bbox.transformed(fig.transFigure.inverted())
-    # # You can then access width and height like this:
-    # legend_width = bbox_fig.width
-    # legend.remove()
-    # center_of_col6 = center_of_col6 - legend_width / 2
-    # fig.legend(handles, tasks, loc='upper center', bbox_to_anchor=(center_of_col6, 1.05), ncol=4)
     long_empty_string = "                                                                                                        "
-    tasks = ["Prepare model", "Prepare data", long_empty_string, "Inference", "Proxy scoring"]
-    colors = colors = [HPI_LIGHT_ORANGE, HPI_ORANGE, 'white', HPI_RED, PURPLE]
-    # tasks = ["Prep. model", "Prep. data", "Inf.", "Prx. score"]
+    tasks = ["Prepare Model", "Prepare Data", "Inference", "Proxy Scoring"]
     handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i]) for i in range(len(tasks))]
-    # #
     # # # Create the legend with the 'upper left' location and adjust the bbox_to_anchor
-    legend = fig.legend(handles, tasks, loc='lower left', bbox_to_anchor=(0.05, -0.0), ncol=5, frameon=False)
-    # # legend = fig.legend(handles, tasks, loc='upper left', bbox_to_anchor=(0, 1.1), ncol=2)
-
-    # legend_elements = [
-    #     Patch(label='B - Baseline'),
-    #     Patch(label='S - SHiFT'),
-    #     Patch(label='A - Alsatian')
-    # ]
-    # fig.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=3,
-    #            handlelength=0, handletextpad=0.5)
-
-    # legend_elements = [
-    #     Patch(label='50 - Last 50%'),
-    #     Patch(label='25 - Last 25%'),
-    #     Patch(label='TOP - Top few')
-    # ]
-    # fig.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=3,
-    #            handlelength=0, handletextpad=0.5)
+    legend = fig.legend(handles, tasks, loc='center', bbox_to_anchor=(0.5, -0.02), ncol=4, frameon=False)
 
     # first and second bottleneck plot
     bottleneck_axis_top = fig.add_subplot(gs[0, 0])
