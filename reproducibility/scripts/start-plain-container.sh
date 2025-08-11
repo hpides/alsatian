@@ -13,4 +13,4 @@ docker run -d -p 3318:22 \
            --cpuset-cpus="64-127" \
            --restart always \
            --name $DOCKER \
-           $DOCKER
+           slin96/model-search-experiments:latest
