@@ -8,6 +8,11 @@
 - Large files like datasets, model snapshots, or large log files of experiments are not contained in the repo. If you
   need access please feel free to reach out to us!
 
+## Reproducibility
+
+- **For Reproducibility please switch to the branch `reproducibility`** and checkout the readme in the folder
+  `reproducibility` this branch contains boiled down script to reproduce only the experiments in the paper.
+
 ## Repository Structure
 
 - [setup](setup) contains information on the hardware and software setup we use.
@@ -22,13 +27,14 @@
 - [data](data) contains information on how to download, access, and prepare the datasets used in our experiments.
 - [custom](custom) contains models, data loaders, and short scripts. These files are mostly slight adjustments
   or minor extensions of PyTorch files and helper scripts that made the development and analysis easier.
-- [global utils](global_utils) is a collection of constants, helper methods, and scripts we use as part of Alsatian or our
+- [global utils](global_utils) is a collection of constants, helper methods, and scripts we use as part of Alsatian or
+  our
   evaluation.
 
 ## Cite our work
 
 If you use _Alsatian_ or reference our findings, please cite us.
- 
+
 ```bibtex
 @inproceedings{strassenburg_alsatian_2025,
   author = {Strassenburg, Nils and Glavic, Boris and Rabl, Tilmann},
