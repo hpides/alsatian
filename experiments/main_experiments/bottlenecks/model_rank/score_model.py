@@ -1,6 +1,7 @@
 import os
 import time
 
+import numpy as np
 import torch
 
 from custom.data_loaders.custom_image_folder import CustomImageFolder
@@ -14,7 +15,56 @@ from global_utils.device import get_device
 from global_utils.dummy_dataset import get_input_shape, DummyDataset
 from global_utils.model_operations import split_model_in_two, get_split_index
 from global_utils.size import state_dict_size_mb
-from model_search.proxies.nn_proxy import linear_proxy
+
+
+def get_input_dimension(tensors: np.ndarray):
+    sample_tensor: torch.Tensor = tensors[0]
+    return tuple(sample_tensor.shape[1:])
+
+
+def linear_proxy(train_features, train_labels, test_features, test_labels, num_classes: int, device) -> float:
+    input_dimension = get_input_dimension(train_features)
+    assert input_dimension == get_input_dimension(test_features), "Make sure train and test have the same shape"
+
+    # init objects
+    model = torch.nn.Linear(input_dimension[0], num_classes)
+    model = model.to(device)
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+
+    # train model on train data
+    model.train()
+    for i in range(100):
+        batch, label = _prepare_batch_and_label(device, train_features, train_labels)
+        optimizer.zero_grad()
+        outputs = model(batch)
+        loss = torch.nn.CrossEntropyLoss()(outputs, label)
+        # print(loss)
+        loss.backward()
+        optimizer.step()
+
+    # eval model on test data
+    model.eval()
+    total_loss = 0.0
+    total_samples = 0
+
+    batch, label = _prepare_batch_and_label(device, test_features, test_labels)
+    outputs = model(batch)
+    loss = torch.nn.CrossEntropyLoss()(outputs, label)
+
+    batch_size = batch.size(0)
+    total_loss += loss.item() * batch_size
+    total_samples += batch_size
+
+    average_loss = total_loss / total_samples
+    return average_loss
+
+
+def _prepare_batch_and_label(device, test_features, test_labels):
+    batch = torch.cat(test_features, dim=0)
+    label = torch.flatten(torch.cat(test_labels, dim=0))
+    batch = batch.to(device)
+    label = label.to(device)
+    return batch, label
 
 
 def score_model_exp(exp_args: ExpArgs):
