@@ -1,6 +1,6 @@
 import configparser
 
-from global_utils.model_names import VISION_MODEL_CHOICES
+from global_utils.model_names import VISION_MODEL_CHOICES, VIT_L_32, EFF_NET_V2_L, RESNET_152, RESNET_18
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
@@ -9,10 +9,10 @@ if __name__ == '__main__':
     model_search_space = VISION_MODEL_CHOICES.copy()
 
     # generate ini files
-    for model_name in model_search_space:
-        for split_level in [str(x) for x in [None, -1, -3, 25, 50, 75]]:
+    for model_name in [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]:
+        for split_level in [str(x) for x in [None, -3]]:
             # 9* 1024, because imagenette has not enough data to fill 10 batches a 1024
-            for num_items in [3 * 32, 1024, 9 * 1024]:
+            for num_items in [96, 1024, 9 * 1024]:
                 for dataset_type, batch_size, num_workers in [('imagenette', 128, 12),
                                                               ('imagenette_preprocessed_ssd', 256, 2)]:
                     section = f'bottleneck_analysis-model-{model_name}-items-{num_items}-split-{split_level}-dataset_type-{dataset_type}'
@@ -23,8 +23,8 @@ if __name__ == '__main__':
 
                     config[section] = {
                         'model_name': model_name,
-                        'result_dir': '/mount-fs/results/bottleneck-analysis',
-                        'dataset_path': '/mount-ssd/data/imagenette2',
+                        'result_dir': '/repro-mount-fs/results/bottleneck-analysis',
+                        'dataset_path': '/repro-mount-ssd/data/imagenette2',
                         'extract_batch_size': str(batch_size),  # chosen based on experiments
                         'classify_batch_size': '0',  # currently not used
                         'num_items': num_items,
@@ -32,7 +32,7 @@ if __name__ == '__main__':
                         'split_level': split_level,
                         'dataset_type': dataset_type,
                         'data_workers': str(num_workers),  # chosen based on experiments
-                        'dummy_input_dir': '/mount-ssd/data/dummy'
+                        'dummy_input_dir': '/repro-mount-ssd/data/dummy'
                     }
 
     with open('tmp-config.ini', 'w') as configfile:
