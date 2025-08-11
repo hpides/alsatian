@@ -6,7 +6,7 @@ import torch
 from custom.data_loaders.custom_image_folder import CustomImageFolder
 from custom.dataset_transfroms import imagenet_inference_transform
 from custom.models.init_models import initialize_model
-from experiments.bottlenecks.model_rank.experiment_args import ExpArgs
+from experiments.main_experiments.bottlenecks.model_rank.experiment_args import ExpArgs
 from global_utils.benchmark_util import Benchmarker
 from global_utils.constants import MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE, LOAD_DATA, CUDA, INFERENCE, \
     CALC_PROXY_SCORE, STATE_DICT_SIZE, PARTIAL_STATE_DICT_SIZE, END_TO_END, END_DATA_LOAD, END_EXTRACT_FEATURES
