@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Assigning command line arguments to variables
-repository_url=git@github.com:hpides/alsatian.git
+repository_url=https://github.com/hpides/alsatian.git
 script_to_start=experiments/main_experiments/bottlenecks/model_rank/run_experiment.py
 github_access_token_file=./access_token
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
