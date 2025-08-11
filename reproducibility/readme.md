@@ -38,10 +38,11 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - to start the container for this script use: [start-plain-container.sh](scripts/start-plain-container.sh)
     - **important**: adjust the following fields according to your setup
-      - ```
-        --mount type=bind,source=/home/fgrabl/nils-strassenburg/docker-mounted/mount-ssd,target=/mount-ssd \
-        --mount type=bind,source=/fs/nils-strassenburg/docker-mounted/mount-fs,target=/mount-fs \
-        --gpus device=1 \
-        --cpuset-cpus="64-127" \
+        - ```
+      --mount type=bind,source=/home/fgrabl/nils-strassenburg/docker-mounted/mount-ssd,target=/mount-ssd \
+      --mount type=bind,source=/fs/nils-strassenburg/docker-mounted/mount-fs,target=/mount-fs \
+      --gpus device=1 \
+      --cpuset-cpus="64-127" \
     ```
-
+- open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
+- copy the [figure-5.sh](scripts/figure-5.sh) script on the container and run it
