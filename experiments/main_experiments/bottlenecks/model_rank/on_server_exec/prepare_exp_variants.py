@@ -23,8 +23,8 @@ if __name__ == '__main__':
 
                     config[section] = {
                         'model_name': model_name,
-                        'result_dir': '/repro-mount-fs/results/bottleneck-analysis',
-                        'dataset_path': '/repro-mount-ssd/data/imagenette2',
+                        'result_dir': '/mount-fs/results/bottleneck-analysis',
+                        'dataset_path': '/mount-ssd/data/imagenette2',
                         'extract_batch_size': str(batch_size),  # chosen based on experiments
                         'classify_batch_size': '0',  # currently not used
                         'num_items': num_items,
@@ -32,7 +32,7 @@ if __name__ == '__main__':
                         'split_level': split_level,
                         'dataset_type': dataset_type,
                         'data_workers': str(num_workers),  # chosen based on experiments
-                        'dummy_input_dir': '/repro-mount-ssd/data/dummy'
+                        'dummy_input_dir': '/mount-ssd/data/dummy'
                     }
 
     with open('tmp-config.ini', 'w') as configfile:
