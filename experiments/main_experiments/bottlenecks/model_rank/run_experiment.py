@@ -1,8 +1,8 @@
 import argparse
 import configparser
 
-from experiments.bottlenecks.model_rank.experiment_args import ExpArgs
-from experiments.bottlenecks.model_rank.score_model import score_model_exp
+from experiments.main_experiments.bottlenecks.model_rank.experiment_args import ExpArgs
+from experiments.main_experiments.bottlenecks.model_rank.score_model import score_model_exp
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 
