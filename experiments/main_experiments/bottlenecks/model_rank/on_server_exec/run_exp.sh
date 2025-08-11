@@ -10,21 +10,21 @@ repo_name=alsatian
 config_file=experiments/main_experiments/bottlenecks/model_rank/on_server_exec/tmp-config.ini
 config_section=$1
 
-# Function to read the access token from file
-read_access_token() {
-    local token_file="$1"
-    if [ -f "$token_file" ]; then
-        echo "$(cat $token_file)"
-    else
-        echo "Error: Access token file not found: $token_file"
-        exit 1
-    fi
-}
-
-github_access_token=$(read_access_token "$github_access_token_file")
-
-
-# Clone the GitHub repository
+## Function to read the access token from file
+#read_access_token() {
+#    local token_file="$1"
+#    if [ -f "$token_file" ]; then
+#        echo "$(cat $token_file)"
+#    else
+#        echo "Error: Access token file not found: $token_file"
+#        exit 1
+#    fi
+#}
+#
+#github_access_token=$(read_access_token "$github_access_token_file")
+#
+#
+## Clone the GitHub repository
 if [ -z "$github_access_token" ]; then
     git clone $repository_url
 else
