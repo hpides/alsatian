@@ -105,6 +105,7 @@ def _compose_pregenerates_set(base_path, distribution, model_set, num_models):
     for architecture_name, num_models in zip(model_set, model_counts):
         model_snapshots, model_store = generate_snapshot_set(architecture_name, num_models, distribution, base_path,
                                                              reuse_allowed=True)
+        print(f"[:{num_models}]")
         model_snapshots = list(model_store.models.values())[:num_models]
         agg_snapshots += model_snapshots
         for snap in model_snapshots:
