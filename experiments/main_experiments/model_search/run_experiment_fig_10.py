@@ -34,8 +34,8 @@ def run_exp(exp_args):
 def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_iterations, result_directory):
     # get a list of all files in the result_directory
     result_files = [f for f in os.listdir(result_directory) if os.path.isfile(os.path.join(result_directory, f))]
-    # split result files by '#' and only keep the scond part
-    result_files = [f.split('#')[-1] for f in result_files]
+    # split result files by '#' and only keep the second part
+    result_files = [f.split('#')[-1].replace(".json", "") for f in result_files]
 
     found = {}
     for file in result_files:
@@ -61,6 +61,7 @@ def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_it
             if diff > 0:
                 diff_experiments[key] = diff
 
+    print("diff_experiments")
     print(diff_experiments)
     return diff_experiments
 
