@@ -10,6 +10,7 @@ fi
 cd alsatian
 git fetch --all
 git checkout reproducibility
+git pull
 
 # Copy the script execution directory
 mkdir -p /mount-ssd/script-execution/fig5
@@ -36,7 +37,13 @@ cd /mount-ssd/script-execution/fig5/on_server_exec
 sh run-all-exp.sh bottleneck_analysis-model-resnet18-items-96-split-None-dataset_type-imagenette
 
 echo "✅ Experiments done"
+echo "results can be found under /mount-fs/results/bottleneck-analysis/"
 
 mkdir -p /mount-fs/plots/bottleneck-analysis
+cd /mount-ssd/script-execution/fig5/on_server_exec
+sh plot.sh
+
+echo "✅ Plots done"
+echo "plots can be found under /mount-fs/plots/bottleneck-analysis"
 
 
