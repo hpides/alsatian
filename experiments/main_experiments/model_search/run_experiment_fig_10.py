@@ -47,6 +47,11 @@ def run_exp_set(base_exp_args, eval_space, base_file_id):
                             for bench_level in eval_space[BENCHMARK_LEVELS]:
                                 base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
 
+                                if approach == "baseline" or approach == "shift":
+                                    base_exp_args.load_full = True
+                                else:
+                                    base_exp_args.load_full = False
+
                                 file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
                                            f"-cache-{cache_location}-snapshot-{snapshot_set}"
                                            f"-models-{num_models}-items-{train_items + test_items}-level-{bench_level}")
