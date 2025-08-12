@@ -4,7 +4,7 @@ cd "$(dirname "$0")"
 
 DOCKER="nils-pytorch"
 
-docker run -d -p 3341:22 \
+docker run -d -p 3318:22 \
            --ipc=host \
            -h $DOCKER \
            --mount type=bind,source=/home/fgrabl/nils-strassenburg/docker-mounted/mount-ssd,target=/mount-ssd \
