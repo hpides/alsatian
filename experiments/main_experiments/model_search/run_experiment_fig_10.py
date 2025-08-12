@@ -55,7 +55,7 @@ def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_it
     diff_experiments = {}
     for key in list(expected.keys()):
         if key not in found:
-            diff_experiments[key] =expected[key]
+            diff_experiments[key] = expected[key]
         else:
             diff = expected[key] - found[key]
             if diff > 0:
@@ -159,6 +159,65 @@ def run_experiment(exp_args, file_id):
         file_id=file_id
     )
 
+def prune_eval_sapce(eval_space, missing_exps):
+    """
+    Prune eval_space to only contain values present in missing_exps.
+    """
+    # 1. Initialize a copy of eval_space where each value is an empty set
+    pruned = {k: set() for k in eval_space}
+
+    # 2. Iterate over missing_exps keys and parse the string
+    for key in missing_exps.keys():
+        # Example key:
+        # "{base_file_id}-distribution-{distribution}-approach-{approach}-cache-{cache}-snapshot-{snapshot}-models-{models}-items-{items}-level-{level}"
+        # We want to extract the values between the known tags.
+        # We'll split by the tags.
+        def extract_between(s, before, after):
+            # returns the substring between before and after
+            i = s.index(before) + len(before)
+            j = s.index(after, i)
+            return s[i:j]
+
+        try:
+            # Find all values
+            distribution = extract_between(key, "-distribution-", "-approach-")
+            approach = extract_between(key, "-approach-", "-cache-")
+            cache = extract_between(key, "-cache-", "-snapshot-")
+            snapshot = extract_between(key, "-snapshot-", "-models-")
+            models = extract_between(key, "-models-", "-items-")
+            items_str = extract_between(key, "-items-", "-level-")
+            level = key.split("-level-")[-1]
+        except Exception:
+            # If parsing fails, skip this key
+            continue
+
+        # 3. Convert items_str back into a tuple (train_items, test_items)
+        total_items = int(items_str)
+        items_tuple = None
+        for tup in eval_space.get("data_itmes", []):
+            if isinstance(tup, (tuple, list)) and len(tup) == 2:
+                if sum(tup) == total_items:
+                    items_tuple = tuple(tup)
+                    break
+        if items_tuple is None:
+            # If not found, skip
+            continue
+
+        # 4. Append each value into the respective set in pruned
+        pruned.get("distributions", set()).add(distribution)
+        pruned.get("approaches", set()).add(approach)
+        pruned.get("default_cache_locations", set()).add(cache)
+        pruned.get("snapshot_set_strings", set()).add(snapshot)
+        pruned.get("nums_models", set()).add(int(models))
+        pruned.get("benchmark_levels", set()).add(level)
+        pruned.get("data_itmes", set()).add(items_tuple)
+
+    # 5. Convert each set back into a list
+    for k in pruned:
+        pruned[k] = list(pruned[k])
+
+    # 6. Return the pruned eval space dictionary
+    return pruned
 
 if __name__ == "__main__":
     # Parse command line arguments
@@ -189,10 +248,13 @@ if __name__ == "__main__":
 
     # TODO put in readme how to extend to multiple runs
     num_runs = 1
-    missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs, exp_args.result_dir)
-    print(missing_exps)
+    missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                exp_args.result_dir)
+
+    pruned_eval_space = prune_eval_sapce(eval_space, missing_exps)
+    print("pruned_eval_space")
+    print(pruned_eval_space)
 
     # # for reproducibility probably enough if we run once
     # for i in range(num_runs):
     #     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
-
