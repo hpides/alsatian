@@ -35,29 +35,54 @@ For all experiments, we mount two directories from the host machine in the docke
 - one that is mounted on the HDD (`/mount-fs` inside the container)
 
 #### Figure 5 (Bottlenecks)
-- start plain docker container (see below under Reoccurring Steps - Start plain docker container)
+
+- start plain docker container
+- to start the container run: [start-plain-container.sh](scripts/start-plain-container.sh)
+    - **important**: adjust the following fields according to your setup
+        - ```
+          --mount type=bind,source=/home/fgrabl/nils-strassenburg/docker-mounted/mount-ssd,target=/mount-ssd \
+          --mount type=bind,source=/fs/nils-strassenburg/docker-mounted/mount-fs,target=/mount-fs \
+          --gpus device=1 \
+          --cpuset-cpus="64-127" \
+          ```
+
 - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
 - copy the [figure-5.sh](scripts/figure-5.sh) script on the container and run it
 
 #### Figure 10 (End-to-end times synthetic models)
-- if not still running, start plain docker container (see below under Reoccurring Steps - Start plain docker container)
-- open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-- TODODOD start clear caches script
+
+- start a docker container with limited IO
+    - to start the container run: [start-container-limited-io.sh](scripts/start-container-limited-io.sh)
+        - **important**: adjust the following fields according to your setup
+          ```
+          --mount type=bind,source=/home/fgrabl/nils-strassenburg/docker-mounted/mount-ssd,target=/mount-ssd \
+          --mount type=bind,source=/fs/nils-strassenburg/docker-mounted/mount-fs,target=/mount-fs \
+          --gpus device=1 \
+          --cpuset-cpus="64-127" \
+          --device-read-bps=/dev/md127:200mb \
+          ```
+        - the first four fields can be copied form the setup used for figure 5
+            - for the last line `/dev/md127` must be replaced with
+            - we used the following cmd: `df --output=source /fs/nils-strassenburg/docker-mounted/mount-fs/`
+            - the output on our machine is:
+            ```
+              Filesystem
+              /dev/md127
+            ```
+
+- in a second terminal **on the host machine** start the clear caches script (see below under Reoccurring Steps - Start
+  clear
+  caches script)
+ 
+- open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash` 
 - copy the [figure-10.sh](scripts/figure-10.sh) script on the container and run it
-
-
 
 ## Reoccurring Steps
 
 #### Start plain docker container
-- to start the container by using: [start-plain-container.sh](scripts/start-plain-container.sh)
-    - **important**: adjust the following fields according to your setup
-        - ```
-      --mount type=bind,source=/home/fgrabl/nils-strassenburg/docker-mounted/mount-ssd,target=/mount-ssd \
-      --mount type=bind,source=/fs/nils-strassenburg/docker-mounted/mount-fs,target=/mount-fs \
-      --gpus device=1 \
-      --cpuset-cpus="64-127" \
-    ```
 
 #### Start clear caches script
+
+- for our experiments, we assume that when models are loaded for the first time
+
 - TODO
