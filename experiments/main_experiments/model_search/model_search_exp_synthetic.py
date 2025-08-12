@@ -43,9 +43,9 @@ def get_combined_snapshots(save_paths):
 
 def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False):
     if trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
-        print("GET MODEL STORE ")
         return get_trained_models_and_model_store(snapshot_set_string, base_save_path)
     elif snapshot_set_string in VISION_MODEL_CHOICES + [BERT] and not trained_snapshots:
+        print(f"GET MODEL STORE {num_models}")
         return get_architecture_models(base_save_path, distribution, num_models, [snapshot_set_string])
     else:
         raise NotImplementedError
