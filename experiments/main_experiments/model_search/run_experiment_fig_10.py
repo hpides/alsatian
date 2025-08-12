@@ -114,7 +114,7 @@ if __name__ == "__main__":
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
         SNAPSHOT_SET_STRINGS: [RESNET_18], # TODO extend to other models as well
-        NUMS_MODELS: [36],
+        NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
     }

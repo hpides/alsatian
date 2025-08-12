@@ -97,10 +97,6 @@ def run_model_search(exp_args: ExpArgs):
 
     if exp_args.num_models > 0:
         assert len(model_snapshots) == exp_args.num_models
-        if exp_args.approach == "mosix":
-            print(len(model_store.models))
-            print(exp_args.num_models)
-            assert len(model_store.models) == exp_args.num_models
 
     if exp_args.approach == "mosix":
         # TODO fix this, either generate info for missing models on the fly or introduce proper argument to deactivate
