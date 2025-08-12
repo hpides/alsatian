@@ -247,14 +247,14 @@ if __name__ == "__main__":
     }
 
     # TODO put in readme how to extend to multiple runs
+    # for reproducibility probably enough if we run once
     num_runs = 1
     missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
                                                 exp_args.result_dir)
 
-    pruned_eval_space = prune_eval_sapce(eval_space, missing_exps)
-    print("pruned_eval_space")
-    print(pruned_eval_space)
+    while len(missing_exps) > 0:
+        pruned_eval_space = prune_eval_sapce(eval_space, missing_exps)
+        print("pruned_eval_space")
+        print(pruned_eval_space)
 
-    # # for reproducibility probably enough if we run once
-    # for i in range(num_runs):
-    #     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+        run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
