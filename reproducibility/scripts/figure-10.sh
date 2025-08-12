@@ -46,10 +46,10 @@ mkdir -p /mount-fs/results/fig10/
 echo "✅ Setup completed successfully."
 
 cd /mount-ssd/script-execution/fig10/start-scripts
-#sh run-all-exp.sh
-#
-#echo "✅ Experiments done"
-#echo "results can be found under /mount-fs/results/fig10/"
+sh start-exp-fig-10.sh
+
+echo "✅ Experiments done"
+echo "results can be found under /mount-fs/results/fig10/"
 #
 #mkdir -p /mount-fs/plots/fig10
 #cd /mount-ssd/script-execution/fig10/on_server_exec

@@ -4,6 +4,7 @@
 repository_url=https://github.com/hpides/alsatian.git
 script_to_start=experiments/main_experiments/model_search/run_experiment_fig_10.py
 branch=reproducibility
+python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 repo_name=alsatian
 config_file=experiments/main_experiments/model_search/config.ini
 config_section=des-gpu-imagenette-synthetic
