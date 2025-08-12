@@ -4,7 +4,6 @@ from statistics import median
 from experiments.side_experiments.plot_shared.data_transform import aggregate_measurements
 from experiments.side_experiments.plot_shared.file_parsing import extract_files_by_name, parse_json_file
 from experiments.side_experiments.plot_shared.horizontal_normalized_bars import plot_horizontal_normalized_bar_chart
-from experiments.side_experiments.plot_shared.plotting_util import plot_stacked_bar_chart
 from global_utils.constants import STATE_DICT_SIZE, LOAD_DATA, DATA_TO_DEVICE, INFERENCE, MODEL_TO_DEVICE, \
     CALC_PROXY_SCORE, STATE_TO_MODEL, LOAD_STATE_DICT, MEASUREMENTS
 from global_utils.model_names import RESNET_18, RESNET_152, VIT_L_32, EFF_NET_V2_L
@@ -63,40 +62,38 @@ def rename_model_names(data):
     return result
 
 
-def plot_time_dist(root_dir, file_template, model_names, disk_speed, file_name_prefix=""):
+def plot_time_dist(root_dir, file_template, model_names, disk_speed, save_path, file_name_prefix=""):
     # . at the end of name is important here to distinguish between dataset types when searching for files
-    for dataset_type in ['imagenette.', 'imagenette_preprocessed_ssd.']:
-        for split in [str(x) for x in [None, -1, -3, 25, 50, 75]]:
-            for num_items in [3 * 32, 1024, 9 * 1024]:
-                if split == 'None' or dataset_type == 'imagenette_preprocessed_ssd.':
-                    data = {}
-                    for model_name in model_names:
-                        # example_config = ['resnet152', '100', '50', 'imagenette']
-                        config = [model_name, num_items, split, dataset_type]
-                        file_id = file_template.format(*config)
+    for model_name in model_names:
+        for dataset_type, split, num_items in zip(
+                ['imagenette.', 'imagenette.', 'imagenette.', 'imagenette_preprocessed_ssd.'],
+                [None, None, None, -3],
+                [3 * 32, 1024, 9 * 1024, 1024]
+        ):
+            data = {}
+            for model_name in model_names:
+                # example_config = ['resnet152', '100', '50', 'imagenette']
+                config = [model_name, num_items, split, dataset_type]
+                file_id = file_template.format(*config)
 
-                        data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
+                data[model_name] = get_aggregated_data(root_dir, file_id, median, disk_speed)
 
-                    # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
-                    ignore = []
-                    file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'.replace('.',
-                                                                                                                   '')
-                    data = rename_model_names(data)
+            # ignore = [MODEL_TO_DEVICE, STATE_TO_MODEL, DATA_TO_DEVICE]
+            ignore = []
+            file_name = f'bottleneck_analysis-items-{num_items}-split-{split}-data-{dataset_type}'.replace('.',
+                                                                                                           '')
+            data = rename_model_names(data)
 
-                    # plot_horizontal_normalized_bar_chart(data, save_path='plots',
-                    #                                      file_name=f'{file_name_prefix}normalized-{file_name}',
-                    #                                      ignore=ignore)
-                    plot_horizontal_normalized_bar_chart(data, save_path='plots',
-                                                         file_name=f'{file_name_prefix}normalized-{file_name}',
-                                                         ignore=ignore, legend=False)
-                    plot_stacked_bar_chart(data, save_path='plots',
-                                           file_name=f'{file_name_prefix}stacked-{file_name}')
+            plot_horizontal_normalized_bar_chart(data, save_path=save_path,
+                                                 file_name=f'{file_name_prefix}normalized-{file_name}',
+                                                 ignore=ignore, legend=False)
 
 
 if __name__ == '__main__':
-    root_dir = os.path.abspath('../results/bottleneck-analysis')
+    root_dir = os.path.abspath('/mount-fs/results/bottleneck-analysis')
+    save_path = os.path.abspath('/mount-fs/plots/bottleneck-analysis')
     file_template = 'bottleneck_analysis-model-{}-items-{}-split-{}-dataset_type-{}'
+
     disk_speed = 200  # in MB/s
     model_names = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
-
-    plot_time_dist(root_dir, file_template, model_names, disk_speed)
+    plot_time_dist(root_dir, file_template, model_names, disk_speed, save_path)

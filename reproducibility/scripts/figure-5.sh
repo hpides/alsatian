@@ -37,3 +37,6 @@ sh run-all-exp.sh bottleneck_analysis-model-resnet18-items-96-split-None-dataset
 
 echo "✅ Experiments done"
 
+mkdir -p /mount-fs/plots/bottleneck-analysis
+
+
