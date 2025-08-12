@@ -257,4 +257,4 @@ if __name__ == "__main__":
         print("pruned_eval_space")
         print(pruned_eval_space)
 
-        run_exp_set(pruned_eval_space, eval_space, base_file_id=args.base_config_section)
+        run_exp_set(exp_args, pruned_eval_space, base_file_id=args.base_config_section)
