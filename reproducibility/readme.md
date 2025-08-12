@@ -69,20 +69,34 @@ For all experiments, we mount two directories from the host machine in the docke
               Filesystem
               /dev/md127
             ```
+            - for details see this readme: [readme.md](../experiments/main_experiments/prevent_caching/readme.md)
 
-- in a second terminal **on the host machine** start the clear caches script (see below under Reoccurring Steps - Start
-  clear
-  caches script)
- 
-- open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash` 
+- **on the host machine** start the clear caches script (see below under Reoccurring Steps - Start clear caches script)
+
+- open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
 - copy the [figure-10.sh](scripts/figure-10.sh) script on the container and run it
 
 ## Reoccurring Steps
 
-#### Start plain docker container
-
 #### Start clear caches script
 
-- for our experiments, we assume that when models are loaded for the first time
+- for our experiments, we assume that when models are loaded for the first time they are loaded from cold/cloud storage
+- thus we limit the I/O when reading from the HDD mounted directory to 200MB/s
+- and we need to prevent caching of files between runs (otherwise a second run has an unfair advantage because the files
+  are already in memory)
+- next to using a docker container with limited I/O, we start the following script on the host machine to clean the
+  caches when triggered by a script inside the container, and also monitor the I/O speed before every
+- run the following script and make sure it runs all the time during experiment execution
+    - [host_watch_script.py](scripts/host_watch_script.py)
+    - **important** adjust the following line before running the script:
+      `BASE_PATH = <PATH ON HOST MACHINE THAT IS MOUNTED TO /mount-fs INSIDE CONTAINER>`
+- for details see this readme: [readme.md](../experiments/main_experiments/prevent_caching/readme.md)
 
-- TODO
+
+
+
+
+
+
+
+
