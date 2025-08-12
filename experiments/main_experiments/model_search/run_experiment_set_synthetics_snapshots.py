@@ -108,7 +108,7 @@ if __name__ == "__main__":
         APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
-        NUMS_MODELS: [36],
+        NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
         # alternatively we can also extend the experiment
