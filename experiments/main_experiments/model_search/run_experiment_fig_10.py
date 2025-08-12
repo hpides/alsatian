@@ -258,3 +258,7 @@ if __name__ == "__main__":
         print(pruned_eval_space)
 
         run_exp_set(exp_args, pruned_eval_space, base_file_id=args.base_config_section)
+
+        missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                    exp_args.result_dir)
+
