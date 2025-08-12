@@ -41,18 +41,9 @@ def get_combined_snapshots(save_paths):
     return list(combined_model_store.models.values()), combined_model_store
 
 
-def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False,
-                  hf_snapshots=False):
-    if hf_snapshots:
-        if parsable_as_list(snapshot_set_string):
-            snapshot_set_strings = snapshot_set_string.split(",")
-            save_paths = [os.path.join(base_save_path, snapshot_string.replace("/", "-")) for snapshot_string in
-                          snapshot_set_strings]
-            return get_combined_snapshots(save_paths)
-        else:
-            snapshot_save_path = os.path.join(base_save_path, snapshot_set_string.replace("/", "-"))
-            return get_existing_model_store(snapshot_save_path)
-    elif trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
+def get_snapshots(snapshot_set_string, num_models, distribution, base_save_path, trained_snapshots=False):
+    if trained_snapshots and snapshot_set_string in TRAINED_MODELS and distribution in TRAINED_DISTRIBUTIONS and num_models == 36:
+        print("GET MODEL STORE")
         return get_trained_models_and_model_store(snapshot_set_string, base_save_path)
     elif snapshot_set_string in VISION_MODEL_CHOICES + [BERT] and not trained_snapshots:
         return get_architecture_models(base_save_path, distribution, num_models, [snapshot_set_string])
