@@ -34,7 +34,7 @@ mkdir -p /mount-fs/results/bottleneck-analysis/
 echo "✅ Setup completed successfully."
 
 cd /mount-ssd/script-execution/fig5/on_server_exec
-sh run-all-exp.sh bottleneck_analysis-model-resnet18-items-96-split-None-dataset_type-imagenette
+sh run-all-exp.sh
 
 echo "✅ Experiments done"
 echo "results can be found under /mount-fs/results/bottleneck-analysis/"
