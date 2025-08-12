@@ -45,8 +45,11 @@ def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_it
 
     # generate expected file dict
     expected = expected_experiment_files(base_exp_args, eval_space, base_file_id, num_iterations)
-    # print(found)
-    # print(expected)
+
+    print("found")
+    print(found)
+    print("expected")
+    print(expected)
 
     # identify missing experiments
     diff_experiments = {}
