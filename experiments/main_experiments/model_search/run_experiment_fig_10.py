@@ -51,9 +51,12 @@ def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_it
     # identify missing experiments
     diff_experiments = {}
     for key in list(expected.keys()):
-        diff = expected[key] - found[key]
-        if diff > 0:
-            diff_experiments[key] = diff
+        if key not in found:
+            diff_experiments[key] =expected[key]
+        else:
+            diff = expected[key] - found[key]
+            if diff > 0:
+                diff_experiments[key] = diff
 
     return diff_experiments
 
