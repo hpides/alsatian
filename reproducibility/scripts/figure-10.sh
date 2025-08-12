@@ -40,8 +40,9 @@ if [ ! -f "imagenette2.tgz" ]; then
 fi
 tar -xzf imagenette2.tgz
 
-# Create results directory
+# Create results directory and caching directory
 mkdir -p /mount-fs/results/fig10/
+mkdir -p /mount-ssd/cache-dir
 
 echo "✅ Setup completed successfully."
 

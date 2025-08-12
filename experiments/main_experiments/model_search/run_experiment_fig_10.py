@@ -7,13 +7,14 @@ import traceback
 
 import torch
 
-from experiments.main_experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
+from experiments.main_experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, \
+    _str_to_cache_location, \
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp_synthetic import run_model_search
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from experiments.main_experiments.snapshots.synthetic.generate import TWENTY_FIVE_PERCENT, FIFTY_PERCENT, TOP_LAYERS
 from global_utils.deterministic import TRUE
-from global_utils.model_names import RESNET_152, RESNET_18, VIT_L_32, EFF_NET_V2_L
+from global_utils.model_names import RESNET_18
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 DATA_ITEMS = "data_itmes"
@@ -28,6 +29,63 @@ DISTRIBUTIONS = "distributions"
 
 def run_exp(exp_args):
     return run_model_search(exp_args)
+
+
+def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_iterations, result_directory):
+    # get a list of all files in the result_directory
+    result_files = [f for f in os.listdir(result_directory) if os.path.isfile(os.path.join(result_directory, f))]
+    # split result files by '#' and only keep the scond part
+    result_files = [f.split('#')[-1] for f in result_files]
+
+    found = {}
+    for file in result_files:
+        if file not in found:
+            found[file] = 0
+        found[file] += 1
+
+    # generate expected file dict
+    expected = expected_experiment_files(base_exp_args, eval_space, base_file_id, num_iterations)
+
+    # identify missing experiments
+    diff_experiments = {}
+    for key in list(expected.keys()):
+        diff = expected[key] - found[key]
+        if diff > 0:
+            diff_experiments[key] = diff
+
+    return diff_experiments
+
+
+def expected_experiment_files(base_exp_args, eval_space, base_file_id, num_iterations):
+    result = {}
+    for train_items, test_items in eval_space[DATA_ITEMS]:
+        base_exp_args.num_train_items = train_items
+        base_exp_args.num_test_items = test_items
+        for distribution in eval_space[DISTRIBUTIONS]:
+            base_exp_args.distribution = _str_to_distribution(distribution)
+            for approach in eval_space[APPROACHES]:
+                base_exp_args.approach = approach
+                for cache_location in eval_space[DEFAULT_CACHE_LOCATIONS]:
+                    base_exp_args.default_cache_location = _str_to_cache_location(cache_location)
+                    for snapshot_set in eval_space[SNAPSHOT_SET_STRINGS]:
+                        base_exp_args.snapshot_set_string = snapshot_set
+                        for num_models in eval_space[NUMS_MODELS]:
+                            base_exp_args.num_models = num_models
+                            for bench_level in eval_space[BENCHMARK_LEVELS]:
+                                base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
+
+                                if approach == "baseline" or approach == "shift":
+                                    base_exp_args.load_full = True
+                                else:
+                                    base_exp_args.load_full = False
+
+                                file_id = (f"{base_file_id}-distribution-{distribution}-approach-{approach}"
+                                           f"-cache-{cache_location}-snapshot-{snapshot_set}"
+                                           f"-models-{num_models}-items-{train_items + test_items}-level-{bench_level}")
+
+                                result[file_id] = num_iterations
+
+        return result
 
 
 def run_exp_set(base_exp_args, eval_space, base_file_id):
@@ -110,16 +168,21 @@ if __name__ == "__main__":
     # run once to for detailed numbers
     eval_space = {
         DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
-        APPROACHES: ["mosix", "baseline", "shift"],
+        APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
-        SNAPSHOT_SET_STRINGS: [RESNET_18], # TODO extend to other models as well
+        SNAPSHOT_SET_STRINGS: [RESNET_18],  # TODO extend to other models as well
         NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
     }
 
-    # for reproducibility probably enough if we run once
     # TODO put in readme how to extend to multiple runs
-    for i in range(1):
-        run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+    num_runs = 1
+    missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs, exp_args.result_dir)
+    print(missing_exps)
+
+    # # for reproducibility probably enough if we run once
+    # for i in range(num_runs):
+    #     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+
