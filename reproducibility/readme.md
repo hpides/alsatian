@@ -90,6 +90,7 @@ For all experiments, we mount two directories from the host machine in the docke
     - [host_watch_script.py](scripts/host_watch_script.py)
     - **important** adjust the following line before running the script:
       `BASE_PATH = <PATH ON HOST MACHINE THAT IS MOUNTED TO /mount-fs INSIDE CONTAINER>`
+    - `sudo python3 host_watch_script.py`
 - for details see this readme: [readme.md](../experiments/main_experiments/prevent_caching/readme.md)
 
 
