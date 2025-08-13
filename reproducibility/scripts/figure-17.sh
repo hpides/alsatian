@@ -67,11 +67,12 @@ cd /mount-fs/plots/fig17/
 
 # Assigning command line arguments to variables
 repository_url=https://github.com/hpides/alsatian.git
-script_to_start=/experiments/main_experiments/model_search/eval/bert/plot_bert_snapshots.py
+script_to_start=experiments/main_experiments/model_search/eval/bert/plot_bert_snapshots.py
 branch=reproducibility
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 repo_name=alsatian
 
+rm -rf alsatian
 git clone $repository_url
 
 # Change directory to the cloned repository
