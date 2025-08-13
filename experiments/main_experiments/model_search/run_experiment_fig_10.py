@@ -301,7 +301,8 @@ if __name__ == "__main__":
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
     }
 
-    for eval_space in [eval_space_11_a_b, eval_space_11_c, eval_space_11_d, eval_space_11_e]:
+    # for eval_space in [eval_space_11_a_b, eval_space_11_c, eval_space_11_d, eval_space_11_e]:
+    for eval_space in [eval_space_11_a_b, eval_space_11_c, eval_space_11_d]:
         num_runs = 1
         missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
                                                     exp_args.result_dir)
