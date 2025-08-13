@@ -21,6 +21,7 @@ cp -r /mount-ssd/alsatian/experiments/main_experiments/model_search/start-script
 mkdir -p /mount-fs/snapshot-sets/
 cd /mount-fs/snapshot-sets/
 
+# Download models
 if [ ! -d resnet18 ]; then
   if [ ! -f resnet18.tar ]; then
       wget https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/snapshot-sets/resnet18.tar
@@ -31,6 +32,7 @@ if [ ! -d resnet18 ]; then
 else
     echo "resnet18 directory already exists, skipping extraction."
 fi
+
 
 # Download and extract Imagenette2 dataset
 mkdir -p /mount-ssd/data
@@ -44,19 +46,20 @@ tar -xzf imagenette2.tgz
 mkdir -p /mount-fs/results/fig10/
 mkdir -p /mount-ssd/cache-dir
 
-echo "✅ Setup completed successfully."
-
-cd /mount-ssd/script-execution/fig10/start-scripts
-sh start-exp-fig-10.sh
+#echo "✅ Setup completed successfully."
+#
+#cd /mount-ssd/script-execution/fig10/start-scripts
+#sh start-exp-fig-10.sh
 
 echo "✅ Experiments done"
 echo "results can be found under /mount-fs/results/fig10/"
-#
-#mkdir -p /mount-fs/plots/fig10
-#cd /mount-ssd/script-execution/fig10/on_server_exec
-#sh plot.sh
-#
-#echo "✅ Plots done"
-#echo "plots can be found under /mount-fs/plots/fig10"
+
+mkdir -p /mount-fs/plots/fig10
+cd /mount-ssd/script-execution/fig10/start-scripts
+sh plot-fig-10.sh
+
+
+echo "✅ Plots done"
+echo "plots can be found under /mount-fs/plots/fig10"
 
 

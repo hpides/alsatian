@@ -246,7 +246,6 @@ if __name__ == "__main__":
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
     }
 
-    # TODO put in readme how to extend to multiple runs
     # for reproducibility probably enough if we run once
     num_runs = 1
     missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
