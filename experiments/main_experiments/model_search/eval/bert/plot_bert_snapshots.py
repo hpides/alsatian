@@ -242,19 +242,12 @@ def sh_iteration_plot_times(root_dir, model, approaches, distribution, caching_l
 
 def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                           plot_save_path):
-    plt.rcParams.update({'font.size': 46})
-
-    plt.rcParams.update({'text.usetex': True
-                            , 'pgf.rcfonts': False
-                            , 'text.latex.preamble': r"""\usepackage{iftex}
-                                                        \ifxetex
-                                                            \usepackage[libertine]{newtxmath}
-                                                            \usepackage[tt=false]{libertine}
-                                                            \setmonofont[StylisticSet=3]{inconsolata}
-                                                        \else
-                                                            \RequirePackage[tt=false, type1=true]{libertine}
-                                                        \fi"""
-                         })
+    plt.rcParams.update({
+        'font.size': 24,
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['Linux Libertine O', 'Times New Roman', 'Times'],
+    })
 
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
 
@@ -306,12 +299,9 @@ if __name__ == '__main__':
     distributions = [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT]
 
     for distribution in distributions:
-        for data_items in [2000, 8000]:
-            if data_items == 8000:
-                measure_type = 'STEPS_DETAILS'
-            else:
-                measure_type = 'EXECUTION_STEPS'
-            root_dir = os.path.abspath("./results/des-gpu-bert-synthetic/")
-            plot_save_path = f'./plots/{data_items}'
+        for data_items in [2000]:
+            measure_type = 'EXECUTION_STEPS'
+            root_dir = os.path.abspath("/mount-fs/results/fig17/")
+            plot_save_path = f'/mount-fs/plots/fig17/'
             plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                                   plot_save_path)
