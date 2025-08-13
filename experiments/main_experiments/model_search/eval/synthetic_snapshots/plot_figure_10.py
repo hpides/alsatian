@@ -278,19 +278,12 @@ def has_first_decimal_zero(number):
 
 def plot_end_to_end_times(data_root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                           plot_save_path):
-    plt.rcParams.update({'font.size': 24})
-
-    plt.rcParams.update({'text.usetex': True
-                            , 'pgf.rcfonts': False
-                            , 'text.latex.preamble': r"""\usepackage{iftex}
-                                                  \ifxetex
-                                                      \usepackage[libertine]{newtxmath}
-                                                      \usepackage[tt=false]{libertine}
-                                                      \setmonofont[StylisticSet=3]{inconsolata}
-                                                  \else
-                                                      \RequirePackage[tt=false, type1=true]{libertine}
-                                                  \fi"""
-                         })
+    plt.rcParams.update({
+        'font.size': 24,
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['Linux Libertine O', 'Times New Roman', 'Times'],
+    })
 
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
