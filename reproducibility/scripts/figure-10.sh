@@ -46,10 +46,10 @@ tar -xzf imagenette2.tgz
 mkdir -p /mount-fs/results/fig10/
 mkdir -p /mount-ssd/cache-dir
 
-#echo "✅ Setup completed successfully."
-#
-#cd /mount-ssd/script-execution/fig10/start-scripts
-#sh start-exp-fig-10.sh
+echo "✅ Setup completed successfully."
+
+cd /mount-ssd/script-execution/fig10/start-scripts
+sh start-exp-fig-10.sh
 
 echo "✅ Experiments done"
 echo "results can be found under /mount-fs/results/fig10/"
