@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Assigning command line arguments to variables
-repository_url=github.com/slin96/model-search-paper.git
+repository_url=https://github.com/hpides/alsatian.git
 script_to_start=experiments/model_search/run_experiment_set_bert.py
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=reproducibility
