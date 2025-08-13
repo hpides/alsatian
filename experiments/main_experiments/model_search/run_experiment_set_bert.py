@@ -6,10 +6,11 @@ import time
 import traceback
 
 import torch
-from experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
-    _str_to_benchmark_level
-from experiments.model_search.model_search_exp import run_model_search
 
+from experiments.main_experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, \
+    _str_to_cache_location, \
+    _str_to_benchmark_level
+from experiments.main_experiments.model_search.model_search_exp_synthetic import run_model_search
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from experiments.main_experiments.snapshots.synthetic.generate import TWENTY_FIVE_PERCENT, FIFTY_PERCENT, TOP_LAYERS
 from global_utils.deterministic import TRUE
@@ -105,18 +106,14 @@ if __name__ == "__main__":
     # run once to for detailed numbers
     eval_space = {
         DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
-        # APPROACHES: ["baseline", "mosix", "shift"],
-        APPROACHES: ["mosix"],
+        APPROACHES: ["baseline", "mosix", "shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [BERT],
         NUMS_MODELS: [35],
-        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
-        # DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
-        DATA_ITEMS: [(1600, 400), (6400, 1600)]
+        BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
+        DATA_ITEMS: [(1600, 400)]
     }
-    run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
 
     # run multiple times for median values
-    eval_space[BENCHMARK_LEVELS] = ["EXECUTION_STEPS"]
-    for i in range(3):
+    for i in range(1):
         run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
