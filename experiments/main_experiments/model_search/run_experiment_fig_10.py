@@ -14,7 +14,7 @@ from experiments.main_experiments.model_search.model_search_exp_synthetic import
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from experiments.main_experiments.snapshots.synthetic.generate import TWENTY_FIVE_PERCENT, FIFTY_PERCENT, TOP_LAYERS
 from global_utils.deterministic import TRUE
-from global_utils.model_names import RESNET_18
+from global_utils.model_names import RESNET_18, VIT_L_32, EFF_NET_V2_L, RESNET_152
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
 DATA_ITEMS = "data_itmes"
@@ -239,8 +239,7 @@ if __name__ == "__main__":
         DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
         APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
-        SNAPSHOT_SET_STRINGS: [RESNET_18],  # TODO extend to other models as well
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
         NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]

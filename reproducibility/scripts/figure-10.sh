@@ -21,17 +21,18 @@ cp -r /mount-ssd/alsatian/experiments/main_experiments/model_search/start-script
 mkdir -p /mount-fs/snapshot-sets/
 cd /mount-fs/snapshot-sets/
 
-# Download models
-if [ ! -d resnet18 ]; then
-  if [ ! -f resnet18.tar ]; then
-      wget https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/snapshot-sets/resnet18.tar
+for model in resnet18 resnet152 eff_net_v2_l vit_l_32; do
+  if [ ! -d "$model" ]; then
+    if [ ! -f "$model.tar" ]; then
+      wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/snapshot-sets/${model}.tar"
+    else
+      echo "$model.tar already exists, skipping download."
+    fi
+    tar -xf "$model.tar"
   else
-      echo "resnet18.tar already exists, skipping download."
+    echo "$model directory already exists, skipping extraction."
   fi
-  tar -xf resnet18.tar
-else
-    echo "resnet18 directory already exists, skipping extraction."
-fi
+done
 
 
 # Download and extract Imagenette2 dataset
