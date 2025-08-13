@@ -129,13 +129,3 @@ if __name__ == "__main__":
 
         missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
                                                     exp_args.result_dir)
-
-    # num_runs = 1
-    # missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
-    #                                             exp_args.result_dir)
-    # print(f"Missing experiments: {missing_exps}")
-    # pruned_eval_space = prune_eval_sapce(eval_space, missing_exps)
-
-    # # run multiple times for median values
-    # for i in range(1):
-    #     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
