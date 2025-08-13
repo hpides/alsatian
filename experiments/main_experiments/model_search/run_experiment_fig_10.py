@@ -234,7 +234,6 @@ if __name__ == "__main__":
     # Call the main function with parsed arguments
     # run_experiment_section(exp_args, args.config_section)
 
-    # run once to for detailed numbers
     eval_space = {
         DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
         APPROACHES: ["baseline", "shift", "mosix"],
@@ -260,3 +259,57 @@ if __name__ == "__main__":
         missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
                                                     exp_args.result_dir)
 
+    # selected runs for detailed numbers; fig 11 a & b
+    eval_space_11_a_b = {
+        APPROACHES: ["baseline", "shift", "mosix"],
+        SNAPSHOT_SET_STRINGS: [RESNET_152],
+        DATA_ITEMS: [(6400, 1600)],
+        DISTRIBUTIONS: [TOP_LAYERS, FIFTY_PERCENT],
+        DEFAULT_CACHE_LOCATIONS: ["CPU"],
+        NUMS_MODELS: [35],
+        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
+    }
+
+    eval_space_11_c = {
+        APPROACHES: ["baseline", "shift", "mosix"],
+        SNAPSHOT_SET_STRINGS: [RESNET_152],
+        DATA_ITEMS: [(1600, 400)],
+        DISTRIBUTIONS: [TOP_LAYERS],
+        DEFAULT_CACHE_LOCATIONS: ["CPU"],
+        NUMS_MODELS: [35],
+        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
+    }
+
+    eval_space_11_d = {
+        APPROACHES: ["mosix"],
+        SNAPSHOT_SET_STRINGS: [RESNET_152],
+        DATA_ITEMS: [(6400, 1600)],
+        DISTRIBUTIONS: [TOP_LAYERS, FIFTY_PERCENT, TWENTY_FIVE_PERCENT],
+        DEFAULT_CACHE_LOCATIONS: ["CPU"],
+        NUMS_MODELS: [35],
+        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
+    }
+
+    eval_space_11_e = {
+        APPROACHES: ["mosix"],
+        SNAPSHOT_SET_STRINGS: [VIT_L_32],
+        DATA_ITEMS: [(6400, 1600)],
+        DISTRIBUTIONS: [TOP_LAYERS, FIFTY_PERCENT, TWENTY_FIVE_PERCENT],
+        DEFAULT_CACHE_LOCATIONS: ["CPU"],
+        NUMS_MODELS: [35],
+        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
+    }
+
+    for eval_space in [eval_space_11_a_b, eval_space_11_c, eval_space_11_d, eval_space_11_e]:
+        num_runs = 1
+        missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                    exp_args.result_dir)
+        while len(missing_exps) > 0:
+            pruned_eval_space = prune_eval_sapce(eval_space, missing_exps)
+            print("pruned_eval_space")
+            print(pruned_eval_space)
+
+            run_exp_set(exp_args, pruned_eval_space, base_file_id=args.base_config_section)
+
+            missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                        exp_args.result_dir)
