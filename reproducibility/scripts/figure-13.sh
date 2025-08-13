@@ -1,0 +1,73 @@
+#!/bin/bash
+set -e  # Exit immediately on error
+set -u  # Treat unset variables as errors
+
+# Clone the repository and checkout the desired branch
+cd /mount-ssd/
+if [ ! -d "alsatian" ]; then
+    git clone https://github.com/hpides/alsatian.git
+fi
+cd alsatian
+git fetch --all
+git checkout reproducibility
+git pull
+
+# Copy the script execution directory
+mkdir -p /mount-ssd/script-execution/fig13
+cp -r /mount-ssd/alsatian/experiments/main_experiments/model_search/start-scripts \
+      /mount-ssd/script-execution/fig13
+
+# Download the model snapshots
+mkdir -p /mount-fs/snapshot-sets/
+cd /mount-fs/snapshot-sets/
+
+#for model in resnet18 resnet152 eff_net_v2_l vit_l_32; do
+#  if [ ! -d "$model" ]; then
+#    if [ ! -f "$model.tar" ]; then
+#      wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/snapshot-sets/${model}.tar"
+#    else
+#      echo "$model.tar already exists, skipping download."
+#    fi
+#    tar -xf "$model.tar"
+#  else
+#    echo "$model directory already exists, skipping extraction."
+#  fi
+#done
+
+
+# Download and extract Imagenette2 dataset
+mkdir -p /mount-ssd/data
+cd /mount-ssd/data
+
+data-engineering-systems/nils-strassenburg/alsatian/datasets/
+
+if [ ! -d "image-woof" ]; then
+    if [ ! -f "image-woof.tar" ]; then
+        wget https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/datasets/image-woof.tar
+    fi
+    tar -xf image-woof.tar
+fi
+echo "✅ Download dataset completed successfully."
+
+# Create results directory and caching directory
+mkdir -p /mount-fs/results/fig13/
+mkdir -p /mount-ssd/cache-dir
+
+echo "✅ Setup completed successfully."
+
+cd /mount-ssd/script-execution/fig13/start-scripts
+sh start-exp-trained-models.sh
+
+echo "✅ Experiments done"
+echo "results can be found under /mount-fs/results/fig10/"
+
+#mkdir -p /mount-fs/plots/fig10/2000
+#mkdir -p /mount-fs/plots/fig10/8000
+#cd /mount-ssd/script-execution/fig10/start-scripts
+#sh plot-fig-10.sh
+#
+#
+#echo "✅ Plots done"
+#echo "plots can be found under /mount-fs/plots/fig10"
+#
+#
