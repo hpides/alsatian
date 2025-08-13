@@ -54,7 +54,8 @@ sh start-exp-fig-10.sh
 echo "✅ Experiments done"
 echo "results can be found under /mount-fs/results/fig10/"
 
-mkdir -p /mount-fs/plots/fig10
+mkdir -p /mount-fs/plots/fig10/2000
+mkdir -p /mount-fs/plots/fig10/8000
 cd /mount-ssd/script-execution/fig10/start-scripts
 sh plot-fig-10.sh
 
