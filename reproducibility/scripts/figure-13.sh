@@ -39,8 +39,6 @@ cd /mount-fs/snapshot-sets/
 mkdir -p /mount-ssd/data
 cd /mount-ssd/data
 
-data-engineering-systems/nils-strassenburg/alsatian/datasets/
-
 if [ ! -d "image-woof" ]; then
     if [ ! -f "image-woof.tar" ]; then
         wget https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/datasets/image-woof.tar
