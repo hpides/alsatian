@@ -103,7 +103,7 @@ def run_model_search(exp_args: ExpArgs):
     len_train_data = len(train_data)
     len_test_data = len(test_data)
 
-    if exp_args.load_full and exp_args.approach == "baseline" or exp_args.approach == "shift":
+    if exp_args.approach == "baseline" or exp_args.approach == "shift":
         if parsable_as_list(exp_args.snapshot_set_string):
             snapshot_set_strings = exp_args.snapshot_set_string.split(",")
         else:
