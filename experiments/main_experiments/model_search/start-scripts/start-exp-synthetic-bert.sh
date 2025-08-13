@@ -6,7 +6,7 @@ script_to_start=experiments/main_experiments/model_search/run_experiment_set_ber
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=reproducibility
 repo_name=alsatian
-config_file=experiments/model_search/config.ini
+config_file=experiments/main_experiments/model_search/config.ini
 config_section=des-gpu-bert-synthetic
 
 
