@@ -11,6 +11,7 @@ from experiments.main_experiments.model_search.experiment_args import ExpArgs, _
     _str_to_cache_location, \
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp_synthetic import run_model_search
+from experiments.main_experiments.model_search.run_experiment_fig_10 import identify_missing_experiments
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from experiments.main_experiments.snapshots.synthetic.generate import TWENTY_FIVE_PERCENT, FIFTY_PERCENT, TOP_LAYERS
 from global_utils.deterministic import TRUE
@@ -114,6 +115,12 @@ if __name__ == "__main__":
         DATA_ITEMS: [(1600, 400)]
     }
 
-    # run multiple times for median values
-    for i in range(1):
-        run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+    num_runs = 1
+    missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                exp_args.result_dir)
+    print(f"Missing experiments: {missing_exps}")
+
+
+    # # run multiple times for median values
+    # for i in range(1):
+    #     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
