@@ -38,16 +38,16 @@ if [ ! -d "imagenette2" ]; then
 fi
 
 # Create results directory and caching directory
-mkdir -p /mount-fs/results/fig14/
+mkdir -p /mount-fs/results/fig15/
 mkdir -p /mount-ssd/cache-dir
 
 echo "✅ Setup completed successfully."
 
 cd /mount-ssd/script-execution/fig14/start-scripts
-sh start-exp-fig-14.sh
+sh start-exp-fig-15.sh
 
 echo "✅ Experiments done"
-echo "results can be found under /mount-fs/results/fig14/"
+echo "results can be found under /mount-fs/results/fig15/"
 
 # CODE FOR PLOTTING
 # CODE FOR PLOTTING
@@ -55,6 +55,6 @@ echo "results can be found under /mount-fs/results/fig14/"
 # CODE FOR PLOTTING
 
 echo "✅ Plots done"
-echo "plots can be found under /mount-fs/plots/fig14"
+echo "plots can be found under /mount-fs/plots/fig15"
 
 
