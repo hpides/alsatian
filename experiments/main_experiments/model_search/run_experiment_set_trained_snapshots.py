@@ -105,7 +105,7 @@ if __name__ == "__main__":
     # run once for detailed numbers
     eval_space = {
         DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
-        APPROACHES: ["mosix", "baseline", "shift"],
+        APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [RESNET_18], # TODO extend to other models
         # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
