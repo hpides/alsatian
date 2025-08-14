@@ -126,7 +126,7 @@ def plot_fixed_approach_changed_config(root_dir, model, items, device, distribut
 
 
 if __name__ == '__main__':
-    root_dir = os.path.abspath('/mount-fs/results/fig11')
+    root_dir = os.path.abspath('/mount-fs/results/fig10')
     output_path = '/mount-fs/plots/fig11'
 
     device = "CPU"
