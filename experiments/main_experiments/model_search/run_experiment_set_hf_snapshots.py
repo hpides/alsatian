@@ -12,7 +12,8 @@ from experiments.main_experiments.model_search.experiment_args import ExpArgs, _
 from experiments.main_experiments.model_search.model_search_exp import run_model_search
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from experiments.main_experiments.snapshots.hugging_face.init_hf_models import MICROSOFT_RESNET_152, \
-    MICROSOFT_RESNET_18, ALL_HF_MODELS
+    MICROSOFT_RESNET_18, ALL_HF_MODELS, FACEBOOK_DETR_RESNET_101, FACEBOOK_DINOV2_LARGE, \
+    GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50
 from global_utils.deterministic import TRUE
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
@@ -103,22 +104,35 @@ if __name__ == "__main__":
     config.read(args.config_file)
     exp_args = ExpArgs(config, args.base_config_section)
 
-    # run once to for detailed numbers
+    # run for some individual model sets, figure 14
     eval_space = {
         # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
         APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
-        # SNAPSHOT_SET_STRINGS: ALL_HF_MODELS, # this line for separate search per model
+        SNAPSHOT_SET_STRINGS: [FACEBOOK_DETR_RESNET_101, FACEBOOK_DINOV2_LARGE, MICROSOFT_RESNET_152, GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50],
         NUMS_MODELS: [exp_args.num_models],
-        BENCHMARK_LEVELS: ["STEPS_DETAILS"],
+        BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
         # alternatively we can also extend the experiment
         # DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
     }
-    run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
 
-    # run multiple times for median values
-    eval_space[BENCHMARK_LEVELS] = ["EXECUTION_STEPS"]
-    for i in range(3):
+    for i in range(1):
         run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+
+    # # run for joint model set, figure 15
+    # eval_space = {
+    #     # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
+    #     APPROACHES: ["baseline", "shift", "mosix"],
+    #     DEFAULT_CACHE_LOCATIONS: ["CPU"],
+    #     SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
+    #     # SNAPSHOT_SET_STRINGS: ALL_HF_MODELS, # this line for separate search per model
+    #     NUMS_MODELS: [exp_args.num_models],
+    #     BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
+    #     DATA_ITEMS: [(1600, 400), (6400, 1600)]
+    #     # alternatively we can also extend the experiment
+    #     # DATA_ITEMS: [(800, 200), (1600, 400), (3200, 800), (6400, 1600)]
+    # }
+    #
+    # for i in range(1):
+    #     run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
