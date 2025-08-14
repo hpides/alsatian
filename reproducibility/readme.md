@@ -49,7 +49,7 @@ For all experiments, we mount two directories from the host machine in the docke
 - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
 - copy the [figure-5.sh](scripts/figure-5.sh) script on the container and run it
 
-#### Figure 10 (End-to-end times synthetic models)
+#### Figure 10 & 11(End-to-end times synthetic models)
 
 - start a docker container with limited IO
     - to start the container run: [start-container-limited-io.sh](scripts/start-container-limited-io.sh)
@@ -74,7 +74,30 @@ For all experiments, we mount two directories from the host machine in the docke
 - **on the host machine** start the clear caches script (see below under Reoccurring Steps - Start clear caches script)
 
 - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-- copy the [figure-10.sh](scripts/figure-10.sh) script on the container and run it
+- copy the [figure-10.sh](scripts/figure-10-11.sh) script on the container and run it
+
+- after or while the download section of the script is running you can remove the `.tar` files that were already unpacked
+- without the tar files the directory structure of `/mount-fs/snapshot-sets` for this experiment should look like this
+```
+.
+├── eff_net_v2_l
+│   ├── FIFTY_PERCENT
+│   ├── TOP_LAYERS
+│   └── TWENTY_FIVE_PERCENT
+├── resnet152
+│   ├── FIFTY_PERCENT
+│   ├── TOP_LAYERS
+│   └── TWENTY_FIVE_PERCENT
+├── resnet18
+│   ├── FIFTY_PERCENT
+│   ├── LAST_ONE_LAYER
+│   ├── TOP_LAYERS
+│   └── TWENTY_FIVE_PERCENT
+└── vit_l_32
+    ├── FIFTY_PERCENT
+    ├── TOP_LAYERS
+    └── TWENTY_FIVE_PERCENT
+```
 
 ## Reoccurring Steps
 
