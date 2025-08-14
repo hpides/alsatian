@@ -95,8 +95,8 @@ def run_model_search(exp_args: ExpArgs):
                                                  exp_args.distribution, exp_args.base_snapshot_save_path,
                                                  trained_snapshots=exp_args.trained_snapshots)
 
-    print("model_snapshots - 0:", model_snapshots[0])
-    print("model_snapshots - 0:", model_snapshots[1])
+    # print("model_snapshots - 0:", model_snapshots[0])
+    # print("model_snapshots - 1:", model_snapshots[1])
 
     if exp_args.num_models > 0:
         assert len(model_snapshots) == exp_args.num_models
