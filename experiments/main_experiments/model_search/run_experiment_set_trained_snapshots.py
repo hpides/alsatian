@@ -28,8 +28,6 @@ DISTRIBUTIONS = "distributions"
 def run_exp(exp_args):
     return run_model_search(exp_args)
 
-# exp_args.snapshot_set_string, exp_args.num_models,
-#                                                  exp_args.distribution, exp_args.base_snapshot_save_path
 
 def run_exp_set(base_exp_args, eval_space, base_file_id):
     for train_items, test_items in eval_space[DATA_ITEMS]:
