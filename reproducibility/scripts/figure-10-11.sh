@@ -83,9 +83,11 @@ mkdir -p /mount-fs/plots/fig10/2000
 mkdir -p /mount-fs/plots/fig10/8000
 cd /mount-ssd/script-execution/fig10/start-scripts
 sh plot-fig-10.sh
-
-
-echo "✅ Plots done"
+echo "✅ Figure 10 Plots done"
 echo "plots can be found under /mount-fs/plots/fig10"
 
-
+mkdir -p /mount-fs/plots/fig11
+cd /mount-ssd/script-execution/fig10/start-scripts
+sh plot-fig-11.sh
+echo "✅ Figure 10 Plots done"
+echo "plots can be found under /mount-fs/plots/fig10"
