@@ -21,6 +21,10 @@ cp -r /mount-ssd/alsatian/experiments/main_experiments/model_search/start-script
 mkdir -p /mount-fs/snapshot-sets/
 cd /mount-fs/snapshot-sets/
 
+# TODO download model store files
+
+# TODO download plain model files
+
 #for model in resnet18 resnet152 eff_net_v2_l vit_l_32; do
 #  if [ ! -d "$model" ]; then
 #    if [ ! -f "$model.tar" ]; then
