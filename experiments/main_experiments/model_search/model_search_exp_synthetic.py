@@ -94,7 +94,7 @@ def run_model_search(exp_args: ExpArgs):
                                                  exp_args.distribution, exp_args.base_snapshot_save_path,
                                                  trained_snapshots=exp_args.trained_snapshots)
 
-    # fix save path if necessary:
+    # fix save path if necessary (for Resnet18 we saved a wrong path pining to /mount-ssd instead of /mount-fs)
     if exp_args.trained_snapshots:
         for snapshot in model_snapshots:
             replace_string = exp_args.base_snapshot_save_path
