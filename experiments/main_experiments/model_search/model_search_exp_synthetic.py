@@ -102,7 +102,7 @@ def run_model_search(exp_args: ExpArgs):
             snapshot.state_dict_path = snapshot.state_dict_path.replace(
                 "/mount-ssd/snapshot-dir", replace_string.replace("/modelstore_savepath", ""))
 
-    print("model_snapshots: ", model_snapshots[0])
+    # print("model_snapshots: ", model_snapshots[0])
 
     if exp_args.num_models > 0:
         assert len(model_snapshots) == exp_args.num_models
