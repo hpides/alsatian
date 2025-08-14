@@ -97,7 +97,7 @@ def run_model_search(exp_args: ExpArgs):
 
     # fix save path if necessary:
     for snapshot in model_snapshots:
-        snapshot.state_dict_path = snapshot.state_dict_path.replace("/mount-ssd", "/mount-ssd")
+        snapshot.state_dict_path = snapshot.state_dict_path.replace("/mount-ssd", "/mount-fs")
 
     print("model_snapshots: ", model_snapshots[0])
 
