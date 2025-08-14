@@ -13,9 +13,9 @@ git checkout reproducibility
 git pull
 
 # Copy the script execution directory
-mkdir -p /mount-ssd/script-execution/fig14
+mkdir -p /mount-ssd/script-execution/fig15
 cp -r /mount-ssd/alsatian/experiments/main_experiments/model_search/start-scripts \
-      /mount-ssd/script-execution/fig14
+      /mount-ssd/script-execution/fig15
 
 # Download the model snapshots
 mkdir -p /mount-fs/trained-snapshots/
@@ -43,7 +43,7 @@ mkdir -p /mount-ssd/cache-dir
 
 echo "✅ Setup completed successfully."
 
-cd /mount-ssd/script-execution/fig14/start-scripts
+cd /mount-ssd/script-execution/fig15/start-scripts
 sh start-exp-fig-15.sh
 
 echo "✅ Experiments done"

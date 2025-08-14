@@ -66,6 +66,7 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
             model = resnet50()
             model_name = RESNET_50
 
+        print(f"HF CACHING DIR: {hf_cache_dir}")
         hf_model = AutoModelForObjectDetection.from_pretrained(hf_model_id, cache_dir=hf_cache_dir)
         backbone_model = hf_model.model.backbone.conv_encoder.model
         hf_model_sd = backbone_model.state_dict()

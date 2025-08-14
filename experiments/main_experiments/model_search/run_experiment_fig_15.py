@@ -11,7 +11,8 @@ from experiments.main_experiments.model_search.experiment_args import ExpArgs, _
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp import run_model_search
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
-from experiments.main_experiments.snapshots.hugging_face.init_hf_models import ALL_HF_MODELS
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import ALL_HF_MODELS, \
+    MICROSOFT_TABLE_TRANSFORMER_DETECTION
 from global_utils.deterministic import TRUE
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
@@ -106,7 +107,8 @@ if __name__ == "__main__":
     eval_space = {
         APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
+        # SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
+        SNAPSHOT_SET_STRINGS: [MICROSOFT_TABLE_TRANSFORMER_DETECTION],  # this line to use all snapshots combined
         NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]

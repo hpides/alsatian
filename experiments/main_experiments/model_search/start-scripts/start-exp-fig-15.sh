@@ -7,7 +7,7 @@ python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 branch=reproducibility
 repo_name=alsatian
 config_file=experiments/main_experiments/model_search/config.ini
-config_section=des-gpu-imagenette-huggingface-single-architecture-search
+config_section=des-gpu-imagenette-huggingface-search-fig15
 
 
 git clone $repository_url
