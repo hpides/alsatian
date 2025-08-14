@@ -107,7 +107,7 @@ if __name__ == "__main__":
     # run for some individual model sets, figure 14
     eval_space = {
         # DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
-        APPROACHES: ["baseline", "shift", "mosix"],
+        APPROACHES: ["shift", "baseline", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         # SNAPSHOT_SET_STRINGS: [FACEBOOK_DETR_RESNET_101, FACEBOOK_DINOV2_LARGE, MICROSOFT_RESNET_152, GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50],
         SNAPSHOT_SET_STRINGS: [FACEBOOK_DETR_RESNET_101],
