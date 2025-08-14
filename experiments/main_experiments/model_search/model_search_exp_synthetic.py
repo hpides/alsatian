@@ -96,10 +96,11 @@ def run_model_search(exp_args: ExpArgs):
                                                  trained_snapshots=exp_args.trained_snapshots)
 
     # fix save path if necessary:
-    for snapshot in model_snapshots:
-        snapshot.state_dict_path = snapshot.state_dict_path.replace("/mount-ssd", "/mount-fs")
+    if exp_args.trained_snapshots:
+        for snapshot in model_snapshots:
+            snapshot.state_dict_path = snapshot.state_dict_path.replace("/mount-ssd/snapshot-dir/", exp_args.base_snapshot_save_path)
 
-    print("model_snapshots: ", model_snapshots[0])
+        print("model_snapshots: ", model_snapshots[0])
 
 
     if exp_args.num_models > 0:
