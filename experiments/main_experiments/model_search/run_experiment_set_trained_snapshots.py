@@ -107,7 +107,7 @@ if __name__ == "__main__":
         DISTRIBUTIONS: ["TWENTY_FIVE_PERCENT"],
         APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [RESNET_152], # TODO extend to other models
+        SNAPSHOT_SET_STRINGS: [EFF_NET_V2_L], # TODO extend to other models
         # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
         NUMS_MODELS: [36], # one extra model being the pretrained model with no adjustments
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
