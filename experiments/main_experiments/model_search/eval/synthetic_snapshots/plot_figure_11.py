@@ -127,15 +127,15 @@ def plot_fixed_approach_changed_config(root_dir, model, items, device, distribut
 
 if __name__ == '__main__':
     root_dir = os.path.abspath('/mount-fs/results/fig11')
-    output_path = '/mount-fs/plots/fig10'
+    output_path = '/mount-fs/plots/fig11'
 
     device = "CPU"
     model = RESNET_152
     approaches = ['baseline', 'shift', 'mosix']
     plot_configurations = [
-        ["TOP_LAYERS", 2000],
-        ["TOP_LAYERS", 8000],
-        ["FIFTY_PERCENT", 8000]
+        ["TOP_LAYERS", 2000], # Figure 11 c
+        ["TOP_LAYERS", 8000], # Figure 11 b
+        ["FIFTY_PERCENT", 8000] # Figure 11 a
     ]
 
     for model_dist, items in plot_configurations:
@@ -145,8 +145,8 @@ if __name__ == '__main__':
     distributions = ["FIFTY_PERCENT", "TWENTY_FIVE_PERCENT", "TOP_LAYERS"]
     items = 8000
     plot_configurations = [
-        [distributions, RESNET_152],
-        [distributions, VIT_L_32]
+        [distributions, RESNET_152], # Figure 11 d
+        [distributions, VIT_L_32] # Figure 11 e
     ]
     for distributions, model in plot_configurations:
         plot_fixed_approach_changed_config(root_dir, model, items, device, distributions, output_path, approach)
