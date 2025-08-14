@@ -2,7 +2,7 @@
 
 # Assigning command line arguments to variables
 repository_url=https://github.com/hpides/alsatian.git
-script_to_start=experiments/main_experiments/model_search/eval/synthetic_snapshots/plot_time_breakdown.py
+script_to_start=experiments/main_experiments/model_search/eval/synthetic_snapshots/plot_figure_11.py
 branch=reproducibility
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 repo_name=alsatian
