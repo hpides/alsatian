@@ -9,7 +9,7 @@ from global_utils.constants import NUM_PARAMS, CUDA, OUTPUT_SHAPE, GPU_INF_TIMES
 from global_utils.dummy_dataset import DummyDataset
 from global_utils.hash import architecture_hash
 from global_utils.model_names import RESNET_50
-from global_utils.model_operations import split_model
+from global_utils.model_operations import split_model_in_two
 from global_utils.size import number_parameters
 
 INF = 10000
@@ -39,6 +39,7 @@ def layer_output_sizes(model, input_shape: [int] = None, input_data=None):
         prev_out = out
 
     return result
+
 
 def bert_layer_output_sizes(model, input_data):
     result = {}
@@ -113,7 +114,7 @@ def model_resource_info(model: torch.nn.Module, split_indices: [int], input_shap
 def _get_bench_model(idx, model):
     if idx < INF:
         # we are always interested in the first half of the model
-        bench_model, _ = split_model(model, idx)
+        bench_model, _ = split_model_in_two(model, idx)
     else:
         bench_model = model
     return bench_model
