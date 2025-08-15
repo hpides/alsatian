@@ -88,7 +88,7 @@ def get_keys_values(data, metric):
 
 
 if __name__ == '__main__':
-    root_dir = os.path.abspath('./results/model_resource_info')
+    root_dir = os.path.abspath('/mount-fs/results/fig12')
     model_names = VISION_MODEL_CHOICES
     batch_size = 32
 
