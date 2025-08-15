@@ -1,33 +1,13 @@
 #!/bin/sh
 
 # Assigning command line arguments to variables
-repository_url=github.com/slin96/model-search-paper.git
-script_to_start=experiments/model_resource_info/model_resource_info_experiment.py
-github_access_token_file=./access_token
+repository_url=https://github.com/hpides/alsatian.git
+branch=reproducibility
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
-branch=reuse-vs-recompute
-repo_name=model-search-paper
+repo_name=alsatian
+script_to_start=experiments/side_experiments/model_resource_info/model_resource_info_experiment.py
 
-# Function to read the access token from file
-read_access_token() {
-    local token_file="$1"
-    if [ -f "$token_file" ]; then
-        echo "$(cat $token_file)"
-    else
-        echo "Error: Access token file not found: $token_file"
-        exit 1
-    fi
-}
-
-github_access_token=$(read_access_token "$github_access_token_file")
-
-
-# Clone the GitHub repository
-if [ -z "$github_access_token" ]; then
-    git clone $repository_url
-else
-    git clone https://$github_access_token@$repository_url
-fi
+git clone $repository_url
 
 # Change directory to the cloned repository
 repo_name=$(basename "$repository_url" .git)

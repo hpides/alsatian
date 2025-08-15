@@ -4,7 +4,7 @@ import os
 from custom.models.init_models import initialize_model
 from custom.models.split_indices import SPLIT_INDEXES
 from experiments.side_experiments.model_resource_info.exp_args import ExpArgs
-from global_utils.model_names import VISION_MODEL_CHOICES
+from global_utils.model_names import RESNET_152, VIT_L_32
 from global_utils.model_resource_info import model_resource_info
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     config.read(config_file)
     exp_args = ExpArgs(config, config_section)
 
-    for model_name in VISION_MODEL_CHOICES:
+    for model_name in [RESNET_152, VIT_L_32]:
         model = initialize_model(model_name, pretrained=True, sequential_model=True)
         info = model_resource_info(model, SPLIT_INDEXES[model_name], [3, 224, 224], inference_time=True)
 
