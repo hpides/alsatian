@@ -70,7 +70,7 @@ def plot_cmp_param_size_inf_time(x_values, param_size, inf_time, ignore, model_n
     # plt.title("Line Plot with Two Y-Axes, Noise, and Smoothing (Dots for Noisy Data and Dotted Line for sin(x))")
     # ax1.grid(True)
 
-    path = f'./plots/param_inf_time_dist_{model_name}'
+    path = f'/mount-fs/plots/fig12/param_inf_time_dist_{model_name}'
     plt.savefig(f'{path}.png', format='png', bbox_inches='tight')
     plt.savefig(f'{path}.svg', format='svg', bbox_inches='tight')
 
