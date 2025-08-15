@@ -28,7 +28,7 @@ cd /mount-ssd/script-execution/fig12
 sh /mount-ssd/script-execution/fig12/model_resource_info_exp_on_server.sh
 
 echo "✅ Experiments done"
-echo "results can be found under /mount-fs/results/fig13/"
+echo "results can be found under /mount-fs/results/fig12/"
 
 #mkdir -p /mount-fs/plots/fig12/
 #cd /mount-fs/plots/fig12/
