@@ -362,6 +362,6 @@ if __name__ == '__main__':
     plot_save_path = '/mount-fs/plots/fig13/'
 
     for data_items in [2000]:
-        root_dir = os.path.abspath("./results/des-gpu-imagenette-trained-snapshots/")
+        root_dir = os.path.abspath("/mount-fs/results/fig13/")
         plot_end_to_end_times(root_dir, file_template, models, approaches, distribution, data_items, measure_type,
                               plot_save_path)
