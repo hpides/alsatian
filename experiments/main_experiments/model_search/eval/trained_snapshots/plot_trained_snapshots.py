@@ -154,7 +154,7 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type):
     for file_id in file_ids:
         # find file
         files += extract_files_by_name(root_dir, [file_id])
-    assert len(files) >= 2
+    assert len(files) >= 1
 
     collected_metrics = []
     for file in files:
