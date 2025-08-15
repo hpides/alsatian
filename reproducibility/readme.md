@@ -99,6 +99,22 @@ For all experiments, we mount two directories from the host machine in the docke
     └── TWENTY_FIVE_PERCENT
 ```
 
+##  Figure 13
+- after download the folder structure of `/mount-fs/trained-snapshots` looks like this:
+```
+.
+├── cub-birds-200
+├── food-101
+├── image-woof
+├── modelstore_savepath
+│   ├── eff_net_v2_l-model-store
+│   ├── resnet152-model-store
+│   ├── resnet18-model-store
+│   └── vit_l_32-model-store
+├── stanford-cars
+└── stanford-dogs
+```
+
 ## Reoccurring Steps
 
 #### Start clear caches script

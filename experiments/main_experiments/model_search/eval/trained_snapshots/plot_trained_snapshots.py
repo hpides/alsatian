@@ -354,8 +354,7 @@ def plot_sh_iterations(root_dir, model, approach, distribution, caching_location
 if __name__ == '__main__':
     file_template = '-distribution-{}-approach-{}-cache-CPU-snapshot-{}-models-36-items-{}-level-{}'
 
-    # models = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32] # TODO
-    models = [RESNET_18]
+    models = [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32]
     approaches = ['baseline', 'shift', 'mosix']
     distribution = "TWENTY_FIVE_PERCENT"
     measure_type = 'EXECUTION_STEPS'

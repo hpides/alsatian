@@ -17,26 +17,41 @@ mkdir -p /mount-ssd/script-execution/fig13
 cp -r /mount-ssd/alsatian/experiments/main_experiments/model_search/start-scripts \
       /mount-ssd/script-execution/fig13
 
-# Download the model snapshots
-mkdir -p /mount-fs/snapshot-sets/
-cd /mount-fs/snapshot-sets/
 
-# TODO download model store files
+# download plain model files
+mkdir -p /mount-fs/trained-snapshots
+cd /mount-fs/trained-snapshots
 
-# TODO download plain model files
+for model in cub-birds-200 food-101 image-woof stanford-cars stanford-dogs; do
+  if [ ! -d "$model" ]; then
+    if [ ! -f "$model.tar" ]; then
+      wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/trained-snapshots/${model}.tar"
+    else
+      echo "$model.tar already exists, skipping download."
+    fi
+    tar -xf "$model.tar"
+  else
+    echo "$model directory already exists, skipping extraction."
+  fi
+done
 
-#for model in resnet18 resnet152 eff_net_v2_l vit_l_32; do
-#  if [ ! -d "$model" ]; then
-#    if [ ! -f "$model.tar" ]; then
-#      wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/snapshot-sets/${model}.tar"
-#    else
-#      echo "$model.tar already exists, skipping download."
-#    fi
-#    tar -xf "$model.tar"
-#  else
-#    echo "$model directory already exists, skipping extraction."
-#  fi
-#done
+
+# download model store files
+mkdir -p /mount-fs/trained-snapshots/modelstore_savepath
+cd /mount-fs/trained-snapshots/modelstore_savepath
+
+for model in resnet18 resnet152 eff_net_v2_l vit_l_32; do
+  if [ ! -d "$model" ]; then
+    if [ ! -f "$model.tar" ]; then
+      wget wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/trained-snapshots/${model}-model-store.tar"
+    else
+      echo "$model.tar already exists, skipping download."
+    fi
+    tar -xf "$model.tar"
+  else
+    echo "$model directory already exists, skipping extraction."
+  fi
+done
 
 
 # Download and extract Imagenette2 dataset
