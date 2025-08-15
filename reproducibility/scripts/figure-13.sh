@@ -41,13 +41,13 @@ mkdir -p /mount-fs/trained-snapshots/modelstore_savepath
 cd /mount-fs/trained-snapshots/modelstore_savepath
 
 for model in resnet18 resnet152 eff_net_v2_l vit_l_32; do
-  if [ ! -d "$model" ]; then
-    if [ ! -f "$model.tar" ]; then
-      wget wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/trained-snapshots/${model}-model-store.tar"
+  if [ ! -d "${model}-model-store" ]; then
+    if [ ! -f "${model}-model-store.tar" ]; then
+      wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/trained-snapshots/${model}-model-store.tar"
     else
-      echo "$model.tar already exists, skipping download."
+      echo "${model}-model-store.tar already exists, skipping download."
     fi
-    tar -xf "$model.tar"
+    tar -xf "${model}-model-store.tar"
   else
     echo "$model directory already exists, skipping extraction."
   fi
