@@ -10,6 +10,7 @@ import torch
 from experiments.main_experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp_synthetic import run_model_search
+from experiments.main_experiments.model_search.run_experiment_fig_10 import identify_missing_experiments
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from global_utils.deterministic import TRUE
 from global_utils.model_names import RESNET_152, RESNET_18, VIT_L_32, EFF_NET_V2_L
@@ -114,8 +115,20 @@ if __name__ == "__main__":
         DATA_ITEMS: [(1600, 400)]
     }
 
-    for i in range(1):
-        run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+    num_runs = 1
+    missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                exp_args.result_dir)
+
+    while len(missing_exps) > 0:
+        pruned_eval_space = prune_eval_sapce(eval_space, missing_exps)
+        print("pruned_eval_space")
+        print(pruned_eval_space)
+
+        run_exp_set(exp_args, pruned_eval_space, base_file_id=args.base_config_section)
+
+        missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                    exp_args.result_dir)
+
 
 
 
