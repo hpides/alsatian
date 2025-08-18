@@ -90,7 +90,7 @@ def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_it
     # get a list of all files in the result_directory
     result_files = [f for f in os.listdir(result_directory) if os.path.isfile(os.path.join(result_directory, f))]
     # split result files by '#' and only keep the second part
-    result_files = ["".join(f.split('#')[2:]).replace(".json", "") for f in result_files]
+    result_files = ["#".join(f.split('#')[2:]).replace(".json", "") for f in result_files]
 
     found = {}
     for file in result_files:
@@ -142,9 +142,9 @@ def expected_experiment_files(base_exp_args, eval_space, base_file_id, num_itera
                             else:
                                 base_exp_args.load_full = False
 
-                            file_id = f"{base_file_id}#approach#{approach}"
-                            f"#cache#{cache_location}#snapshot#{snapshot_set.replace('/', '-')}"
-                            f"#models#{num_models}#items#{train_items + test_items}#level#{bench_level}"
+                            file_id = (f"{base_file_id}#approach#{approach}"
+                                       f"#cache#{cache_location}#snapshot#{snapshot_set.replace('/', '-')}"
+                                       f"#models#{num_models}#items#{train_items + test_items}#level#{bench_level}")
 
                             result[file_id] = num_iterations
 
