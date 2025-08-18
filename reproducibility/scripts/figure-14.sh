@@ -17,15 +17,6 @@ mkdir -p /mount-ssd/script-execution/fig14
 cp -r /mount-ssd/alsatian/experiments/main_experiments/model_search/start-scripts \
       /mount-ssd/script-execution/fig14
 
-# Download the model snapshots
-mkdir -p /mount-fs/trained-snapshots/
-cd /mount-fs/trained-snapshots/
-
-# CODE FOR DOWNLOAD HF CACHING DIR HERE
-
-# CODE FOR DOWNLOAD MODEL STORES HERE
-
-
 # Download and extract Imagenette2 dataset
 mkdir -p /mount-ssd/data
 cd /mount-ssd/data
@@ -36,6 +27,50 @@ if [ ! -d "imagenette2" ]; then
     fi
     tar -xzf imagenette2.tgz
 fi
+
+# Download the model snapshots
+cd /mount-fs
+
+if [ ! -d "hf-caching-dir" ]; then
+    if [ ! -f "hf-caching-dir.tar" ]; then
+         wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/hf-snapshots/hf-caching-dir.tar"
+    fi
+    tar -xf  hf-caching-dir.tar
+fi
+
+mkdir -p /mount-fs/hf-snapshots
+cd /mount-fs/hf-snapshots
+
+for model in \
+  SenseTime-deformable-detr \
+  facebook-detr-resnet-101 \
+  facebook-detr-resnet-50-dc5 \
+  facebook-detr-resnet-50 \
+  facebook-dinov2-base \
+  facebook-dinov2-large \
+  google-vit-base-patch16-224-in21k \
+  hf-microsoft-resnet-152 \
+  hf-microsoft-resnet-18 \
+  microsoft-conditional-detr-resnet-50 \
+  microsoft-resnet-152 \
+  microsoft-resnet-18 \
+  microsoft-table-transformer-detection \
+  microsoft-table-transformer-structure-recognition \
+  resnet-50-test \
+  resnet-50
+do
+  if [ ! -d "$model" ]; then
+    if [ ! -f "$model.tar" ]; then
+      wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/hf-snapshots/${model}.tar"
+    else
+      echo "$model.tar already exists, skipping download."
+    fi
+    tar -xf "$model.tar"
+  else
+    echo "$model directory already exists, skipping extraction."
+  fi
+done
+
 
 # Create results directory and caching directory
 mkdir -p /mount-fs/results/fig14/

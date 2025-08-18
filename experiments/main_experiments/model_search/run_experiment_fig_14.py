@@ -11,9 +11,7 @@ from experiments.main_experiments.model_search.experiment_args import ExpArgs, _
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp import run_model_search
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
-from experiments.main_experiments.snapshots.hugging_face.init_hf_models import MICROSOFT_RESNET_152, \
-    FACEBOOK_DETR_RESNET_101, FACEBOOK_DINOV2_LARGE, \
-    GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import *
 from global_utils.deterministic import TRUE
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
@@ -25,6 +23,132 @@ SNAPSHOT_SET_STRINGS = "snapshot_set_strings"
 DEFAULT_CACHE_LOCATIONS = "default_cache_locations"
 APPROACHES = "approaches"
 DISTRIBUTIONS = "distributions"
+
+
+def prune_eval_sapce(eval_space, missing_exps):
+    """
+    Prune eval_space to only contain values present in missing_exps.
+    """
+    # 1. Initialize a copy of eval_space where each value is an empty set
+    pruned = {k: set() for k in eval_space}
+
+    # 2. Iterate over missing_exps keys and parse the string
+    for key in missing_exps.keys():
+        # Example key:
+        # "{base_file_id}-distribution-{distribution}-approach-{approach}-cache-{cache}-snapshot-{snapshot}-models-{models}-items-{items}-level-{level}"
+        # We want to extract the values between the known tags.
+        # We'll split by the tags.
+        def extract_between(s, before, after):
+            # returns the substring between before and after
+            i = s.index(before) + len(before)
+            j = s.index(after, i)
+            return s[i:j]
+
+        # single-architecture-search#approach#baseline#cache#CPU#snapshot#microsoft-resnet-18#models#-1#items#2000#level#STEPS_DETAILS.json
+
+        try:
+            # Find all values
+            approach = extract_between(key, "approach#", "#cache")
+            cache = extract_between(key, "#cache#", "#snapshot#")
+            snapshot = extract_between(key, "#snapshot#", "#models#")
+            models = extract_between(key, "#models#", "#items#")
+            items_str = extract_between(key, "#items#", "#level#")
+            level = key.split("-level-")[-1]
+        except Exception:
+            # If parsing fails, skip this key
+            continue
+
+        # 3. Convert items_str back into a tuple (train_items, test_items)
+        total_items = int(items_str)
+        items_tuple = None
+        for tup in eval_space.get("data_itmes", []):
+            if isinstance(tup, (tuple, list)) and len(tup) == 2:
+                if sum(tup) == total_items:
+                    items_tuple = tuple(tup)
+                    break
+        if items_tuple is None:
+            # If not found, skip
+            continue
+
+        # 4. Append each value into the respective set in pruned
+        pruned.get("approaches", set()).add(approach)
+        pruned.get("default_cache_locations", set()).add(cache)
+        pruned.get("snapshot_set_strings", set()).add(snapshot)
+        pruned.get("nums_models", set()).add(int(models))
+        pruned.get("benchmark_levels", set()).add(level)
+        pruned.get("data_itmes", set()).add(items_tuple)
+
+    # 5. Convert each set back into a list
+    for k in pruned:
+        pruned[k] = list(pruned[k])
+
+    # 6. Return the pruned eval space dictionary
+    return pruned
+
+
+def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_iterations, result_directory):
+    # get a list of all files in the result_directory
+    result_files = [f for f in os.listdir(result_directory) if os.path.isfile(os.path.join(result_directory, f))]
+    # split result files by '#' and only keep the second part
+    result_files = [f.split('#')[-1].replace(".json", "") for f in result_files]
+
+    found = {}
+    for file in result_files:
+        if file not in found:
+            found[file] = 0
+        found[file] += 1
+
+    # generate expected file dict
+    expected = expected_experiment_files(base_exp_args, eval_space, base_file_id, num_iterations)
+
+    print("found")
+    print(found)
+    print("expected")
+    print(expected)
+
+    # identify missing experiments
+    diff_experiments = {}
+    for key in list(expected.keys()):
+        if key not in found:
+            diff_experiments[key] = expected[key]
+        else:
+            diff = expected[key] - found[key]
+            if diff > 0:
+                diff_experiments[key] = diff
+
+    print("diff_experiments")
+    print(diff_experiments)
+    return diff_experiments
+
+
+def expected_experiment_files(base_exp_args, eval_space, base_file_id, num_iterations):
+    result = {}
+    for train_items, test_items in eval_space[DATA_ITEMS]:
+        base_exp_args.num_train_items = train_items
+        base_exp_args.num_test_items = test_items
+        for snapshot_set in eval_space[SNAPSHOT_SET_STRINGS]:
+            base_exp_args.snapshot_set_string = snapshot_set
+            for approach in eval_space[APPROACHES]:
+                base_exp_args.approach = approach
+                for cache_location in eval_space[DEFAULT_CACHE_LOCATIONS]:
+                    base_exp_args.default_cache_location = _str_to_cache_location(cache_location)
+                    for num_models in eval_space[NUMS_MODELS]:
+                        base_exp_args.num_models = num_models
+                        for bench_level in eval_space[BENCHMARK_LEVELS]:
+                            base_exp_args.benchmark_level = _str_to_benchmark_level(bench_level)
+
+                            if approach == "baseline" or approach == "shift":
+                                base_exp_args.load_full = True
+                            else:
+                                base_exp_args.load_full = False
+
+                            file_id = f"{base_file_id}#approach#{approach}"
+                            f"#cache#{cache_location}#snapshot#{snapshot_set.replace('/', '-')}"
+                            f"#models#{num_models}#items#{train_items + test_items}#level#{bench_level}"
+
+                            result[file_id] = num_iterations
+
+    return result
 
 
 def run_exp(exp_args):
@@ -114,5 +238,16 @@ if __name__ == "__main__":
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
     }
 
-    for i in range(1):
-        run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+    num_runs = 1
+    missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                exp_args.result_dir)
+
+    while len(missing_exps) > 0:
+        pruned_eval_space = prune_eval_sapce(eval_space, missing_exps)
+        print("pruned_eval_space")
+        print(pruned_eval_space)
+
+        run_exp_set(exp_args, pruned_eval_space, base_file_id=args.base_config_section)
+
+        missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                    exp_args.result_dir)
