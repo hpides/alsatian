@@ -132,7 +132,8 @@ def run_model_search(exp_args: ExpArgs):
             blacklist = [
                 "table-transformer-misty-meadow-38",
                 "table-transformer-effortless-wildflower-30",
-                "Joseph-large-2024_09_16-batch-size32_epochs150_freeze"
+                "Joseph-large-2024_09_16-batch-size32_epochs150_freeze",
+                "DinoVdeau-large-2024_10_25-prova_batch-size8_freeze_monolabel"
 
             ]
 
