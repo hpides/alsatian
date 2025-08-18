@@ -104,7 +104,7 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
 
 
 def any_notation(model_set):
-    return [m.replace('/', '-') for m in model_set] + model_set
+    return model_set
 
 
 def get_sequential_microsoft_resnet(hf_model_id, hf_cache_dir=None):
