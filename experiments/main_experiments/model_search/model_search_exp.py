@@ -131,7 +131,9 @@ def run_model_search(exp_args: ExpArgs):
             # DEBUG filter out AmineAllo/table-transformer-misty-meadow-38 and other missing
             blacklist = [
                 "table-transformer-misty-meadow-38",
-                "table-transformer-effortless-wildflower-30"
+                "table-transformer-effortless-wildflower-30",
+                "Joseph-large-2024_09_16-batch-size32_epochs150_freeze"
+
             ]
 
             model_snapshots = [

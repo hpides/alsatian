@@ -11,8 +11,7 @@ from experiments.main_experiments.model_search.experiment_args import ExpArgs, _
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp import run_model_search
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
-from experiments.main_experiments.snapshots.hugging_face.init_hf_models import ALL_HF_MODELS, \
-    MICROSOFT_TABLE_TRANSFORMER_DETECTION
+from experiments.main_experiments.snapshots.hugging_face.init_hf_models import *
 from global_utils.deterministic import TRUE
 from global_utils.write_results import write_measurements_and_args_to_json_file
 
@@ -103,14 +102,16 @@ if __name__ == "__main__":
     config.read(args.config_file)
     exp_args = ExpArgs(config, args.base_config_section)
 
-    print([",".join(ALL_HF_MODELS)])
-
     # run for joint model set, figure 15
     eval_space = {
         # APPROACHES: ["baseline", "shift", "mosix"],
         APPROACHES: ["shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
+        SNAPSHOT_SET_STRINGS: [
+            ",".join([FACEBOOK_DINOV2_LARGE,
+                      SENSE_TIME_DEFORMABLE_DETR, GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50])],
+        # this line to use all snapshots combined
+        # SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
         # SNAPSHOT_SET_STRINGS: [MICROSOFT_TABLE_TRANSFORMER_DETECTION],  # this line to use all snapshots combined
         NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
