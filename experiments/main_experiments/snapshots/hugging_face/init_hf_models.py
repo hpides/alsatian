@@ -55,6 +55,7 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
     :param hf_cache_dir: the cache dir for the hugging face snapshot
     :return: a sequential feature extractor/backbone of a hugging face model
     """
+    print("hf_base_model_id:", hf_base_model_id)
     if (hf_base_model_id in PYTORCH_RESNETS):
         if hf_base_model_id == FACEBOOK_DETR_RESNET_101:
             model = resnet101()
