@@ -86,7 +86,7 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
         split_index = SPLIT_INDEXES[model_name][0]
         first, _ = split_model_in_two(model, split_index)
         model = first
-    elif hf_base_model_id in MICROSOFT_RESNETS:
+    elif hf_base_model_id in MICROSOFT_RESNETS + [m.replace('/','-') for m in MICROSOFT_RESNETS]:
         model = get_sequential_microsoft_resnet(hf_model_id, hf_cache_dir)
         model_name = hf_base_model_id
     elif hf_base_model_id == GOOGLE_VIT_BASE_PATCH16_224_IN21K:
