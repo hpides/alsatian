@@ -126,6 +126,8 @@ def run_model_search(exp_args: ExpArgs):
 
 
             model_snapshots.extend(hf_snapshots)
+            print("MODEL SNAPSHOTS")
+            print(model_snapshots)
 
     elif exp_args.approach == "mosix":
         model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
