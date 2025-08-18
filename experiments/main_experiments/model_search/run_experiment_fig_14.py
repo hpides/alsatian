@@ -243,11 +243,7 @@ if __name__ == "__main__":
                                                 exp_args.result_dir)
 
     while len(missing_exps) > 0:
-        pruned_eval_space = prune_eval_sapce(eval_space, missing_exps)
-        print("pruned_eval_space")
-        print(pruned_eval_space)
-
-        run_exp_set(exp_args, pruned_eval_space, base_file_id=args.base_config_section)
+        run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
 
         missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
                                                     exp_args.result_dir)

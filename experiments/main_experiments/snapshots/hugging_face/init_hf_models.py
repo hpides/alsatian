@@ -55,14 +55,12 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
     :param hf_cache_dir: the cache dir for the hugging face snapshot
     :return: a sequential feature extractor/backbone of a hugging face model
     """
-    hf_base_model_id = hf_base_model_id.replace("-", "/", 1)
-    hf_model_id = hf_model_id.replace("-", "/", 1)
     print("hf_base_model_id:", hf_base_model_id)
     if (hf_base_model_id in PYTORCH_RESNETS):
-        if hf_base_model_id in any_notation(FACEBOOK_DETR_RESNET_101):
+        if hf_base_model_id in FACEBOOK_DETR_RESNET_101:
             model = resnet101()
             model_name = RESNET_101
-        elif hf_base_model_id in any_notation(MICROSOFT_TABLE_TRANSFORMERS):
+        elif hf_base_model_id in MICROSOFT_TABLE_TRANSFORMERS:
             model = resnet18()
             model_name = RESNET_18
         else:
@@ -88,13 +86,13 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
         split_index = SPLIT_INDEXES[model_name][0]
         first, _ = split_model_in_two(model, split_index)
         model = first
-    elif hf_base_model_id in any_notation(MICROSOFT_RESNETS):
+    elif hf_base_model_id in MICROSOFT_RESNETS:
         model = get_sequential_microsoft_resnet(hf_model_id, hf_cache_dir)
         model_name = hf_base_model_id
-    elif hf_base_model_id == any_notation(GOOGLE_VIT_BASE_PATCH16_224_IN21K):
+    elif hf_base_model_id == GOOGLE_VIT_BASE_PATCH16_224_IN21K:
         model = get_sequential_vit_model(model_id=hf_model_id, hf_caching_dir=hf_cache_dir)
         model_name = hf_base_model_id
-    elif hf_base_model_id in any_notation(DINO_V2_MODELS):
+    elif hf_base_model_id in DINO_V2_MODELS:
         model = get_sequential_dinov2_model(model_id=hf_model_id, hf_caching_dir=hf_cache_dir)
         model_name = hf_base_model_id
     else:
@@ -103,8 +101,6 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
     return model_name, model
 
 
-def any_notation(model_set):
-    return model_set
 
 
 def get_sequential_microsoft_resnet(hf_model_id, hf_cache_dir=None):
