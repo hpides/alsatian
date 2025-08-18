@@ -108,8 +108,7 @@ if __name__ == "__main__":
         APPROACHES: ["shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [
-            ",".join([FACEBOOK_DINOV2_LARGE,
-                      SENSE_TIME_DEFORMABLE_DETR, GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50])],
+            ",".join([GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50])],
         # this line to use all snapshots combined
         # SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
         # SNAPSHOT_SET_STRINGS: [MICROSOFT_TABLE_TRANSFORMER_DETECTION],  # this line to use all snapshots combined
