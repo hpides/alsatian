@@ -53,7 +53,7 @@ def prune_eval_sapce(eval_space, missing_exps):
             snapshot = extract_between(key, "#snapshot#", "#models#")
             models = extract_between(key, "#models#", "#items#")
             items_str = extract_between(key, "#items#", "#level#")
-            level = key.split("-level-")[-1]
+            level = key.split("#level#")[-1]
         except Exception:
             # If parsing fails, skip this key
             continue
