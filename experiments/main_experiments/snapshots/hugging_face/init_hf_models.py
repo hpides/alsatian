@@ -56,6 +56,7 @@ def initialize_hf_model(hf_base_model_id, hf_model_id, hf_cache_dir):
     :return: a sequential feature extractor/backbone of a hugging face model
     """
     hf_base_model_id = hf_base_model_id.replace("-", "/", 1)
+    hf_model_id = hf_model_id.replace("-", "/", 1)
     print("hf_base_model_id:", hf_base_model_id)
     if (hf_base_model_id in PYTORCH_RESNETS):
         if hf_base_model_id in any_notation(FACEBOOK_DETR_RESNET_101):
