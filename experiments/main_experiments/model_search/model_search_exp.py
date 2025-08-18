@@ -135,7 +135,8 @@ def run_model_search(exp_args: ExpArgs):
                 "Joseph-large-2024_09_16-batch-size32_epochs150_freeze",
                 "DinoVdeau-large-2024_10_25-prova_batch-size8_freeze_monolabel",
                 "imagenet2012-1k-subsampling-50-vit-base-patch16-224-in21k",
-                "nsugianto/detr-resnet-50_finetuned_cppe5"
+                "nsugianto/detr-resnet-50_finetuned_cppe5",
+                "bunbohue/detr-resnet-50_finetuned_cppe5"
             ]
 
             print("EXAMPLE MODEL ID")
