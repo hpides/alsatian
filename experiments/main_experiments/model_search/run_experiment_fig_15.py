@@ -103,6 +103,8 @@ if __name__ == "__main__":
     config.read(args.config_file)
     exp_args = ExpArgs(config, args.base_config_section)
 
+    print([",".join(ALL_HF_MODELS)])
+
     # run for joint model set, figure 15
     eval_space = {
         # APPROACHES: ["baseline", "shift", "mosix"],
