@@ -105,13 +105,15 @@ if __name__ == "__main__":
 
     # run for joint model set, figure 15
     eval_space = {
-        APPROACHES: ["baseline", "shift", "mosix"],
+        # APPROACHES: ["baseline", "shift", "mosix"],
+        APPROACHES: ["shift"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        # SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
-        SNAPSHOT_SET_STRINGS: [MICROSOFT_TABLE_TRANSFORMER_DETECTION],  # this line to use all snapshots combined
+        SNAPSHOT_SET_STRINGS: [",".join(ALL_HF_MODELS)],  # this line to use all snapshots combined
+        # SNAPSHOT_SET_STRINGS: [MICROSOFT_TABLE_TRANSFORMER_DETECTION],  # this line to use all snapshots combined
         NUMS_MODELS: [exp_args.num_models],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
-        DATA_ITEMS: [(1600, 400), (6400, 1600)]
+        # DATA_ITEMS: [(1600, 400), (6400, 1600)]
+        DATA_ITEMS: [(800, 200)]
     }
 
     for i in range(1):
