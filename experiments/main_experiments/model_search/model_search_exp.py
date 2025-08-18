@@ -137,6 +137,9 @@ def run_model_search(exp_args: ExpArgs):
                 "imagenet2012-1k-subsampling-50-vit-base-patch16-224-in21k"
             ]
 
+            print("EXAMPLE MODEL ID")
+            print(hf_snapshots[0].model_id)
+
             model_snapshots = [
                 hf_snapshots for hf_snapshots in model_snapshots
                 if not any(bad in hf_snapshots.model_id for bad in blacklist)
