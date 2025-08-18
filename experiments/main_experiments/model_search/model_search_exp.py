@@ -137,7 +137,8 @@ def run_model_search(exp_args: ExpArgs):
                 "imagenet2012-1k-subsampling-50-vit-base-patch16-224-in21k",
                 "nsugianto/detr-resnet-50_finetuned_cppe5",
                 "bunbohue/detr-resnet-50_finetuned_cppe5",
-                "NoahMeissner/detr-resnet-50_finetuned_cppe5"
+                "NoahMeissner/detr-resnet-50_finetuned_cppe5",
+                "abdumalikov/detr-resnet-50_finetuned_cppe5"
             ]
 
             print("EXAMPLE MODEL ID")
