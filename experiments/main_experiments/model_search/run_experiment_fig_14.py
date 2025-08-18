@@ -142,7 +142,7 @@ def expected_experiment_files(base_exp_args, eval_space, base_file_id, num_itera
                             else:
                                 base_exp_args.load_full = False
 
-                            file_id = (f"{base_file_id}#approach#{approach}"
+                            file_id = (f"approach#{approach}"
                                        f"#cache#{cache_location}#snapshot#{snapshot_set.replace('/', '-')}"
                                        f"#models#{num_models}#items#{train_items + test_items}#level#{bench_level}")
 
