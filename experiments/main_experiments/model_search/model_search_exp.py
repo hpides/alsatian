@@ -128,9 +128,16 @@ def run_model_search(exp_args: ExpArgs):
             print("MODEL SNAPSHOTS")
             print(model_snapshots)
 
-            # DEBUG filter out AmineAllo/table-transformer-misty-meadow-38
-            model_snapshots = [hf_snapshots for hf_snapshots in model_snapshots if
-                               "table-transformer-misty-meadow-38" not in hf_snapshots.model_id]
+            # DEBUG filter out AmineAllo/table-transformer-misty-meadow-38 and other missing
+            blacklist = [
+                "table-transformer-misty-meadow-38",
+                "table-transformer-effortless-wildflower-30"
+            ]
+
+            model_snapshots = [
+                hf_snapshots for hf_snapshots in model_snapshots
+                if not any(bad in hf_snapshots.model_id for bad in blacklist)
+            ]
 
     elif exp_args.approach == "mosix":
         model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
