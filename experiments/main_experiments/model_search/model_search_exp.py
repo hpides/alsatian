@@ -126,32 +126,19 @@ def run_model_search(exp_args: ExpArgs):
 
             model_snapshots.extend(hf_snapshots)
 
-            # DEBUG filter out AmineAllo/table-transformer-misty-meadow-38 and other missing
-            blacklist = [
-                "table-transformer-misty-meadow-38",
-                "table-transformer-effortless-wildflower-30",
-                "Joseph-large-2024_09_16-batch-size32_epochs150_freeze",
-                "DinoVdeau-large-2024_10_25-prova_batch-size8_freeze_monolabel",
-                "imagenet2012-1k-subsampling-50-vit-base-patch16-224-in21k",
-                "nsugianto/detr-resnet-50_finetuned_cppe5",
-                "bunbohue/detr-resnet-50_finetuned_cppe5",
-                "NoahMeissner/detr-resnet-50_finetuned_cppe5",
-                "abdumalikov/detr-resnet-50_finetuned_cppe5"
-            ]
+            model_snapshots = filter_deleted_snapshots(model_snapshots)
 
-            print("EXAMPLE MODEL ID")
-            print(hf_snapshots[0].model_id)
 
-            model_snapshots = [
-                hf_snapshots for hf_snapshots in model_snapshots
-                if not any(bad in hf_snapshots.model_id for bad in blacklist)
-            ]
 
     elif exp_args.approach == "mosix":
+
         model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
                                                      exp_args.distribution, exp_args.base_snapshot_save_path,
                                                      trained_snapshots=exp_args.trained_snapshots,
                                                      hf_snapshots=exp_args.hf_snapshots)
+        print("LEN MODEL SNAPSHOTS: ", len(model_snapshots))
+        model_snapshots = filter_deleted_snapshots(model_snapshots)
+        print("LEN MODEL SNAPSHOTS: ", len(model_snapshots))
     else:
         raise NotImplementedError
 
@@ -194,3 +181,23 @@ def run_model_search(exp_args: ExpArgs):
     measurements = {END_TO_END: measure, DETAILED_TIMES: sub_measurements}
 
     return measurements, result
+
+
+def filter_deleted_snapshots(model_snapshots):
+    # list of all models that are not available on hugging face anymore
+    blacklist = [
+        "table-transformer-misty-meadow-38",
+        "table-transformer-effortless-wildflower-30",
+        "Joseph-large-2024_09_16-batch-size32_epochs150_freeze",
+        "DinoVdeau-large-2024_10_25-prova_batch-size8_freeze_monolabel",
+        "imagenet2012-1k-subsampling-50-vit-base-patch16-224-in21k",
+        "nsugianto/detr-resnet-50_finetuned_cppe5",
+        "bunbohue/detr-resnet-50_finetuned_cppe5",
+        "NoahMeissner/detr-resnet-50_finetuned_cppe5",
+        "abdumalikov/detr-resnet-50_finetuned_cppe5"
+    ]
+    model_snapshots = [
+        hf_snapshot for hf_snapshot in model_snapshots
+        if not any(bad in hf_snapshot.model_id for bad in blacklist)
+    ]
+    return model_snapshots
