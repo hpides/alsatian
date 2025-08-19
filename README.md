@@ -8,6 +8,13 @@
 - Large files like datasets, model snapshots, or large log files of experiments are not contained in the repo. If you
   need access please feel free to reach out to us!
 
+## Reproducibility
+
+- **For Reproducibility, please switch to the branch `reproducibility`** and checkout the readme in the folder
+  `reproducibility`
+- The code in the `reproducibility` contains boiled-down script to reproduce only the experiments in the paper
+
+
 ## Repository Structure
 
 - [setup](setup) contains information on the hardware and software setup we use.
