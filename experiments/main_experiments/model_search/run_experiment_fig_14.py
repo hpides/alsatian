@@ -228,11 +228,11 @@ if __name__ == "__main__":
     config.read(args.config_file)
     exp_args = ExpArgs(config, args.base_config_section)
 
-    for snapshot_set_string in [FACEBOOK_DETR_RESNET_50, FACEBOOK_DETR_RESNET_101, FACEBOOK_DINOV2_LARGE, MICROSOFT_RESNET_152,
-                               GOOGLE_VIT_BASE_PATCH16_224_IN21K]:
+    for snapshot_set_string in [FACEBOOK_DETR_RESNET_101, FACEBOOK_DINOV2_LARGE, MICROSOFT_RESNET_152,
+                               GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50]:
 
         eval_space = {
-            APPROACHES: ["mosix", "shift", "baseline",],
+            APPROACHES: ["shift", "baseline", "mosix"],
             DEFAULT_CACHE_LOCATIONS: ["CPU"],
             SNAPSHOT_SET_STRINGS: [snapshot_set_string],
             NUMS_MODELS: [exp_args.num_models],

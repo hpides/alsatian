@@ -131,14 +131,10 @@ def run_model_search(exp_args: ExpArgs):
 
 
     elif exp_args.approach == "mosix":
-
         model_snapshots, model_store = get_snapshots(exp_args.snapshot_set_string, exp_args.num_models,
                                                      exp_args.distribution, exp_args.base_snapshot_save_path,
                                                      trained_snapshots=exp_args.trained_snapshots,
                                                      hf_snapshots=exp_args.hf_snapshots)
-        print("LEN MODEL SNAPSHOTS: ", len(model_snapshots))
-        model_snapshots = filter_deleted_snapshots(model_snapshots)
-        print("LEN MODEL SNAPSHOTS: ", len(model_snapshots))
     else:
         raise NotImplementedError
 
@@ -196,9 +192,6 @@ def filter_deleted_snapshots(model_snapshots):
         "NoahMeissner/detr-resnet-50_finetuned_cppe5",
         "abdumalikov/detr-resnet-50_finetuned_cppe5"
     ]
-
-    print("EXAMPLE MODEL SNAPSHOT: ", model_snapshots[0])
-
     model_snapshots = [
         hf_snapshot for hf_snapshot in model_snapshots
         if not any(bad in hf_snapshot.model_id for bad in blacklist)
