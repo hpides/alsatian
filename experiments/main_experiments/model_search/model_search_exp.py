@@ -125,8 +125,6 @@ def run_model_search(exp_args: ExpArgs):
                 hf_snapshots = hf_snapshots[:100]
 
             model_snapshots.extend(hf_snapshots)
-            print("MODEL SNAPSHOTS")
-            print(model_snapshots)
 
             # DEBUG filter out AmineAllo/table-transformer-misty-meadow-38 and other missing
             blacklist = [
