@@ -230,22 +230,24 @@ if __name__ == "__main__":
 
     for snapshot_set_string in [FACEBOOK_DETR_RESNET_101, FACEBOOK_DINOV2_LARGE, MICROSOFT_RESNET_152,
                                GOOGLE_VIT_BASE_PATCH16_224_IN21K, FACEBOOK_DETR_RESNET_50]:
+        for data_items in [(1600, 400), (6400, 1600)]:
+            for approach in ["shift", "baseline", "mosix"]:
 
-        eval_space = {
-            APPROACHES: ["shift", "baseline", "mosix"],
-            DEFAULT_CACHE_LOCATIONS: ["CPU"],
-            SNAPSHOT_SET_STRINGS: [snapshot_set_string],
-            NUMS_MODELS: [exp_args.num_models],
-            BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
-            DATA_ITEMS: [(1600, 400), (6400, 1600)]
-        }
+                eval_space = {
+                    APPROACHES: [approach],
+                    DEFAULT_CACHE_LOCATIONS: ["CPU"],
+                    SNAPSHOT_SET_STRINGS: [snapshot_set_string],
+                    NUMS_MODELS: [exp_args.num_models],
+                    BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
+                    DATA_ITEMS: [data_items]
+                }
 
-        num_runs = 1
-        missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
-                                                exp_args.result_dir)
-
-        while len(missing_exps) > 0:
-            run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
-
-            missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                num_runs = 1
+                missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
                                                         exp_args.result_dir)
+
+                while len(missing_exps) > 0:
+                    run_exp_set(exp_args, eval_space, base_file_id=args.base_config_section)
+
+                    missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
+                                                                exp_args.result_dir)
