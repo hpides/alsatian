@@ -146,7 +146,7 @@ if __name__ == '__main__':
     items = 8000
     plot_configurations = [
         [distributions, RESNET_152], # Figure 11 d
-        # [distributions, VIT_L_32] # Figure 11 e
+        [distributions, VIT_L_32] # Figure 11 e
     ]
     for distributions, model in plot_configurations:
         plot_fixed_approach_changed_config(root_dir, model, items, device, distributions, output_path, approach)
