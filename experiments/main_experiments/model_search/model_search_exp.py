@@ -196,6 +196,9 @@ def filter_deleted_snapshots(model_snapshots):
         "NoahMeissner/detr-resnet-50_finetuned_cppe5",
         "abdumalikov/detr-resnet-50_finetuned_cppe5"
     ]
+
+    print("EXAMPLE MODEL SNAPSHOT: ", model_snapshots[0])
+
     model_snapshots = [
         hf_snapshot for hf_snapshot in model_snapshots
         if not any(bad in hf_snapshot.model_id for bad in blacklist)
