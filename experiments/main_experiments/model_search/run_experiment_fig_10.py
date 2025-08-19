@@ -238,8 +238,7 @@ if __name__ == "__main__":
         DISTRIBUTIONS: [TOP_LAYERS, TWENTY_FIVE_PERCENT, FIFTY_PERCENT],
         APPROACHES: ["baseline", "shift", "mosix"],
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
-        # SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
-        SNAPSHOT_SET_STRINGS: [RESNET_18],
+        SNAPSHOT_SET_STRINGS: [RESNET_18, RESNET_152, EFF_NET_V2_L, VIT_L_32],
         NUMS_MODELS: [35],
         BENCHMARK_LEVELS: ["EXECUTION_STEPS"],
         DATA_ITEMS: [(1600, 400), (6400, 1600)]
@@ -301,8 +300,7 @@ if __name__ == "__main__":
         BENCHMARK_LEVELS: ["STEPS_DETAILS"],
     }
 
-    # for eval_space in [eval_space_11_a_b, eval_space_11_c, eval_space_11_d, eval_space_11_e]:
-    for eval_space in [eval_space_11_a_b, eval_space_11_c, eval_space_11_d]:
+    for eval_space in [eval_space_11_a_b, eval_space_11_c, eval_space_11_d, eval_space_11_e]:
         num_runs = 1
         missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section, num_runs,
                                                     exp_args.result_dir)
