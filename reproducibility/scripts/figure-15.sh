@@ -121,4 +121,6 @@ $python_dir $script_to_start
 echo "✅ Plots done"
 echo "plots can be found under /mount-fs/plots/fig15"
 
+rm -rf /mount-fs/plots/fig15/alsatian
+
 
