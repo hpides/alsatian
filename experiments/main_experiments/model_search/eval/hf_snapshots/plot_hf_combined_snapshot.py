@@ -512,7 +512,8 @@ if __name__ == '__main__':
     measure_type = 'EXECUTION_STEPS'
 
     root_dir = os.path.abspath('/mount-fs/results/fig15')
-    for data_items in [2000, 8000]:
+    for data_items in [2000]:
+    # for data_items in [2000, 8000]:
         plot_save_path = os.path.abspath(f'/mount-fs/plots/fig15/{data_items}/')
         os.makedirs(plot_save_path, exist_ok=True)
         plot_end_to_end_times(root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path,
