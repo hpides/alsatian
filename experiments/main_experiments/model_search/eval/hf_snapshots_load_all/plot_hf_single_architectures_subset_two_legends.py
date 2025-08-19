@@ -337,6 +337,6 @@ if __name__ == '__main__':
         data = collect_combined_data(model_sets, root_dirs, fallback_path, file_templates, backup_file_template,
                                      measure_type)
 
-        plot_save_path = os.path.abspath(f'/mount-fs/plots/{data_items}')
+        plot_save_path = os.path.abspath(f'/mount-fs/plots/fig14/{data_items}')
         os.makedirs(plot_save_path, exist_ok=True)
         plot_end_to_end_times(data, plot_save_path)

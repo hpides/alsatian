@@ -118,6 +118,8 @@ export PYTHONPATH=$PWD
 # Execute the specified Python script
 $python_dir $script_to_start
 
+cd /mount-fs/plots/fig14/
+rm -rf alsatian
 
 echo "✅ Plots done"
 echo "plots can be found under /mount-fs/plots/fig14"
