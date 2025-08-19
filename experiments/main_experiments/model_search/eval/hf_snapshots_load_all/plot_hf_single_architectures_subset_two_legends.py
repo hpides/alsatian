@@ -237,19 +237,12 @@ def collect_combined_data(model_subsets, data_root_dirs, fallback_path, file_tem
 
 
 def plot_end_to_end_times(data, plot_save_path):
-    plt.rcParams.update({'font.size': 24})
-
-    plt.rcParams.update({'text.usetex': True
-                            , 'pgf.rcfonts': False
-                            , 'text.latex.preamble': r"""\usepackage{iftex}
-                                                  \ifxetex
-                                                      \usepackage[libertine]{newtxmath}
-                                                      \usepackage[tt=false]{libertine}
-                                                      \setmonofont[StylisticSet=3]{inconsolata}
-                                                  \else
-                                                      \RequirePackage[tt=false, type1=true]{libertine}
-                                                  \fi"""
-                         })
+    plt.rcParams.update({
+        'font.size': 24,
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['Linux Libertine O', 'Times New Roman', 'Times'],
+    })
 
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
 
@@ -296,7 +289,6 @@ def plot_end_to_end_times(data, plot_save_path):
             y_ticks = list(range(0, 20, 5))
             axs[bi].set_yticks(y_ticks)
 
-
         # Set x-ticks at the center of each group of bars
         tick_positions = bar_index + bar_width * (n_methods - 1) / 2
         axs[bi].set_xticks(tick_positions)
@@ -322,18 +314,17 @@ if __name__ == '__main__':
     }
 
     root_dirs = {
-        "baseline": os.path.abspath('./results/des-gpu-imagenette-huggingface-load-full-models'),
-        "shift": os.path.abspath('./results/des-gpu-imagenette-huggingface-load-full-models'),
-        "mosix": os.path.abspath(
-            '../hf_snapshots/results/des-gpu-imagenette-huggingface-single-architecture-search')
+        "baseline": os.path.abspath('/mount-fs/results/fig14'),
+        "shift": os.path.abspath('/mount-fs/results/fig14'),
+        "mosix": os.path.abspath('/mount-fs/results/fig14')
     }
 
     fallback_path = os.path.abspath(
         '../hf_snapshots/results/des-gpu-imagenette-huggingface-single-architecture-search')
 
     file_templates = {
-        "baseline": "des-gpu-imagenette-huggingface-load-full-models#approach#{}#cache#CPU#snapshot#{}#models#-1#items#{}#level#{}",
-        "shift": "des-gpu-imagenette-huggingface-load-full-models#approach#{}#cache#CPU#snapshot#{}#models#-1#items#{}#level#{}",
+        "baseline": "des-gpu-imagenette-huggingface-single-architecture-search#approach#{}#cache#CPU#snapshot#{}#models#-1#items#{}#level#{}",
+        "shift": "des-gpu-imagenette-huggingface-single-architecture-search#approach#{}#cache#CPU#snapshot#{}#models#-1#items#{}#level#{}",
         "mosix": "des-gpu-imagenette-huggingface-single-architecture-search#approach#{}#cache#CPU#snapshot#{}#models#-1#items#{}#level#{}"
     }
 
@@ -344,6 +335,6 @@ if __name__ == '__main__':
         data = collect_combined_data(model_sets, root_dirs, fallback_path, file_templates, backup_file_template,
                                      measure_type)
 
-        plot_save_path = os.path.abspath(f'./plots/single_models/{data_items}/subset-merged')
+        plot_save_path = os.path.abspath(f'/mount-fs/plots/{data_items}')
         os.makedirs(plot_save_path, exist_ok=True)
         plot_end_to_end_times(data, plot_save_path)

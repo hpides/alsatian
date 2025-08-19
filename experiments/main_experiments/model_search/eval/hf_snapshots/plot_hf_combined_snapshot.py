@@ -291,17 +291,12 @@ def plot_end_to_end_times(data_root_dir, file_template, models, approaches, data
                           plot_save_path, plot_width):
     plt.rcParams.update({'font.size': 46})
 
-    plt.rcParams.update({'text.usetex': True
-                            , 'pgf.rcfonts': False
-                            , 'text.latex.preamble': r"""\usepackage{iftex}
-                                                  \ifxetex
-                                                      \usepackage[libertine]{newtxmath}
-                                                      \usepackage[tt=false]{libertine}
-                                                      \setmonofont[StylisticSet=3]{inconsolata}
-                                                  \else
-                                                      \RequirePackage[tt=false, type1=true]{libertine}
-                                                  \fi"""
-                         })
+    plt.rcParams.update({
+        'font.size': 24,
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['Linux Libertine O', 'Times New Roman', 'Times'],
+    })
 
     colors = ['#bae4bc', '#43a2ca', '#0868ac']
 
@@ -510,17 +505,15 @@ def plot_end_to_end_times_with_error(
 
 if __name__ == '__main__':
 
-    file_template = 'des-gpu-imagenette-huggingface-all-hf-architecture-search#approach#{}#cache#CPU#snapshot#{}#models#-1#items#{}#level#{}'
+    file_template = 'des-gpu-imagenette-huggingface-search-fig15#approach#{}#cache#CPU#snapshot#{}#models#-1#items#{}#level#{}'
 
     models = ['combined']
     approaches = ['baseline', 'shift', 'mosix']
     measure_type = 'EXECUTION_STEPS'
 
+    root_dir = os.path.abspath('/mount-fs/results/fig15')
     for data_items in [2000, 8000]:
-        root_dir = os.path.abspath('./results/des-gpu-imagenette-huggingface-combined-architecture-search')
-        plot_save_path = os.path.abspath(f'./plots/combined_models/{data_items}/')
+        plot_save_path = os.path.abspath(f'/mount-fs/plots/fig15/{data_items}/')
         os.makedirs(plot_save_path, exist_ok=True)
         plot_end_to_end_times(root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path,
-                              4)
-        plot_end_to_end_times_with_error(root_dir, file_template, models, approaches, data_items, measure_type, plot_save_path,
                               4)
