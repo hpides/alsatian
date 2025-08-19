@@ -164,7 +164,7 @@ def extract_times_of_interest(root_dir, file_ids, approach, measure_type, fallba
                 files += extract_files_by_name(fallback_path, [file_id])
 
 
-    assert len(files) >= 1 and len(files) < 4, f"found {len(files)} files"
+    assert len(files) >= 1, f"found {len(files)} files"
 
     collected_metrics = []
     for file in files:
