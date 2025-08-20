@@ -62,20 +62,8 @@ echo "✅ Setup completed successfully."
 
 cd /mount-ssd/script-execution/fig16/start-scripts
 sh start-exp-synthetic-snapshots-limited-5gb.sh
-#TODO also start 10GB and 64 GB
 
 echo "✅ Experiments done"
-echo "results can be found under /mount-fs/results/fig10/"
+echo "results can be found under /mount-fs/results/fig16/"
+echo "TO CONTINUE WITH THE 10GB EXPERIMENT SWITCH DOCKER CONTAINERS"
 
-#mkdir -p /mount-fs/plots/fig10/2000
-#mkdir -p /mount-fs/plots/fig10/8000
-#cd /mount-ssd/script-execution/fig10/start-scripts
-#sh plot-fig-10.sh
-#echo "✅ Figure 10 plots done"
-#echo "plots can be found under /mount-fs/plots/fig10"
-#
-#mkdir -p /mount-fs/plots/fig11
-#cd /mount-ssd/script-execution/fig10/start-scripts
-#sh plot-fig-11.sh
-#echo "✅ Figure 11 plots done"
-#echo "plots can be found under /mount-fs/plots/fig11"

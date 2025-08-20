@@ -10,21 +10,13 @@ from global_utils.model_names import VIT_L_32
 
 def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_path, file_name, config_names, show_yaxis_text,
                                           title):
-    plt.rcParams.update({'font.size': 24})
+    plt.rcParams.update({
+        'font.size': 24,
+        'text.usetex': False,
+        'font.family': 'serif',
+        'font.serif': ['Linux Libertine O', 'Times New Roman', 'Times'],
+    })
 
-    plt.rcParams.update({'text.usetex': True
-                            , 'pgf.rcfonts': False
-                            , 'text.latex.preamble': r"""\usepackage{iftex}
-                                                        \ifxetex
-                                                            \usepackage[libertine]{newtxmath}
-                                                            \usepackage[tt=false]{libertine}
-                                                            \setmonofont[StylisticSet=3]{inconsolata}
-                                                        \else
-                                                            \RequirePackage[tt=false, type1=true]{libertine}
-                                                        \fi"""
-                         })
-
-    colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac', '#b30086']
     colors = ['#bae4bc', '#7bccc4', '#43a2ca', '#0868ac']
 
     # Maintain the order of the keys as they appear in the JSON inputs
@@ -34,10 +26,6 @@ def stacked_bar_plot_three_configurations(config_1, config_2, config_3, file_pat
 
     if "exec planning" in categories:
         categories.remove("exec planning")
-
-    # for conf in [config_1, config_2, config_3]:
-    #     if "exec_planning" in conf:
-    #         del conf["exec_planning"]
 
     # Data preparation
     baseline_values = [config_1.get(category, 0) for category in categories]
@@ -131,9 +119,9 @@ def plot_approaches_across_memory_config(root_dir, model_distribution, model_dis
 
 
 if __name__ == '__main__':
-    output_path = './plots'
+    output_path = '/mount-fs/plots/fig16'
     model_distribution = "FIFTY_PERCENT"
-    root_dir = os.path.abspath(f'./results/limited-memory-exps')
+    root_dir = os.path.abspath(f'/mount-fs/results/fig16')
     model_dist = "FIFTY_PERCENT"
 
     for approach in ['mosix', 'baseline', 'shift']:
