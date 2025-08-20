@@ -26,7 +26,7 @@ for model in vit_l_32; do
   cd "/mount-fs/snapshot-sets/$model" || exit
   for chunk in FIFTY_PERCENT; do
     tar_file="${model}_${chunk}.tar"
-    unpack_dir="${model}_${chunk}"
+    unpack_dir="${chunk}"
 
     if [ ! -f "$tar_file" ]; then
       wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/snapshot-sets/${tar_file}"

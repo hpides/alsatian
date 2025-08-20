@@ -6,6 +6,14 @@
 
 ## General Info
 
+### Number of Experiments
+
+- For our paper we executed every experiment 3-5 times to investigate the variance in execution time and report median
+  values
+- On our setup we find the variance to be low. Thus, we only do one run per experiment for this reproducibility
+  submission. This is mainly to limit the execution time for the reviewers (which will be long even with one run per
+  experiment).
+
 ### Hardware
 
 We execute all experiments on a server with the following specs, but only use a subset of its resources (see software
