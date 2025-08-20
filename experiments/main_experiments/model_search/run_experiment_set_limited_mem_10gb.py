@@ -7,10 +7,10 @@ import traceback
 
 import torch
 
-from experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
+from experiments.main_experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, \
+    _str_to_cache_location, \
     _str_to_benchmark_level
-from experiments.model_search.model_search_exp import run_model_search
-
+from experiments.main_experiments.model_search.model_search_exp_synthetic import run_model_search
 from experiments.main_experiments.model_search.run_experiment_set_limited_mem_5gb import identify_missing_experiments
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from global_utils.deterministic import TRUE

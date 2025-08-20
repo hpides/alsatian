@@ -6,10 +6,11 @@ import time
 import traceback
 
 import torch
-from experiments.main_experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
+
+from experiments.main_experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, \
+    _str_to_cache_location, \
     _str_to_benchmark_level
 from experiments.main_experiments.model_search.model_search_exp_synthetic import run_model_search
-
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from global_utils.deterministic import TRUE
 from global_utils.model_names import VIT_L_32
@@ -28,6 +29,7 @@ NUM_WORKERS = "num_workers"
 
 def run_exp(exp_args):
     return run_model_search(exp_args)
+
 
 def identify_missing_experiments(base_exp_args, eval_space, base_file_id, num_iterations, result_directory):
     # get a list of all files in the result_directory
@@ -193,4 +195,3 @@ if __name__ == "__main__":
             missing_exps = identify_missing_experiments(exp_args, eval_space, args.base_config_section,
                                                         num_runs,
                                                         exp_args.result_dir)
-
