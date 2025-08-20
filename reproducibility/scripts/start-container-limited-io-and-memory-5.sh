@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 DOCKER="nils-pytorch"
 
 # When setting --memory swap to the same valu as memory, the container will not be allowed to use any swap
-docker run -d -p 3341:22 \
+docker run -d -p 3340:22 \
            --ipc=host \
            -h $DOCKER-5GB \
            --mount type=bind,source=/home/fgrabl/nils-strassenburg/docker-mounted/repro-mount-ssd,target=/mount-ssd \
