@@ -6,9 +6,9 @@ import time
 import traceback
 
 import torch
-from experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
+from experiments.main_experiments.model_search.experiment_args import ExpArgs, _str_to_distribution, _str_to_cache_location, \
     _str_to_benchmark_level
-# from experiments.model_search.model_search_exp import run_model_search
+from experiments.main_experiments.model_search.model_search_exp_synthetic import run_model_search
 
 from experiments.main_experiments.prevent_caching.watch_utils import LIMIT_IO
 from global_utils.deterministic import TRUE
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # run_experiment_section(exp_args, args.config_section)
     eval_space = {
         DISTRIBUTIONS: ["FIFTY_PERCENT"],
-        APPROACHES: ["baseline"],
+        APPROACHES: ["baseline", "shift", "mosix"],
         NUM_WORKERS: [3, 3, 3],  # first entry baseline, second shift, third mosix
         DEFAULT_CACHE_LOCATIONS: ["CPU"],
         SNAPSHOT_SET_STRINGS: [VIT_L_32],
