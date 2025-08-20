@@ -11,7 +11,8 @@
 ## Reproducibility
 
 - **For Reproducibility please switch to the branch `reproducibility`** and checkout the readme in the folder
-  `reproducibility` this branch contains boiled down script to reproduce only the experiments in the paper.
+  `reproducibility`
+- the code in the `reproducibility` contains boiled down script to reproduce only the experiments in the paper
 
 ## Repository Structure
 
