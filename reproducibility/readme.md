@@ -6,6 +6,11 @@
 
 ## General Info
 
+### Approach Naming
+
+- the working title of our approach was `mosix`, in the final paper we use the name `Alsatian`
+- the naming of plots and result files still uses the name `mosix`
+
 ### Number of Experiments
 
 - For our paper we executed every experiment 3-5 times to investigate the variance in execution time and report median
@@ -47,15 +52,15 @@ For all experiments, we mount two directories from the host machine in the docke
 ## Reproducing Experiments
 
 - **We recommend to reproduce the experiments in the order provided in this readme**.
-- Reason 1: As part of the experiment
-  execution we download large sets of model snapshots. In our case these were so large that we were not able to fit all
-  base data for all experiments on our server at the same time. We thus ordered the experiments in a way that
-  consecutive experiments can avoid re-downloading datasets.
+- Reason 1: As part of the experiment execution we download large sets of model snapshots. In our case these were so
+  large that we were not able to fit all models for all experiments on our server at the same time. We thus ordered
+  the experiments in a way that consecutive experiments can avoid re-downloading datasets and that once one experiment
+  group is finished the downloads of previous experiments can be deleted.
 - Reason 2: We ordered the experiments in increasing duration (so first experiments take a short amount of time, later
   ones take longer)
 
 - All figures mentioned under one bullet point share a large part of data (if there is only one figure per bullet point
-  there is no sharing)
+  there might be sharing of datasets but no sharing of model snapshots)
     - Figure 5
     - Figure 12
     - Figure 17
@@ -63,10 +68,10 @@ For all experiments, we mount two directories from the host machine in the docke
     - Figure 10, Figure 11, Figure 16
     - Figure 14, Figure 15
 
-- **general setup**
+- **General Setup**
     - as a starting point for all experiments, we assume you have a cloned version of our repo
     - **and you are in the reproducibility branch**
-    - we further assume you have two directories created
+    - we further assume you have two empty directories created that can be mounted into the docker container
         - one on a hard drive (will later be mounted to `/mount-fs` in the docker container)
         - one on an SSD (will later be mounted to `/mount-ssd` in the docker container)
 
@@ -80,11 +85,11 @@ For all experiments, we mount two directories from the host machine in the docke
     --gpus device=<THE_ID_OF_THE_GPU_YOU_WANT_TO_USE> \
     --cpuset-cpus="<THE_ID_RANGE_OF_CPUS_YOU_WANT_TO_USE>" \
     ```
-    - to start the container by executing [start-plain-container.sh](scripts/start-plain-container.sh)
+    - start the container by executing [start-plain-container.sh](scripts/start-plain-container.sh)
 
 - **run the experiment & generate plots**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-    - copy the [figure-5.sh](scripts/figure-5.sh) script on the container and run it (e.g. by placing it in one of the
+    - copy the [figure-5.sh](scripts/figure-5.sh) to the container (e.g. by placing it in one of the
       mounted directories)
     - execute `figure-5.sh`
     - the plots are saved under: `/mount-fs/plots/bottleneck-analysis` **in the docker container** (and thus should be
@@ -100,11 +105,11 @@ For all experiments, we mount two directories from the host machine in the docke
     --gpus device=<THE_ID_OF_THE_GPU_YOU_WANT_TO_USE> \
     --cpuset-cpus="<THE_ID_RANGE_OF_CPUS_YOU_WANT_TO_USE>" \
     ```
-    - to start the container by executing [start-plain-container.sh](scripts/start-plain-container.sh)
+    - start the container by executing [start-plain-container.sh](scripts/start-plain-container.sh)
 
 - **run the experiment & generate plots**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-    - copy the [figure-12.sh](scripts/figure-12.sh) script on the container and run it (e.g. by placing it in one of the
+    - copy the [figure-12.sh](scripts/figure-12.sh) to the container (e.g. by placing it in one of the
       mounted directories)
     - execute `figure-12.sh`
     - the plots are saved under: `/mount-fs/plots/fig12` **in the docker container** (and thus should be
@@ -120,7 +125,7 @@ For all experiments, we mount two directories from the host machine in the docke
 
 #### Figure 17
 
-- **start a docker container with LIMITED I/O**
+- **start a docker container with LIMITED I/O (different to previous experiments)**
     - take the script [start-container-limited-io.sh](scripts/start-container-limited-io.sh) as a starting point and
       adjust the following fields
     ```
@@ -130,7 +135,7 @@ For all experiments, we mount two directories from the host machine in the docke
     --cpuset-cpus="<THE_ID_RANGE_OF_CPUS_YOU_WANT_TO_USE>" \
     ```
     - the first four fields can be copied form the setup used for figure 5
-        - for the last line `/dev/md127` must be replaced with
+        - the last line `/dev/md127`, must be adjusted to your setup
         - we used the following cmd: `df --output=source /fs/nils-strassenburg/docker-mounted/mount-fs/`
         - the output on our machine is:
           ```
@@ -144,11 +149,23 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - **run the experiment & generate plots**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-    - copy the [figure-17.sh](scripts/figure-17.sh) script on the container and run it (e.g. by placing it in one of the
+    - copy the [figure-17.sh](scripts/figure-17.sh) to the container (e.g. by placing it in one of the
       mounted directories)
     - execute `figure-17.sh`
     - the plots are saved under: `/mount-fs/plots/fig17` **in the docker container** (and thus should be
       in your mounted directory on the host machine)
+
+- **troubleshooting**
+    - after all downloads are complete, the folder structure of `/mount-fs/snapshot-sets` looks like this:
+      ```
+        .
+        ├── bert
+        │   ├── FIFTY_PERCENT
+        │   ├── TOP_LAYERS
+        │   └── TWENTY_FIVE_PERCENT
+      ```
+    - this experiment is the only one that uses the `bert` snapshots, meaning if you run out of space you can
+      delete the directory after the plots were generated
 
 #### Figure 13
 
@@ -162,7 +179,7 @@ For all experiments, we mount two directories from the host machine in the docke
     --cpuset-cpus="<THE_ID_RANGE_OF_CPUS_YOU_WANT_TO_USE>" \
     ```
     - the first four fields can be copied form the setup used for figure 5
-        - for the last line `/dev/md127` must be replaced with
+        - the last line `/dev/md127`, must be adjusted to your setup
         - we used the following cmd: `df --output=source /fs/nils-strassenburg/docker-mounted/mount-fs/`
         - the output on our machine is:
           ```
@@ -176,7 +193,7 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - **run the experiment & generate plots**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-    - copy the [figure-17.sh](scripts/figure-13.sh) script on the container and run it (e.g. by placing it in one of the
+    - copy the [figure-13.sh](scripts/figure-13.sh) to the container (e.g. by placing it in one of the
       mounted directories)
     - execute `figure-13.sh`
     - the plots are saved under: `/mount-fs/plots/fig13` **in the docker container** (and thus should be
@@ -215,7 +232,7 @@ For all experiments, we mount two directories from the host machine in the docke
           --device-read-bps=/dev/md127:200mb \
           ```
         - the first four fields can be copied form the setup used for figure 5
-            - for the last line `/dev/md127` must be replaced with
+            - the last line `/dev/md127`, must be adjusted to your setup
             - we used the following cmd: `df --output=source /fs/nils-strassenburg/docker-mounted/mount-fs/`
             - the output on our machine is:
             ```
@@ -227,7 +244,7 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - **run the experiment & generate plots**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-    - copy the [figure-10-11.sh](scripts/figure-10-11.sh) script on the container and run it (e.g. by placing it in one
+    - copy the [figure-10-11.sh](scripts/figure-10-11.sh) to the container (e.g. by placing it in one
       of the
       mounted directories)
     - execute `figure-10-11.sh`
@@ -259,6 +276,11 @@ For all experiments, we mount two directories from the host machine in the docke
           ├── TOP_LAYERS
           └── TWENTY_FIVE_PERCENT
       ```
+        - this experiment is the only one that uses the `/mount-fs/snapshot-sets/eff_net_v2_l`,
+          `/mount-fs/snapshot-sets/resnet18`, `/mount-fs/snapshot-sets/resnet152`,
+          `/mount-fs/snapshot-sets/vit_l_32/TOP_LAYERS`,
+          and `/mount-fs/snapshot-sets/vit_l_32/TWENTY_FIVE_PERCENT` meaning if you run out of space you can
+          delete the directory after the plots were generated
 
 #### Figure 16
 
@@ -281,7 +303,7 @@ For all experiments, we mount two directories from the host machine in the docke
       --device-read-bps=/dev/md127:200mb \
       ```
     - the first four fields can be copied form the setup used for figure 5
-        - for the last line `/dev/md127` must be replaced with
+        - the last line `/dev/md127`, must be adjusted to your setup
         - we used the following cmd: `df --output=source /fs/nils-strassenburg/docker-mounted/mount-fs/`
         - the output on our machine is:
         ```
@@ -295,7 +317,7 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - **run the experiment for 64 GB**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID-WITH-64GB-MEMORY> bash`
-    - copy the [figure-16-64gb.sh](scripts/figure-16-64gb.sh) script on the container and run it (e.g. by placing it in
+    - copy the [figure-16-64gb.sh](scripts/figure-16-64gb.sh) to the container (e.g. by placing it in
       one of the
       mounted directories)
     - execute `figure-16-64gb.sh`
@@ -310,7 +332,7 @@ For all experiments, we mount two directories from the host machine in the docke
     - (see below under Reoccurring Steps - Start clear caches script)
 - **run the experiment for 10GB (and then do the same for 5GB)**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID-WITH-10GB-MEMORY> bash`
-    - copy the [figure-16-10gb.sh](scripts/figure-16-10gb.sh) script on the container and run it (e.g. by placing it in
+    - copy the [figure-16-10gb.sh](scripts/figure-16-10gb.sh) to the container (e.g. by placing it in
       one of the
       mounted directories)
     - execute `figure-16-10gb.sh`
@@ -319,6 +341,19 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - use any of the docker containers started above
 - copy the script [figure-16-plot.sh](scripts/figure-16-plot.sh) to the container and run it
+
+##### troubleshooting
+
+- after all downloads are complete, the folder structure of `/mount-fs/snapshot-sets` looks like this:
+  ```
+    .
+    ├── bert
+    │   ├── FIFTY_PERCENT
+    │   ├── TOP_LAYERS
+    │   └── TWENTY_FIVE_PERCENT
+  ```
+- this experiment and Figure 10 & 11 are the only experiments that use `/mount-fs/snapshot-sets`, meaning if you run out
+  of space you can delete the directory after the plots were generated
 
 #### Figure 14 & Figure 15
 
@@ -341,7 +376,7 @@ For all experiments, we mount two directories from the host machine in the docke
           --device-read-bps=/dev/md127:200mb \
           ```
         - the first four fields can be copied form the setup used for figure 5
-            - for the last line `/dev/md127` must be replaced with
+            - the last line `/dev/md127`, must be adjusted to your setup
             - we used the following cmd: `df --output=source /fs/nils-strassenburg/docker-mounted/mount-fs/`
             - the output on our machine is:
             ```
@@ -357,7 +392,7 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - **run the experiment & generate plots**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-    - copy the [figure-14.sh](scripts/figure-14.sh) script on the container and run it (e.g. by placing it in one
+    - copy the [figure-14.sh](scripts/figure-14.sh) to the container (e.g. by placing it in one
       of the mounted directories)
     - execute `scripts/figure-14.sh`
     - the plots are saved under: `/mount-fs/plots/fig14` **in the docker container** (and
@@ -367,11 +402,37 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - **run the experiment & generate plots**
     - open the containers bash: `sudo docker exec -it <CONTAINER-ID> bash`
-    - copy the [figure-15.sh](scripts/figure-15.sh) script on the container and run it (e.g. by placing it in one
+    - copy the [figure-15.sh](scripts/figure-15.sh) to the container (e.g. by placing it in one
       of the mounted directories)
     - execute `scripts/figure-15.sh`
     - the plots are saved under: `/mount-fs/plots/fig15` **in the docker container** (and
       thus should be in your mounted directory on the host machine)
+
+##### troubleshooting
+
+- during the execution of the baseline and SHiFT there should be no downloads of models from hugging face since we
+  provide the hf-caching dir 
+- after all downloads are complete, the folder structure of `/mount-fs/hf-snapshots` looks like this:
+  ```
+    .
+    ├── facebook-detr-resnet-101
+    ├── facebook-detr-resnet-50
+    ├── facebook-detr-resnet-50-dc5
+    ├── facebook-dinov2-base
+    ├── facebook-dinov2-large
+    ├── google-vit-base-patch16-224-in21k
+    ├── hf-microsoft-resnet-152
+    ├── hf-microsoft-resnet-18
+    ├── microsoft-conditional-detr-resnet-50
+    ├── microsoft-resnet-152
+    ├── microsoft-resnet-18
+    ├── microsoft-table-transformer-detection
+    ├── microsoft-table-transformer-structure-recognition
+    ├── resnet-50
+    └── SenseTime-deformable-detr
+  ```
+- this experiment and Figure 14 & 15 are the only experiments that use `/mount-fs/hf-snapshots`, meaning if you run out
+  of space you can delete the directory after the plots were generated
 
 ## Reoccurring Steps
 
