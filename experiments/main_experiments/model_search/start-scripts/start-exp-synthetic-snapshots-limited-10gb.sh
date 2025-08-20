@@ -2,7 +2,7 @@
 
 # Assigning command line arguments to variables
 repository_url=https://github.com/hpides/alsatian.git
-script_to_start=experiments/main_experiments/model_search/run_experiment_set_limited_mem-10gb.py
+script_to_start=experiments/main_experiments/model_search/run_experiment_set_limited_mem_10gb.py
 branch=reproducibility
 python_dir=/home/nils/.virtualenvs/model-search-paper/bin/python
 repo_name=alsatian
