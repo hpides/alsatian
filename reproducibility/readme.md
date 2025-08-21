@@ -336,6 +336,7 @@ For all experiments, we mount two directories from the host machine in the docke
       one of the
       mounted directories)
     - execute `figure-16-10gb.sh`
+    - then repeat the steps using the 5gb scripts 
 
 ##### Plotting
 
@@ -346,11 +347,9 @@ For all experiments, we mount two directories from the host machine in the docke
 
 - after all downloads are complete, the folder structure of `/mount-fs/snapshot-sets` looks like this:
   ```
-    .
-    ├── bert
-    │   ├── FIFTY_PERCENT
-    │   ├── TOP_LAYERS
-    │   └── TWENTY_FIVE_PERCENT
+      .
+      └── vit_l_32
+          ├── FIFTY_PERCENT
   ```
 - this experiment and Figure 10 & 11 are the only experiments that use `/mount-fs/snapshot-sets`, meaning if you run out
   of space you can delete the directory after the plots were generated
@@ -358,14 +357,14 @@ For all experiments, we mount two directories from the host machine in the docke
 #### Figure 14 & Figure 15
 
 - **general comment regarding reproducibility**
-    - between the initial paper submission and the reproducibility submission a small number of models we used for our
+    - Between the initial paper submission and the reproducibility submission a small number of models we used for our
       experiments have been deleted from HuggingFace. While Alsatian is able to recover these snapshots form our backup
       directory SHiFT and Baseline fail to do so and will just skip these snapshots. When we reproduced the results as
       part of preparing the reproducibility submission this had the effect that the performance improvements of Alsatian
       over the Baseline and SHiFT slightly degrade (because Alsatian is searching through a couple more models). Still
       the trends should be very similar.
 
-- **start a docker container with limited IO**
+- **start a docker container with limited IO (and UNLIMITED memory, unlike for Figure 16)**
     - to start the container run: [start-container-limited-io.sh](scripts/start-container-limited-io.sh)
         - **important**: adjust the following fields according to your setup
           ```
