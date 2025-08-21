@@ -10,8 +10,8 @@
 
 ## Reproducibility
 
-- **For Reproducibility please switch to the branch `reproducibility`** and checkout the
-  readme[readme.md](reproducibility/readme.md) in the folder `reproducibility`.
+- **For Reproducibility please switch to the branch `reproducibility`** and checkout
+  the [readme.md](reproducibility/readme.md) in the folder `reproducibility`.
 - The code in the `reproducibility` branch contains boiled down script to reproduce only the experiments in the paper.
 
 ## Repository Structure
