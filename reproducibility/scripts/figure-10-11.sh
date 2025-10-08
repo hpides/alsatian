@@ -37,7 +37,7 @@ done
 for model in eff_net_v2_l vit_l_32; do
   mkdir -p "/mount-fs/snapshot-sets/$model"
   cd "/mount-fs/snapshot-sets/$model" || exit
-  for chunk in TOP_LAYER FIFTY_PERCENT TWENTY_FIVE_PERCENT; do
+  for chunk in TOP_LAYERS FIFTY_PERCENT TWENTY_FIVE_PERCENT; do
     tar_file="${model}_${chunk}.tar"
     unpack_dir="${chunk}"
 
