@@ -41,13 +41,12 @@ for model in eff_net_v2_l vit_l_32; do
     tar_file="${model}_${chunk}.tar"
     unpack_dir="${chunk}"
 
-    if [ ! -f "$tar_file" ]; then
-      wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/snapshot-sets/${tar_file}"
-    else
-      echo "$tar_file already exists, skipping download."
-    fi
-
     if [ ! -d "$unpack_dir" ]; then
+      if [ ! -f "$tar_file" ]; then
+        wget "https://data-engineering-systems.s3.openhpicloud.de/nils-strassenburg/alsatian/snapshot-sets/${tar_file}"
+      else
+        echo "$tar_file already exists, skipping download."
+      fi
       tar -xf "$tar_file"
     else
       echo "$unpack_dir already exists, skipping extraction."
